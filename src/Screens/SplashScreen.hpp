@@ -23,14 +23,12 @@ SplashScreen::SplashScreen(Logger* logger)
         return;
     }
     sprite_ = sf::Sprite(image_);
-    sprite_.setPosition(200,200);
+    sprite_.setPosition(200, 200);
 }
 
 void SplashScreen::show(sf::RenderWindow& window)
 {
-    window.clear(sf::Color::Black);
     window.draw(sprite_);
-    window.display();
 }
 
 #endif

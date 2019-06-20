@@ -28,9 +28,7 @@ Options::Options(Logger* logger)
 
 void Options::show(sf::RenderWindow& window)
 {
-    window.clear(sf::Color::Black);
     window.draw(sprite_);
-    window.display();
 }
 
 #endif

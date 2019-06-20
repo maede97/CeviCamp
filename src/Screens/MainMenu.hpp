@@ -78,7 +78,6 @@ MainMenu::MainMenu(Logger* logger, bool keepPlaying)
 
 void MainMenu::show(sf::RenderWindow& window)
 {
-    window.clear(sf::Color::Black);
     if (keepPlaying_)
         window.draw(keepPlayingSprite_);
     window.draw(gamestartSprite_);
@@ -86,7 +85,6 @@ void MainMenu::show(sf::RenderWindow& window)
     window.draw(versionSprite_);
     window.draw(logoLeftSprite_);
     window.draw(logoRightSprite_);
-    window.display();
 }
 
 MainMenu::MenuResult MainMenu::handleClick(int x, int y)

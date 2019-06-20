@@ -32,7 +32,11 @@ void View::openFrame()
 {
     sf::VideoMode vm = sf::VideoMode(1920, 1080);
     window.create(vm, settings_->title, sf::Style::Default);
-    //window.setVerticalSyncEnabled(true);
+
+    // only one of those:
+    window.setVerticalSyncEnabled(true);
+    //window.setFramerateLimit(60);
+
     logger_->log("View", "openFrame");
 }
 void View::closeFrame()
@@ -43,7 +47,6 @@ void View::closeFrame()
 void View::clearFrame()
 {
     window.clear(sf::Color::Black);
-    window.display();
 }
 void View::updateFrame()
 {
