@@ -6,7 +6,7 @@
 
 class Grass {
 public:
-    Grass(Logger* logger, sf::Vector2u windowSize)
+    Grass(Logger* logger, sf::Vector2i windowSize)
     {
         logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Grass.png")) {
@@ -15,8 +15,8 @@ public:
         }
 
         image_.setRepeated(true);
-        sprite_ = sf::Sprite(image_, sf::IntRect(0,0,windowSize.x,windowSize.y));
-        sprite_.setPosition(0,0);
+        sprite_ = sf::Sprite(image_, sf::IntRect(0, 0, windowSize.x, windowSize.y));
+        sprite_.setPosition(0, 0);
     }
 
     sf::Sprite getSprite() const { return sprite_; }

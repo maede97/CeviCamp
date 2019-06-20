@@ -3,7 +3,7 @@ SFML Cevi Game
 
 # Good links
 ## Sprites
-https://piskelapp.com
+https://www.piskelapp.com
 
 Size 32x32, Export Scale x4 1 Column, multiple Rows
 

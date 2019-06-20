@@ -51,7 +51,7 @@ GameController::GameController(Logger* logger)
     settings_ = new Settings(logger_);
     view_ = new View(settings_, logger_);
     soundManager_ = new SoundManager(logger_);
-    gameObjectManager_ = new GameObjectManager(logger_, sf::Vector2u(settings_->screenWidth, settings_->screenHeight));
+    gameObjectManager_ = new GameObjectManager(logger_, sf::Vector2i(settings_->screenWidth, settings_->screenHeight));
 
     // Screens
     splashScreen_ = new SplashScreen(logger_);
@@ -149,14 +149,12 @@ void GameController::gameLoop()
                 gameState_ = Exiting;
                 break;
             case sf::Event::EventType::KeyPressed:
-                logger_->log("Playing", "Key pressed");
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                     gameState_ = ShowMenu;
                 }
                 break;
             case sf::Event::EventType::MouseButtonPressed:
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-                    logger_->log("Playing", "Mouse pressed");
                     gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y);
                 }
             }
@@ -178,6 +176,18 @@ void GameController::gameLoop()
         options_->show(view_->window);
         break;
     case Playing:
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            gameObjectManager_->down();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            gameObjectManager_->up();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            gameObjectManager_->left();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            gameObjectManager_->right();
+        }
         gameObjectManager_->drawAll(view_->window, deltaTime_.getElapsedTime());
         break;
     }
