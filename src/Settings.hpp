@@ -10,6 +10,8 @@ public:
     void saveSettingsToFile();
 
     const char* title = "CeviCamp";
+    const unsigned int screenWidth = 1920;
+    const unsigned int screenHeight = 1080;
     bool keepPlaying = false;
 
 private:
@@ -23,11 +25,11 @@ Settings::Settings(Logger* logger)
 
 void Settings::readSettingsFromFile()
 {
-    logger_->log("Settings","readSettingsFromFile");
+    logger_->log("Settings", "readSettingsFromFile");
 }
 void Settings::saveSettingsToFile()
 {
-    logger_->log("Settings","saveSettingsToFile");
+    logger_->log("Settings", "saveSettingsToFile");
 }
 
 #endif

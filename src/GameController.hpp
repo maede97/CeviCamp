@@ -1,11 +1,12 @@
 #ifndef GAMECONTROLLER_HPP
 #define GAMECONTROLLER_HPP
 
-#include "GameObjects/Fire.hpp"
+#include "GameObjectManager.hpp"
 #include "Logger.hpp"
 #include "Screens/MainMenu.hpp"
 #include "Screens/Options.hpp"
 #include "Screens/SplashScreen.hpp"
+#include "SoundManager.hpp"
 #include "View.hpp"
 
 class GameController {
@@ -28,6 +29,8 @@ private:
     GameState gameState_ = Uninitialized;
     Settings* settings_;
     View* view_;
+    SoundManager* soundManager_;
+    GameObjectManager* gameObjectManager_;
 
     // Screens
     SplashScreen* splashScreen_;
@@ -43,17 +46,17 @@ private:
 
 GameController::GameController(Logger* logger)
 {
+    // Later: load async
     logger_ = logger;
     settings_ = new Settings(logger_);
     view_ = new View(settings_, logger_);
+    soundManager_ = new SoundManager(logger_);
+    gameObjectManager_ = new GameObjectManager(logger_, sf::Vector2u(settings_->screenWidth, settings_->screenHeight));
 
     // Screens
     splashScreen_ = new SplashScreen(logger_);
     mainMenu_ = new MainMenu(logger_, settings_->keepPlaying);
     options_ = new Options(logger_);
-
-    // GameObjects
-    fire_ = new Fire(logger_);
 }
 
 void GameController::start()
@@ -64,6 +67,7 @@ void GameController::start()
     // read settings
     settings_->readSettingsFromFile();
     view_->openFrame();
+    soundManager_->playSoundTrack();
 
     gameState_ = ShowSplash;
     while (!isExiting()) {
@@ -89,9 +93,8 @@ GameController::~GameController()
 
     delete view_;
     delete settings_;
-
-    // GameObjects
-    delete fire_;
+    delete soundManager_;
+    delete gameObjectManager_;
 }
 
 void GameController::gameLoop()
@@ -154,7 +157,7 @@ void GameController::gameLoop()
             case sf::Event::EventType::MouseButtonPressed:
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                     logger_->log("Playing", "Mouse pressed");
-                    fire_->upgrade();
+                    gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y);
                 }
             }
             break;
@@ -175,11 +178,7 @@ void GameController::gameLoop()
         options_->show(view_->window);
         break;
     case Playing:
-        // TEMP: needs to be done using a GameObjectManager
-        fire_->play();
-        fire_->update(deltaTime_.getElapsedTime());
-        //logger_->log("Time",std::to_string(deltaTime_.getElapsedTime().asMilliseconds()));
-        view_->window.draw(fire_->getSprite());
+        gameObjectManager_->drawAll(view_->window, deltaTime_.getElapsedTime());
         break;
     }
 

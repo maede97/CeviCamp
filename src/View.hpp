@@ -30,7 +30,7 @@ View::View(Settings* settings, Logger* logger)
 
 void View::openFrame()
 {
-    sf::VideoMode vm = sf::VideoMode(1920, 1080);
+    sf::VideoMode vm = sf::VideoMode(settings_->screenWidth, settings_->screenHeight);
     window.create(vm, settings_->title, sf::Style::Default);
 
     // only one of those:

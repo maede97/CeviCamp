@@ -30,6 +30,7 @@ public:
 
     void upgrade()
     {
+        logger_->log("Fire", "Upgraded");
         if (current_ == &stones_) {
             current_ = &wood_;
         } else if (current_ = &wood_) {
@@ -37,15 +38,9 @@ public:
         }
     }
 
-    void play()
-    {
-        sprite_.play(*current_);
-    }
+    void play() { sprite_.play(*current_); }
 
-    void update(sf::Time frametime)
-    {
-        sprite_.update(frametime);
-    }
+    void update(sf::Time frametime) { sprite_.update(frametime); }
 
     AnimatedSprite getSprite() const { return sprite_; }
 
