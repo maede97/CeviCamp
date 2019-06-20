@@ -3,9 +3,9 @@
 
 int main()
 {
-    Logger logger(Logger::ALL);
+    Logger logger(Logger::INFO);
     GameController controller(&logger);
-    logger.log("main", "Game started");
+    logger.info("main", "Game started");
     controller.start();
     return 0;
 }

@@ -10,7 +10,7 @@ public:
     {
         logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Fire.png")) {
-            logger_->log("Fire", "res/CampParts/Fire.png not found");
+            logger_->error("Fire", "res/CampParts/Fire.png not found");
             return;
         }
         stones_.setSpriteSheet(image_);
@@ -30,7 +30,7 @@ public:
 
     void upgrade()
     {
-        logger_->log("Fire", "Upgraded");
+        logger_->info("Fire", "Upgraded");
         if (current_ == &stones_) {
             current_ = &wood_;
         } else if (current_ = &wood_) {

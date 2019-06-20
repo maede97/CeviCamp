@@ -60,6 +60,7 @@ public:
 
     void handleClick(int x, int y)
     {
+        logger_->info("GameObjectManager","Handle Click");
         if (fire_->getSprite().getGlobalBounds().contains(x, y)) {
             fire_->upgrade();
         }

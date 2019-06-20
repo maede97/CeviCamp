@@ -8,9 +8,9 @@
 class Logger {
 public:
     enum Level { ALL,
-        INFO,
-        WARNING,
         ERROR,
+        WARNING,
+        INFO,
         NOTHING };
 
     Logger(Level l)
@@ -18,18 +18,25 @@ public:
         level_ = l;
     }
 
-    void log(std::string x, Level l = ALL)
+    void info(std::string x, std::string y)
     {
-        if (l == NOTHING)
-            return;
-        std::cout << x << std::endl;
+        log(x, y, INFO);
+    }
+
+    void error(std::string x, std::string y)
+    {
+        log(x, y, ERROR);
+    }
+    void warning(std::string x, std::string y)
+    {
+        log(x, y, WARNING);
     }
     void log(std::string x, std::string y, Level l = ALL)
     {
-        if (l == NOTHING)
-            return;
-        std::cout << std::setfill(' ') << std::setw(15) << std::left << x << " ";
-        std::cout << std::setfill(' ') << std::setw(100) << std::left << y << std::endl;
+        if (l >= level_) {
+            std::cout << std::setfill(' ') << std::setw(15) << std::left << x << " ";
+            std::cout << std::setfill(' ') << std::setw(100) << std::left << y << std::endl;
+        }
     }
 
 private:

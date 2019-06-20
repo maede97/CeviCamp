@@ -19,7 +19,7 @@ SplashScreen::SplashScreen(Logger* logger)
 {
     logger_ = logger;
     if (image_.loadFromFile("res/logo_right.png") != true) {
-        logger_->log("SplashScreen", "file res/logo_right.png not found");
+        logger_->error("SplashScreen", "file res/logo_right.png not found");
         return;
     }
     sprite_ = sf::Sprite(image_);

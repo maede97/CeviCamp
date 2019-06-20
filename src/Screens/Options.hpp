@@ -19,7 +19,7 @@ Options::Options(Logger* logger)
 {
     logger_ = logger;
     if (image_.loadFromFile("res/logo_left.png") != true) {
-        logger_->log("Options", "file res/logo_left.png not found");
+        logger_->error("Options", "file res/logo_left.png not found");
         return;
     }
     sprite_ = sf::Sprite(image_);

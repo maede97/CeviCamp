@@ -38,27 +38,27 @@ MainMenu::MainMenu(Logger* logger, bool keepPlaying)
     keepPlaying_ = keepPlaying;
     logger_ = logger;
     if (keepPlayingImage_.loadFromFile("res/keep_playing.png") != true) {
-        logger_->log("MainMenu", "file res/keep_playing.png not found");
+        logger_->error("MainMenu", "file res/keep_playing.png not found");
         return;
     }
     if (gamestartImage_.loadFromFile("res/gamestart.png") != true) {
-        logger_->log("MainMenu", "file res/gamestart.png not found");
+        logger_->error("MainMenu", "file res/gamestart.png not found");
         return;
     }
     if (optionsImage_.loadFromFile("res/options.png") != true) {
-        logger_->log("MainMenu", "file res/options.png not found");
+        logger_->error("MainMenu", "file res/options.png not found");
         return;
     }
     if (versionImage_.loadFromFile("res/version.png") != true) {
-        logger_->log("MainMenu", "file res/version.png not found");
+        logger_->error("MainMenu", "file res/version.png not found");
         return;
     }
     if (logoLeftImage_.loadFromFile("res/logo_left.png") != true) {
-        logger_->log("MainMenu", "file res/logo_left.png not found");
+        logger_->error("MainMenu", "file res/logo_left.png not found");
         return;
     }
     if (logoRightImage_.loadFromFile("res/logo_right.png") != true) {
-        logger_->log("MainMenu", "file res/logo_right.png not found");
+        logger_->error("MainMenu", "file res/logo_right.png not found");
         return;
     }
     keepPlayingSprite_ = sf::Sprite(keepPlayingImage_);

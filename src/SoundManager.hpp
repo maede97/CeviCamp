@@ -10,7 +10,7 @@ public:
     {
         logger_ = logger;
         if (!soundtrack_.openFromFile("res/Sounds/Soundtrack.wav")) {
-            logger_->log("SoundManager", "Soundtrack.wav could not be loaded");
+            logger_->error("SoundManager", "Soundtrack.wav could not be loaded");
             return;
         }
         soundtrack_.setLoop(true);

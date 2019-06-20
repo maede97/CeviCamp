@@ -10,7 +10,7 @@ public:
     {
         logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Grass.png")) {
-            logger_->log("Grass", "res/CampParts/Grass.png not found");
+            logger_->error("Grass", "res/CampParts/Grass.png not found");
             return;
         }
 

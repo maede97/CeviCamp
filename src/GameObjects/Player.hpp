@@ -11,7 +11,7 @@ public:
         windowSize_ = windowSize;
         logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Player.png")) {
-            logger_->log("Player", "res/CampParts/Player.png not found");
+            logger_->error("Player", "res/CampParts/Player.png not found");
             return;
         }
         walkingDown_.setSpriteSheet(image_);

@@ -37,11 +37,11 @@ void View::openFrame()
     window.setVerticalSyncEnabled(true);
     //window.setFramerateLimit(60);
 
-    logger_->log("View", "openFrame");
+    logger_->info("View", "openFrame");
 }
 void View::closeFrame()
 {
-    logger_->log("View", "closeFrame");
+    logger_->info("View", "closeFrame");
     window.close();
 }
 void View::clearFrame()

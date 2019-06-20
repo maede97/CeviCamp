@@ -105,14 +105,14 @@ void GameController::gameLoop()
         case ShowSplash: {
             if (currentEvent.type == sf::Event::EventType::KeyPressed || currentEvent.type == sf::Event::EventType::MouseButtonPressed || currentEvent.type == sf::Event::EventType::Closed) {
                 gameState_ = ShowMenu;
-                logger_->log("SplashScreen", "Quit Splash, show Menu");
+                logger_->info("SplashScreen", "Quit Splash, show Menu");
             }
             break;
         }
         case ShowMenu: {
             if (currentEvent.type == sf::Event::EventType::Closed || currentEvent.type == sf::Event::EventType::KeyPressed && sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                 gameState_ = Exiting;
-                logger_->log("MainMenu", "exit game");
+                logger_->info("MainMenu", "exit game");
             }
             if (currentEvent.type == sf::Event::EventType::MouseButtonPressed) {
                 MainMenu::MenuResult result = mainMenu_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y);
@@ -122,14 +122,14 @@ void GameController::gameLoop()
                 case MainMenu::MenuResult::KeepPlaying:
                     // settings load gamestate
                     gameState_ = Playing;
-                    logger_->log("MenuResult", "KeepPlaying");
+                    logger_->info("MenuResult", "KeepPlaying");
                     break;
                 case MainMenu::MenuResult::StartGame:
-                    logger_->log("MenuResult", "StartGame");
+                    logger_->info("MenuResult", "StartGame");
                     gameState_ = Playing;
                     break;
                 case MainMenu::MenuResult::Options:
-                    logger_->log("MenuResult", "Options");
+                    logger_->info("MenuResult", "Options");
                     gameState_ = ShowOptions;
                     break;
                 }
@@ -139,7 +139,7 @@ void GameController::gameLoop()
         case ShowOptions: {
             if (currentEvent.type == sf::Event::EventType::KeyPressed || currentEvent.type == sf::Event::EventType::MouseButtonPressed || currentEvent.type == sf::Event::EventType::Closed) {
                 gameState_ = ShowMenu;
-                logger_->log("Options", "Quit Options, show Menu");
+                logger_->info("Options", "Quit Options, show Menu");
             }
             break;
         }
