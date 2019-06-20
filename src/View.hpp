@@ -1,8 +1,8 @@
 #ifndef VIEW_HPP
 #define VIEW_HPP
 
-#include "Settings.hpp"
 #include "Logger.hpp"
+#include "Settings.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
@@ -13,6 +13,7 @@ public:
     void openFrame();
     void closeFrame();
     void updateFrame();
+    void clearFrame();
 
     sf::RenderWindow window;
 
@@ -29,14 +30,20 @@ View::View(Settings* settings, Logger* logger)
 
 void View::openFrame()
 {
-    sf::VideoMode vm = sf::VideoMode::getFullscreenModes().at(0);
-    window.create(vm, settings_->title, sf::Style::Fullscreen);
-    logger_->log("View","openFrame");
+    sf::VideoMode vm = sf::VideoMode(1920, 1080);
+    window.create(vm, settings_->title, sf::Style::Default);
+    //window.setVerticalSyncEnabled(true);
+    logger_->log("View", "openFrame");
 }
 void View::closeFrame()
 {
-    logger_->log("View","closeFrame");
+    logger_->log("View", "closeFrame");
     window.close();
+}
+void View::clearFrame()
+{
+    window.clear(sf::Color::Black);
+    window.display();
 }
 void View::updateFrame()
 {

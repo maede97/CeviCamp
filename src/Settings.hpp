@@ -10,6 +10,7 @@ public:
     void saveSettingsToFile();
 
     const char* title = "CeviCamp";
+    bool keepPlaying = false;
 
 private:
     Logger* logger_;

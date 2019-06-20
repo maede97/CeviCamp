@@ -3,10 +3,14 @@
 
 #include <iomanip>
 #include <iostream>
+#include <string>
 
 class Logger {
 public:
     enum Level { ALL,
+        INFO,
+        WARNING,
+        ERROR,
         NOTHING };
 
     Logger(Level l)
@@ -14,13 +18,13 @@ public:
         level_ = l;
     }
 
-    void log(const char* x, Level l = ALL)
+    void log(std::string x, Level l = ALL)
     {
         if (l == NOTHING)
             return;
         std::cout << x << std::endl;
     }
-    void log(const char* x, const char* y, Level l = ALL)
+    void log(std::string x, std::string y, Level l = ALL)
     {
         if (l == NOTHING)
             return;
