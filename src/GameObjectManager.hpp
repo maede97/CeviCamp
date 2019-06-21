@@ -31,6 +31,9 @@ public:
         Fire* fire = new Fire(logger_);
         fire->setPosition(300, 300);
 
+        Fire* fire2 = new Fire(logger_);
+        fire2->setPosition(600, 600);
+
         // push objects into vector
         gameObjects_.push_back(grass);
 
@@ -43,11 +46,13 @@ public:
         }
 
         gameObjects_.push_back(fire);
+        gameObjects_.push_back(fire2);
         gameObjects_.push_back(player);
         gameObjects_.push_back(cursor);
         gameObjects_.push_back(playerInventory);
 
         // Give some test items
+        addInventoryItem("ItemMatch");
         addInventoryItem("ItemMatch");
     }
 
@@ -190,7 +195,7 @@ public:
             return;
         }
         // we have a valid click
-        bool removeItem;
+        bool removeItem = false;
         auto removeIt = gameObjects_.end();
         auto currentIterator = gameObjects_.begin();
         for (auto gameObject : gameObjects_) {
@@ -227,7 +232,6 @@ public:
             }
             currentIterator++;
         }
-
         if (removeItem) {
             gameObjects_.erase(removeIt);
         }
