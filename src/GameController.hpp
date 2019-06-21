@@ -51,7 +51,9 @@ GameController::GameController(Logger* logger)
     settings_ = new Settings(logger_);
     view_ = new View(settings_, logger_);
     soundManager_ = new SoundManager(logger_);
-    gameObjectManager_ = new GameObjectManager(logger_, settings_);
+    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
+
+    settings_->readSettingsFromFile();
 
     // Screens
     splashScreen_ = new SplashScreen(logger_);
@@ -64,8 +66,6 @@ void GameController::start()
     if (gameState_ != Uninitialized)
         return;
 
-    // read settings
-    settings_->readSettingsFromFile();
     view_->openFrame();
     soundManager_->playSoundTrack();
 
@@ -77,11 +77,9 @@ void GameController::start()
     // settings_->saveSettingsToFile();
 }
 
-bool GameController::isExiting()
+inline bool GameController::isExiting()
 {
-    if (gameState_ == Exiting)
-        return true;
-    return false;
+    return gameState_ = Exiting;
 }
 
 GameController::~GameController()
@@ -127,6 +125,9 @@ void GameController::gameLoop()
                     view_->hideCursor();
                     break;
                 case MainMenu::MenuResult::StartGame:
+                    // create a new game here!
+                    // function does not yet exist
+                    // TODO
                     logger_->info("MenuResult", "StartGame");
                     view_->hideCursor();
                     gameState_ = Playing;
@@ -156,6 +157,7 @@ void GameController::gameLoop()
             case sf::Event::EventType::KeyPressed:
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                     view_->showCursor();
+                    settings_->saveSettingsToFile();
                     gameState_ = ShowMenu;
                 }
                 break;

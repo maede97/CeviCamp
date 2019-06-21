@@ -28,6 +28,17 @@ public:
         sprite_.setPosition(300, 300);
     }
 
+    unsigned int getLevel() const
+    {
+        if (current_ == &stones_)
+            return 0;
+        if (current_ == &wood_)
+            return 1;
+        if (current_ == &burning_)
+            return 2;
+        return 100;
+    }
+
     void upgrade()
     {
         logger_->info("Fire", "Upgraded");

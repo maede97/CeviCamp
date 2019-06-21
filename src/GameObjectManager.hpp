@@ -5,28 +5,35 @@
 #include "GameObjects/Grass.hpp"
 #include "GameObjects/MouseCursor.hpp"
 #include "GameObjects/Player.hpp"
+#include "GameObjects/PlayerInventory.hpp"
 #include "GameObjects/Tree.hpp"
 #include "Logger.hpp"
 #include "Settings.hpp"
+#include "SoundManager.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
 class GameObjectManager {
 public:
-    GameObjectManager(Logger* logger, Settings* settings)
+    GameObjectManager(Logger* logger, Settings* settings, SoundManager* soundManager)
     {
         logger_ = logger;
         settings_ = settings;
+        soundManager_ = soundManager;
 
         grass_ = new Grass(logger_, sf::Vector2i(settings_->screenWidth, settings_->screenHeight));
         player_ = new Player(logger_, sf::Vector2i(settings_->screenWidth, settings_->screenHeight));
         cursor_ = new MouseCursor(logger_);
+        playerInventory_ = new PlayerInventory(logger_, settings_);
 
         buildTrees();
 
         // Test objects
         fire_ = new Fire(logger_);
-        //fire_->play();
+
+        // Give some test items
+        playerInventory_->addItem("ItemWood");
+        playerInventory_->addItem("ItemMatch");
     }
 
     ~GameObjectManager()
@@ -38,6 +45,7 @@ public:
         delete grass_;
         delete player_;
         delete cursor_;
+        delete playerInventory_;
     }
 
     void down()
@@ -85,6 +93,8 @@ public:
         window.draw(fire_->getSprite());
         window.draw(player_->getSprite());
         window.draw(cursor_->getSprite());
+        window.draw(playerInventory_->getSprite());
+        playerInventory_->drawItems(window);
     }
 
     void updateMousePosition(int mouseX, int mouseY)
@@ -98,8 +108,24 @@ public:
             return;
         }
         logger_->info("GameObjectManager", "Handle Click");
+        
         if (fire_->getSprite().getGlobalBounds().contains(x, y)) {
-            fire_->upgrade();
+            switch (fire_->getLevel()) {
+            case 0:
+                if (playerInventory_->removeItem("ItemWood")) {
+                    soundManager_->playSound("ItemWood");
+                    fire_->upgrade();
+                }
+                break;
+            case 1:
+                if (playerInventory_->removeItem("ItemMatch")) {
+                    soundManager_->playSound("ItemMatch");
+                    fire_->upgrade();
+                }
+                break;
+            case 2:
+                break;
+            }
         }
     }
 
@@ -120,6 +146,8 @@ private:
     Fire* fire_;
     Player* player_;
     MouseCursor* cursor_;
+    PlayerInventory* playerInventory_;
+    SoundManager* soundManager_;
 
     std::vector<Tree*> trees_;
 };

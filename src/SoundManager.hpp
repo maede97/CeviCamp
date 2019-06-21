@@ -3,6 +3,7 @@
 
 #include "Logger.hpp"
 #include <SFML/Audio.hpp>
+#include <vector>
 
 class SoundManager {
 public:
@@ -14,6 +15,29 @@ public:
             return;
         }
         soundtrack_.setLoop(true);
+    }
+    ~SoundManager()
+    {
+        for (auto buffer : buffers_) {
+            delete buffer;
+        }
+        for (auto sound : sounds_) {
+            delete sound;
+        }
+    }
+
+    void playSound(std::string item)
+    {
+        sf::SoundBuffer* buffer = new sf::SoundBuffer();
+        if (!buffer->loadFromFile("res/Sounds/" + item + ".wav")) {
+            logger_->error("SoundManager", "res/Sounds/" + item + ".wav could not be loaded");
+            return;
+        }
+        sf::Sound* sound = new sf::Sound();
+        sound->setBuffer(*buffer);
+        sound->play();
+        buffers_.push_back(buffer);
+        sounds_.push_back(sound);
     }
 
     void playSoundTrack()
@@ -33,6 +57,8 @@ public:
 private:
     Logger* logger_;
     sf::Music soundtrack_;
+    std::vector<sf::SoundBuffer*> buffers_;
+    std::vector<sf::Sound*> sounds_;
 };
 
 #endif
