@@ -53,11 +53,9 @@ GameController::GameController(Logger* logger)
     soundManager_ = new SoundManager(logger_);
     gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
 
-    settings_->readSettingsFromFile();
-
     // Screens
     splashScreen_ = new SplashScreen(logger_);
-    mainMenu_ = new MainMenu(logger_, settings_->keepPlaying);
+    mainMenu_ = new MainMenu(logger_);
     options_ = new Options(logger_);
 }
 
@@ -70,16 +68,16 @@ void GameController::start()
     soundManager_->playSoundTrack();
 
     gameState_ = ShowSplash;
+
     while (!isExiting()) {
         gameLoop();
     }
     view_->closeFrame();
-    // settings_->saveSettingsToFile();
 }
 
 inline bool GameController::isExiting()
 {
-    return gameState_ = Exiting;
+    return gameState_ == Exiting;
 }
 
 GameController::~GameController()
@@ -158,6 +156,7 @@ void GameController::gameLoop()
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                     view_->showCursor();
                     settings_->saveSettingsToFile();
+                    settings_->keepPlaying = true;
                     gameState_ = ShowMenu;
                 }
                 break;
@@ -181,6 +180,7 @@ void GameController::gameLoop()
         splashScreen_->show(view_->window);
         break;
     case ShowMenu:
+        mainMenu_->updateKeepPlaying(settings_->keepPlaying);
         mainMenu_->show(view_->window);
         break;
     case ShowOptions:

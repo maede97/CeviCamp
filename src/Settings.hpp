@@ -23,6 +23,7 @@ private:
 Settings::Settings(Logger* logger)
 {
     logger_ = logger;
+    readSettingsFromFile();
 }
 
 void Settings::readSettingsFromFile()
@@ -30,7 +31,7 @@ void Settings::readSettingsFromFile()
     logger_->log("Settings", "readSettingsFromFile");
     std::ifstream cFile("cevicamp.save");
     if (cFile.is_open()) {
-        logger_->info("Settings","Save found");
+        logger_->info("Settings", "Save found");
         keepPlaying = true; // save found, show keepPlaying
         std::string line;
         while (getline(cFile, line)) {
@@ -50,7 +51,6 @@ void Settings::readSettingsFromFile()
         keepPlaying = false;
         logger_->error("Settings", "cevicamp.save could not be openend");
     }
-    cFile.close();
 }
 void Settings::saveSettingsToFile()
 {

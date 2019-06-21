@@ -10,7 +10,11 @@ public:
         KeepPlaying,
         StartGame,
         Options };
-    MainMenu(Logger* logger, bool keepPlaying);
+    MainMenu(Logger* logger);
+    void updateKeepPlaying(bool keepPlaying)
+    {
+        keepPlaying_ = keepPlaying;
+    }
     void show(sf::RenderWindow& window);
     MenuResult handleClick(int x, int y);
 
@@ -33,9 +37,8 @@ private:
     sf::Sprite logoRightSprite_;
 };
 
-MainMenu::MainMenu(Logger* logger, bool keepPlaying)
+MainMenu::MainMenu(Logger* logger)
 {
-    keepPlaying_ = keepPlaying;
     logger_ = logger;
     if (keepPlayingImage_.loadFromFile("res/keep_playing.png") != true) {
         logger_->error("MainMenu", "file res/keep_playing.png not found");
