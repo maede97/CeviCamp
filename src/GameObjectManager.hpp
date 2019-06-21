@@ -216,7 +216,7 @@ public:
                     break;
                 case GameObject::Type::Tree:
                     if (addInventoryItem("ItemWood")) {
-                        soundManager_->playSound("ItemMatch");
+                        soundManager_->playSound("TreeBreak");
                         removeItem = true;
                         removeIt = currentIterator;
                     }
