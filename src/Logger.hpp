@@ -33,8 +33,8 @@ public:
     }
     void log(std::string x, std::string y, Level l = ALL)
     {
-        if (l >= level_) {
-            std::cout << std::setfill(' ') << std::setw(15) << std::left << x << " ";
+        if (l <= level_) {
+            std::cout << std::setfill(' ') << std::setw(20) << std::left << x << " ";
             std::cout << std::setfill(' ') << std::setw(100) << std::left << y << std::endl;
         }
     }

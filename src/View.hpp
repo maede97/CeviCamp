@@ -14,6 +14,8 @@ public:
     void closeFrame();
     void updateFrame();
     void clearFrame();
+    void hideCursor();
+    void showCursor();
 
     sf::RenderWindow window;
 
@@ -28,10 +30,18 @@ View::View(Settings* settings, Logger* logger)
     logger_ = logger;
 }
 
+
+void View::hideCursor() {
+    window.setMouseCursorVisible(true);
+}
+void View::showCursor() {
+    window.setMouseCursorVisible(true);
+}
+
 void View::openFrame()
 {
     sf::VideoMode vm = sf::VideoMode(settings_->screenWidth, settings_->screenHeight);
-    window.create(vm, settings_->title, sf::Style::Default);
+    window.create(vm, settings_->title, sf::Style::Default);   
 
     // only one of those:
     window.setVerticalSyncEnabled(true);

@@ -47,6 +47,11 @@ public:
         movement_ = sf::Vector2f(0.0f, 0.0f);
     }
 
+    sf::Vector2i getPosition() const
+    {
+        return sf::Vector2i(sprite_.getPosition()) + sf::Vector2i(playerSize_, playerSize_) / 2;
+    }
+
     void moveDown()
     {
         current_ = &walkingDown_;
@@ -113,7 +118,7 @@ private:
 
     Logger* logger_;
 
-    float speed_ = 200.0f;
+    float speed_ = 300.0f;
     sf::Vector2f movement_;
     sf::Vector2i windowSize_;
     bool noKeyWasPressed_ = true;
