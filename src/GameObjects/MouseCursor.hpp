@@ -1,21 +1,23 @@
 #ifndef MOUSECURSOR_HPP
 #define MOUSECURSOR_HPP
 
-#include "../Logger.hpp"
+#include "GameObject.hpp"
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
-class MouseCursor {
+class MouseCursor : public GameObject {
 public:
     MouseCursor(Logger* logger)
+        : GameObject(logger, GameObject::Type::Cursor)
     {
-        logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/MouseCursor.png")) {
             logger_->error("MouseCursor", "res/CampParts/MouseCursor.png not found");
             return;
         }
-
-        sprite_ = sf::Sprite(image_);
+        animation_.setSpriteSheet(image_);
+        animation_.addFrame(sf::IntRect(0, 0, 72, 72));
+        sprite_ = AnimatedSprite(sf::seconds(1), true, false);
+        sprite_.setAnimation(animation_);
     }
 
     bool validClick(int mouseX, int mouseY, int playerX, int playerY)
@@ -23,7 +25,11 @@ public:
         return (std::sqrt(std::pow(mouseX - playerX, 2) + std::pow(mouseY - playerY, 2)) < interactionRadius_);
     }
 
-    void setPosition(int mouseX, int mouseY, int playerX, int playerY)
+    void play() {}
+    void handleClick() {}
+    bool checkClick(float, float) { return false; }
+
+    void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY)
     {
         sf::Vector2f mousePos(mouseX, mouseY);
         sf::Vector2f playerPos(playerX, playerY);
@@ -39,14 +45,10 @@ public:
 
         sprite_.setPosition(pos.x - image_.getSize().x / 2, pos.y - image_.getSize().y / 2);
     }
-    sf::Sprite getSprite() const { return sprite_; }
 
 private:
     sf::Texture image_;
-    sf::Sprite sprite_;
-
-    Logger* logger_;
-
+    Animation animation_;
     const float interactionRadius_ = 300.0f;
 };
 

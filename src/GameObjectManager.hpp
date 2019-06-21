@@ -3,6 +3,7 @@
 
 #include "GameObjects/Fire.hpp"
 #include "GameObjects/Grass.hpp"
+#include "GameObjects/InventoryItem.hpp"
 #include "GameObjects/MouseCursor.hpp"
 #include "GameObjects/Player.hpp"
 #include "GameObjects/PlayerInventory.hpp"
@@ -21,60 +22,124 @@ public:
         settings_ = settings;
         soundManager_ = soundManager;
 
-        grass_ = new Grass(logger_, sf::Vector2i(settings_->screenWidth, settings_->screenHeight));
-        player_ = new Player(logger_, sf::Vector2i(settings_->screenWidth, settings_->screenHeight));
-        cursor_ = new MouseCursor(logger_);
-        playerInventory_ = new PlayerInventory(logger_, settings_);
-
-        buildTrees();
+        Grass* grass = new Grass(logger_, sf::Vector2i(settings_->screenWidth, settings_->screenHeight));
+        Player* player = new Player(logger_, sf::Vector2i(settings_->screenWidth, settings_->screenHeight));
+        MouseCursor* cursor = new MouseCursor(logger_);
+        PlayerInventory* playerInventory = new PlayerInventory(logger_, settings_);
 
         // Test objects
-        fire_ = new Fire(logger_);
+        Fire* fire = new Fire(logger_);
+        fire->setPosition(300, 300);
+
+        // push objects into vector
+        gameObjects_.push_back(grass);
+
+        // build some trees
+        int y_offset = -15;
+        for (int x = 0; x < settings_->screenWidth;) {
+            Tree* t = new Tree(logger_, x, y_offset);
+            x += t->getSprite().getAnimation()->getSpriteSheet()->getSize().x;
+            gameObjects_.push_back(t);
+        }
+
+        gameObjects_.push_back(fire);
+        gameObjects_.push_back(player);
+        gameObjects_.push_back(cursor);
+        gameObjects_.push_back(playerInventory);
 
         // Give some test items
-        playerInventory_->addItem("ItemWood");
-        playerInventory_->addItem("ItemMatch");
+        addInventoryItem("ItemMatch");
     }
 
     ~GameObjectManager()
     {
-        for (auto tree : trees_) {
-            delete tree;
+        for (auto gameObject : gameObjects_) {
+            delete gameObject;
         }
-        delete fire_;
-        delete grass_;
-        delete player_;
-        delete cursor_;
-        delete playerInventory_;
+    }
+
+    bool addInventoryItem(std::string item)
+    {
+        sf::Vector2i invPos;
+        for (auto gameObject : gameObjects_) {
+            if (gameObject->type == GameObject::Type::Inventory) {
+                invPos = sf::Vector2i(gameObject->getPosition());
+            }
+        }
+        int slot = 0;
+        while (slot < 8) {
+            bool empty = true;
+            for (auto item : inventoryItems_) {
+                if (item->getSlot() == slot) {
+                    empty = false;
+                    break; // slot already full
+                }
+            }
+            if (empty) {
+                inventoryItems_.push_back(new InventoryItem(logger_, item, invPos.x + slot * 112, invPos.y, slot));
+                logger_->info("Inventory", "Add Item " + item);
+                return true;
+            } else {
+                slot++;
+            }
+        }
+        return false;
+    }
+    bool removeInventoryItem(std::string item)
+    {
+        // playSound for this Item
+        std::vector<InventoryItem*>::iterator position = inventoryItems_.end();
+        for (auto it = inventoryItems_.begin(); it != inventoryItems_.end(); it++) {
+            if ((*it)->getName() == item) {
+                position = it;
+            }
+        }
+        if (position == inventoryItems_.end()) {
+            return false;
+        }
+        delete *position;
+        inventoryItems_.erase(position);
+        logger_->info("Inventory", "Remove Item " + item);
+        return true;
     }
 
     void down()
     {
-        player_->moveDown();
+        for (auto gameObject : gameObjects_) {
+            gameObject->down();
+        }
     }
     void up()
     {
-        player_->moveUp();
+        for (auto gameObject : gameObjects_) {
+            gameObject->up();
+        }
     }
     void left()
     {
-        player_->moveLeft();
+        for (auto gameObject : gameObjects_) {
+            gameObject->left();
+        }
     }
     void right()
     {
-        player_->moveRight();
+        for (auto gameObject : gameObjects_) {
+            gameObject->right();
+        }
     }
 
     void playAnimations()
     {
-        fire_->play();
-        player_->play();
+        for (auto gameObject : gameObjects_) {
+            gameObject->play();
+        }
     }
 
     void updateDT(sf::Time dt)
     {
-        fire_->update(dt);
-        player_->update(dt);
+        for (auto gameObject : gameObjects_) {
+            gameObject->update(dt);
+        }
     }
 
     void drawAll(sf::RenderWindow& window, sf::Time dT)
@@ -85,71 +150,97 @@ public:
         // Play Animations
         playAnimations();
 
-        // Draw members, firstly background (grass)
-        window.draw(grass_->getSprite());
-        for (auto tree : trees_) {
-            window.draw(tree->getSprite());
+        // Draw members
+        for (auto gameObject : gameObjects_) {
+            window.draw(gameObject->getSprite());
         }
-        window.draw(fire_->getSprite());
-        window.draw(player_->getSprite());
-        window.draw(cursor_->getSprite());
-        window.draw(playerInventory_->getSprite());
-        playerInventory_->drawItems(window);
+        for (auto item : inventoryItems_) {
+            window.draw(item->getSprite());
+        }
     }
 
     void updateMousePosition(int mouseX, int mouseY)
     {
-        cursor_->setPosition(mouseX, mouseY, player_->getPosition().x, player_->getPosition().y);
+        sf::Vector2i playerPos;
+        for (auto gameObject : gameObjects_) {
+            if (gameObject->type == GameObject::Type::Player) {
+                playerPos = sf::Vector2i(gameObject->getPosition());
+            }
+        }
+        for (auto gameObject : gameObjects_) {
+            gameObject->updateMousePlayerPosition(mouseX, mouseY, playerPos.x, playerPos.y);
+        }
     }
 
     void handleClick(int x, int y)
     {
-        if (!cursor_->validClick(x, y, player_->getPosition().x, player_->getPosition().y)) {
+        bool valid = false;
+        sf::Vector2i playerPos;
+        for (auto gameObject : gameObjects_) {
+            if (gameObject->type == GameObject::Type::Player) {
+                playerPos = sf::Vector2i(gameObject->getPosition());
+            }
+        }
+        for (auto gameObject : gameObjects_) {
+            if (gameObject->type == GameObject::Type::Cursor && gameObject->validClick(x, y, playerPos.x, playerPos.y)) {
+                valid = true;
+            }
+        }
+        if (!valid) {
             return;
         }
-        logger_->info("GameObjectManager", "Handle Click");
-        
-        if (fire_->getSprite().getGlobalBounds().contains(x, y)) {
-            switch (fire_->getLevel()) {
-            case 0:
-                if (playerInventory_->removeItem("ItemWood")) {
-                    soundManager_->playSound("ItemWood");
-                    fire_->upgrade();
+        // we have a valid click
+        bool removeItem;
+        auto removeIt = gameObjects_.end();
+        auto currentIterator = gameObjects_.begin();
+        for (auto gameObject : gameObjects_) {
+            if (gameObject->checkClick(x, y)) {
+                switch (gameObject->type) {
+
+                case GameObject::Type::Fire:
+                    switch (gameObject->getLevel()) {
+                    case 0:
+                        if (removeInventoryItem("ItemWood")) {
+                            soundManager_->playSound("ItemWood");
+                            gameObject->handleClick();
+                        }
+                        break;
+                    case 1:
+                        if (removeInventoryItem("ItemMatch")) {
+                            soundManager_->playSound("ItemMatch");
+                            gameObject->handleClick();
+                        }
+                    default:
+                        break;
+                    }
+                    break;
+                case GameObject::Type::Tree:
+                    if (addInventoryItem("ItemWood")) {
+                        soundManager_->playSound("ItemMatch");
+                        removeItem = true;
+                        removeIt = currentIterator;
+                    }
+                    break;
+                default:
+                    break;
                 }
-                break;
-            case 1:
-                if (playerInventory_->removeItem("ItemMatch")) {
-                    soundManager_->playSound("ItemMatch");
-                    fire_->upgrade();
-                }
-                break;
-            case 2:
-                break;
             }
+            currentIterator++;
+        }
+
+        if (removeItem) {
+            gameObjects_.erase(removeIt);
         }
     }
 
 private:
-    void buildTrees()
-    {
-        // oben
-        int y_offset = -15;
-        for (int x = 0; x < settings_->screenWidth;) {
-            Tree* t = new Tree(logger_, x, y_offset);
-            x += t->getSprite().getTexture()->getSize().x;
-            trees_.push_back(t);
-        }
-    }
     Logger* logger_;
     Settings* settings_;
-    Grass* grass_;
-    Fire* fire_;
-    Player* player_;
-    MouseCursor* cursor_;
-    PlayerInventory* playerInventory_;
+
     SoundManager* soundManager_;
 
-    std::vector<Tree*> trees_;
+    std::vector<GameObject*> gameObjects_;
+    std::vector<InventoryItem*> inventoryItems_;
 };
 
 #endif

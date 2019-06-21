@@ -1,31 +1,36 @@
 #ifndef GRASS_HPP
 #define GRASS_HPP
 
-#include "../Logger.hpp"
+#include "GameObject.hpp"
 #include <SFML/Graphics.hpp>
 
-class Grass {
+class Grass : public GameObject {
 public:
     Grass(Logger* logger, sf::Vector2i windowSize)
+        : GameObject(logger, GameObject::Type::Grass)
     {
-        logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Grass.png")) {
             logger_->error("Grass", "res/CampParts/Grass.png not found");
             return;
         }
 
         image_.setRepeated(true);
-        sprite_ = sf::Sprite(image_, sf::IntRect(0, 0, windowSize.x, windowSize.y));
+
+        animation_.setSpriteSheet(image_);
+        animation_.addFrame(sf::IntRect(0, 0, windowSize.x, windowSize.y));
+        sprite_ = AnimatedSprite(sf::seconds(1), true, false);
+        sprite_.setAnimation(animation_);
+
         sprite_.setPosition(0, 0);
     }
 
-    sf::Sprite getSprite() const { return sprite_; }
+    void play() {}
+    bool checkClick(float, float) { return false; }
+    void handleClick() {}
 
 private:
     sf::Texture image_;
-    sf::Sprite sprite_;
-
-    Logger* logger_;
+    Animation animation_;
 };
 
 #endif

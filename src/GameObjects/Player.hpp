@@ -1,15 +1,15 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-#include "../Logger.hpp"
 #include "AnimatedSprite.hpp"
+#include "GameObject.hpp"
 
-class Player {
+class Player : public GameObject {
 public:
     Player(Logger* logger, sf::Vector2i windowSize)
+        : GameObject(logger, GameObject::Type::Player)
     {
         windowSize_ = windowSize;
-        logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Player.png")) {
             logger_->error("Player", "res/CampParts/Player.png not found");
             return;
@@ -47,12 +47,12 @@ public:
         movement_ = sf::Vector2f(0.0f, 0.0f);
     }
 
-    sf::Vector2i getPosition() const
+    sf::Vector2f getPosition() const
     {
-        return sf::Vector2i(sprite_.getPosition()) + sf::Vector2i(playerSize_, playerSize_) / 2;
+        return sf::Vector2f(sprite_.getPosition()) + sf::Vector2f(playerSize_, playerSize_) / 2.0f;
     }
 
-    void moveDown()
+    void down()
     {
         current_ = &walkingDown_;
         movement_.y += speed_;
@@ -61,7 +61,7 @@ public:
         }
         noKeyWasPressed_ = false;
     }
-    void moveUp()
+    void up()
     {
         current_ = &walkingUp_;
         movement_.y -= speed_;
@@ -70,7 +70,7 @@ public:
         }
         noKeyWasPressed_ = false;
     }
-    void moveLeft()
+    void left()
     {
         current_ = &walkingLeft_;
         movement_.x -= speed_;
@@ -79,7 +79,7 @@ public:
         }
         noKeyWasPressed_ = false;
     }
-    void moveRight()
+    void right()
     {
         current_ = &walkingRight_;
         movement_.x += speed_;
@@ -88,8 +88,6 @@ public:
         }
         noKeyWasPressed_ = false;
     }
-
-    void play() { sprite_.play(*current_); }
 
     void update(sf::Time frametime)
     {
@@ -102,7 +100,9 @@ public:
         movement_ = sf::Vector2f(0.0f, 0.0f);
     }
 
-    AnimatedSprite getSprite() const { return sprite_; }
+    bool checkClick(float x, float y) { return false; } // can't click on player
+    void play() { sprite_.play(*current_); }
+    void handleClick() {}
 
 private:
     sf::Texture image_;
@@ -112,11 +112,7 @@ private:
     Animation walkingRight_;
     Animation walkingUp_;
 
-    AnimatedSprite sprite_;
-
     Animation* current_ = &walkingDown_;
-
-    Logger* logger_;
 
     float speed_ = 300.0f;
     sf::Vector2f movement_;

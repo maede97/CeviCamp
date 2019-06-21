@@ -1,14 +1,14 @@
 #ifndef FIRE_HPP
 #define FIRE_HPP
 
-#include "../Logger.hpp"
 #include "AnimatedSprite.hpp"
+#include "GameObject.hpp"
 
-class Fire {
+class Fire : public GameObject {
 public:
     Fire(Logger* logger)
+        : GameObject(logger, GameObject::Type::Fire)
     {
-        logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Fire.png")) {
             logger_->error("Fire", "res/CampParts/Fire.png not found");
             return;
@@ -25,35 +25,36 @@ public:
 
         // paused = false, repeat = true
         sprite_ = AnimatedSprite(sf::seconds(0.2), false, true);
-        sprite_.setPosition(300, 300);
     }
 
-    unsigned int getLevel() const
+    bool checkClick(float x, float y)
     {
-        if (current_ == &stones_)
-            return 0;
-        if (current_ == &wood_)
-            return 1;
-        if (current_ == &burning_)
-            return 2;
-        return 100;
+        return sprite_.getGlobalBounds().contains(x, y);
     }
 
-    void upgrade()
+    void setPosition(int x, int y)
+    {
+        sprite_.setPosition(x, y);
+    }
+
+    void handleClick()
     {
         logger_->info("Fire", "Upgraded");
         if (current_ == &stones_) {
             current_ = &wood_;
+            level_ = 1;
         } else if (current_ = &wood_) {
             current_ = &burning_;
+            level_ = 2;
         }
     }
 
     void play() { sprite_.play(*current_); }
 
-    void update(sf::Time frametime) { sprite_.update(frametime); }
-
-    AnimatedSprite getSprite() const { return sprite_; }
+    void update(sf::Time frametime)
+    {
+        sprite_.update(frametime);
+    }
 
 private:
     sf::Texture image_;
@@ -62,11 +63,7 @@ private:
     Animation wood_;
     Animation burning_;
 
-    AnimatedSprite sprite_;
-
     Animation* current_ = &stones_;
-
-    Logger* logger_;
 };
 
 #endif

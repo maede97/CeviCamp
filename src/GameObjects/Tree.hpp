@@ -1,30 +1,39 @@
 #ifndef TREE_HPP
 #define TREE_HPP
 
-#include "../Logger.hpp"
+#include "GameObject.hpp"
 #include <SFML/Graphics.hpp>
 
-class Tree {
+class Tree : public GameObject {
 public:
     Tree(Logger* logger, int x, int y)
+        : GameObject(logger, GameObject::Type::Tree)
     {
-        logger_ = logger;
         if (!image_.loadFromFile("res/CampParts/Tree.png")) {
             logger_->error("Tree", "res/CampParts/Tree.png not found");
             return;
         }
+        animation_.setSpriteSheet(image_);
+        animation_.addFrame(sf::IntRect(0, 0, image_.getSize().x, image_.getSize().y));
+        sprite_ = AnimatedSprite(sf::seconds(1), true, false);
 
-        sprite_ = sf::Sprite(image_);
-        sprite_.setPosition(x,y);
+        sprite_.setAnimation(animation_);
+        sprite_.setPosition(x, y);
     }
 
-    sf::Sprite getSprite() const { return sprite_; }
+    void play() {}
+    void handleClick()
+    {
+        logger_->info("Tree", "Tree was clicked");
+    }
+    bool checkClick(float x, float y)
+    {
+        return sprite_.getGlobalBounds().contains(x, y);
+    }
 
 private:
     sf::Texture image_;
-    sf::Sprite sprite_;
-
-    Logger* logger_;
+    Animation animation_;
 };
 
 #endif

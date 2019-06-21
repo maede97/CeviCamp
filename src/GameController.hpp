@@ -37,9 +37,6 @@ private:
     MainMenu* mainMenu_;
     Options* options_;
 
-    // GameObjects (TEMP)
-    Fire* fire_;
-
     Logger* logger_;
     sf::Clock deltaTime_;
 };
