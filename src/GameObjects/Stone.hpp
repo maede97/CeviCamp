@@ -1,16 +1,16 @@
-#ifndef TREE_HPP
-#define TREE_HPP
+#ifndef STONE_HPP
+#define STONE_HPP
 
 #include "GameObject.hpp"
 #include <SFML/Graphics.hpp>
 
-class Tree : public GameObject {
+class Stone : public GameObject {
 public:
-    Tree(Logger* logger, int x, int y)
-        : GameObject(logger, GameObject::Type::Tree)
+    Stone(Logger* logger, int x, int y)
+        : GameObject(logger, GameObject::Type::Stone)
     {
-        if (!image_.loadFromFile("res/CampParts/Tree.png")) {
-            logger_->error("Tree", "res/CampParts/Tree.png not found");
+        if (!image_.loadFromFile("res/CampParts/Stone.png")) {
+            logger_->error("Stone", "res/CampParts/Stone.png not found");
             return;
         }
         animation_.setSpriteSheet(image_);

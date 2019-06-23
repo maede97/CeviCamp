@@ -47,7 +47,7 @@ GameController::GameController(Logger* logger)
     logger_ = logger;
     settings_ = new Settings(logger_);
     view_ = new View(settings_, logger_);
-    soundManager_ = new SoundManager(logger_);
+    soundManager_ = new SoundManager(logger_, settings_);
     gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
 
     // Screens
@@ -156,10 +156,37 @@ void GameController::gameLoop()
                     settings_->keepPlaying = true;
                     gameState_ = ShowMenu;
                 }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+                    gameObjectManager_->selectInventorySlot(0);
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+                    gameObjectManager_->selectInventorySlot(1);
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+                    gameObjectManager_->selectInventorySlot(2);
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+                    gameObjectManager_->selectInventorySlot(3);
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+                    gameObjectManager_->selectInventorySlot(4);
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
+                    gameObjectManager_->selectInventorySlot(5);
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
+                    gameObjectManager_->selectInventorySlot(6);
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
+                    gameObjectManager_->selectInventorySlot(7);
+                }
                 break;
             case sf::Event::EventType::MouseButtonPressed:
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                     gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y);
+                }
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+                    gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y, false);
                 }
             }
             break;
@@ -184,6 +211,7 @@ void GameController::gameLoop()
         options_->show(view_->window);
         break;
     case Playing:
+        // check these here because hold down
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             gameObjectManager_->down();
         }

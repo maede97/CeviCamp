@@ -8,10 +8,11 @@
 
 class PlayerInventory : public GameObject {
 public:
-    PlayerInventory(Logger* logger, Settings* settings)
+    PlayerInventory(Logger* logger, Settings* settings, int slotSize)
         : GameObject(logger, GameObject::Type::Inventory)
     {
         settings_ = settings;
+        slotSize_ = slotSize;
         if (!image_.loadFromFile("res/CampParts/InventorySlots.png")) {
             logger_->error("PlayerInv", "res/CampParts/InventorySlots.png not found");
             return;
@@ -28,14 +29,14 @@ public:
 
     void play() {}
     void handleClick() {}
-    bool checkClick(float x, float y) { return false; } // maybe change slot later here
+    bool checkClick(float x, float y) { return sprite_.getGlobalBounds().contains(x,y); } // maybe change slot later here
 
 private:
     sf::Texture image_;
     Animation animation_;
 
     Settings* settings_;
-    int slotSize_ = 112;
+    int slotSize_;
 };
 
 #endif

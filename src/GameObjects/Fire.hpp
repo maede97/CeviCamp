@@ -25,6 +25,7 @@ public:
 
         // paused = false, repeat = true
         sprite_ = AnimatedSprite(sf::seconds(0.2), false, true);
+        sprite_.setAnimation(stones_);
     }
 
     bool checkClick(float x, float y)

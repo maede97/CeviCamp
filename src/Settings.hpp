@@ -2,6 +2,7 @@
 #define SETTINGS_HPP
 
 #include "Logger.hpp"
+#include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <fstream>
 
@@ -15,6 +16,9 @@ public:
     unsigned int screenWidth = 1920;
     unsigned int screenHeight = 1080;
     bool keepPlaying = false;
+    int musicVolume = 100;
+    int soundVolume = 100;
+    sf::Font font;
 
 private:
     Logger* logger_;
@@ -24,6 +28,10 @@ Settings::Settings(Logger* logger)
 {
     logger_ = logger;
     readSettingsFromFile();
+    if (!font.loadFromFile("res/FreeSans.ttf")) {
+        logger_->error("Settings", "Could not open res/FreeSans.ttf");
+        return;
+    }
 }
 
 void Settings::readSettingsFromFile()
@@ -44,6 +52,10 @@ void Settings::readSettingsFromFile()
                 screenWidth = std::stoi(value);
             } else if (name == "height") {
                 screenHeight = std::stoi(value);
+            } else if (name == "music-volume") {
+                musicVolume = std::stoi(value);
+            } else if (name == "sound-volume") {
+                soundVolume = std::stoi(value);
             }
         }
     } else {
@@ -58,6 +70,8 @@ void Settings::saveSettingsToFile()
     std::ofstream out("cevicamp.save");
     out << "width=" << screenWidth << std::endl;
     out << "height=" << screenHeight << std::endl;
+    out << "music-volume=" << musicVolume << std::endl;
+    out << "sound-volume=" << soundVolume << std::endl;
     out.close();
 }
 

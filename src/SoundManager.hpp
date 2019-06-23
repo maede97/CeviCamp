@@ -2,19 +2,22 @@
 #define SOUNDMANAGER_HPP
 
 #include "Logger.hpp"
+#include "Settings.hpp"
 #include <SFML/Audio.hpp>
 #include <vector>
 
 class SoundManager {
 public:
-    SoundManager(Logger* logger)
+    SoundManager(Logger* logger, Settings* settings)
     {
         logger_ = logger;
+        settings_ = settings;
         if (!soundtrack_.openFromFile("res/Sounds/Soundtrack.wav")) {
             logger_->error("SoundManager", "Soundtrack.wav could not be loaded");
             return;
         }
         soundtrack_.setLoop(true);
+        soundtrack_.setVolume(settings_->musicVolume);
     }
     ~SoundManager()
     {
@@ -35,6 +38,7 @@ public:
         }
         sf::Sound* sound = new sf::Sound();
         sound->setBuffer(*buffer);
+        sound->setVolume(settings_->soundVolume);
         sound->play();
         buffers_.push_back(buffer);
         sounds_.push_back(sound);
@@ -56,6 +60,7 @@ public:
 
 private:
     Logger* logger_;
+    Settings* settings_;
     sf::Music soundtrack_;
     std::vector<sf::SoundBuffer*> buffers_;
     std::vector<sf::Sound*> sounds_;
