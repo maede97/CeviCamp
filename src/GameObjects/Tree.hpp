@@ -6,8 +6,8 @@
 
 class Tree : public GameObject {
 public:
-    Tree(Logger* logger, int x, int y)
-        : GameObject(logger, GameObject::Type::Tree)
+    Tree(Logger* logger, Settings* settings, int x, int y)
+        : GameObject(logger, settings, GameObject::Type::Tree)
     {
         if (!image_.loadFromFile("res/CampParts/Tree.png")) {
             logger_->error("Tree", "res/CampParts/Tree.png not found");

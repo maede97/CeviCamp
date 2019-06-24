@@ -26,6 +26,9 @@ private:
     bool isExiting();
     void gameLoop();
 
+    void saveCampData();
+    void loadCampData();
+
     GameState gameState_ = Uninitialized;
     Settings* settings_;
     View* view_;
@@ -48,7 +51,6 @@ GameController::GameController(Logger* logger)
     settings_ = new Settings(logger_);
     view_ = new View(settings_, logger_);
     soundManager_ = new SoundManager(logger_, settings_);
-    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
 
     // Screens
     splashScreen_ = new SplashScreen(logger_);
@@ -113,25 +115,29 @@ void GameController::gameLoop()
                 switch (result) {
                 case MainMenu::MenuResult::Nothing:
                     break;
-                case MainMenu::MenuResult::KeepPlaying:
+                case MainMenu::MenuResult::KeepPlaying: {
                     // settings load gamestate
+                    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
+                    loadCampData();
                     gameState_ = Playing;
                     logger_->info("MenuResult", "KeepPlaying");
                     view_->hideCursor();
                     break;
-                case MainMenu::MenuResult::StartGame:
-                    // create a new game here!
-                    // function does not yet exist
-                    // TODO
+                }
+                case MainMenu::MenuResult::StartGame: {
+                    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
+                    gameObjectManager_->createNewGame();
                     logger_->info("MenuResult", "StartGame");
                     view_->hideCursor();
                     gameState_ = Playing;
                     break;
-                case MainMenu::MenuResult::Options:
+                }
+                case MainMenu::MenuResult::Options: {
                     logger_->info("MenuResult", "Options");
                     view_->showCursor();
                     gameState_ = ShowOptions;
                     break;
+                }
                 }
             }
             break;
@@ -153,6 +159,8 @@ void GameController::gameLoop()
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                     view_->showCursor();
                     settings_->saveSettingsToFile();
+                    saveCampData();
+                    delete gameObjectManager_;
                     settings_->keepPlaying = true;
                     gameState_ = ShowMenu;
                 }
@@ -197,7 +205,8 @@ void GameController::gameLoop()
     view_->clearFrame();
 
     sf::Vector2i mousePos = sf::Mouse::getPosition(view_->window);
-    gameObjectManager_->updateMousePosition(mousePos.x, mousePos.y);
+    if (gameState_ == Playing)
+        gameObjectManager_->updateMousePosition(mousePos.x, mousePos.y);
 
     switch (gameState_) {
     case ShowSplash:
@@ -230,6 +239,78 @@ void GameController::gameLoop()
 
     view_->window.display();
     deltaTime_.restart();
+}
+
+void GameController::loadCampData()
+{
+    std::vector<Settings::CampPart> parts = settings_->readCampData();
+    for (auto part : parts) {
+        GameObject::Type type = (GameObject::Type)part.enumType;
+        switch (type) {
+        case GameObject::Type::Player: {
+            Player* player = new Player(logger_, settings_);
+            player->setAnimation();
+            player->setPosition(part.x - player->getSprite().getLocalBounds().width / 2, part.y - player->getSprite().getLocalBounds().height / 2);
+            gameObjectManager_->addGameObject(player);
+            break;
+        }
+        case GameObject::Type::Grass: {
+            Grass* grass = new Grass(logger_, settings_);
+            grass->setPosition(part.x, part.y);
+            gameObjectManager_->addGameObject(grass);
+            break;
+        }
+        case GameObject::Type::Fire: {
+            Fire* fire = new Fire(logger_, settings_);
+            fire->setPosition(part.x, part.y);
+            fire->setLevel(part.level);
+            fire->setAnimation();
+            gameObjectManager_->addGameObject(fire);
+            break;
+        }
+        case GameObject::Type::Stone: {
+            Stone* stone = new Stone(logger_, settings_, part.x, part.y);
+            stone->setAnimation();
+            gameObjectManager_->addGameObject(stone);
+            break;
+        }
+        case GameObject::Type::Tree: {
+            Tree* tree = new Tree(logger_, settings_, part.x, part.y);
+            tree->setAnimation();
+            gameObjectManager_->addGameObject(tree);
+            break;
+        }
+        default:
+            break;
+        }
+    }
+    gameObjectManager_->setNewIterators();
+    std::vector<std::string> inv = settings_->readInventory();
+    for(std::string& s : inv) {
+        gameObjectManager_->addInventoryItem(s);
+    }
+
+    gameObjectManager_->orderGameObjects();
+}
+
+void GameController::saveCampData()
+{
+    std::vector<Settings::CampPart> parts;
+    for (auto gameObject : gameObjectManager_->getObjectVector()) {
+        Settings::CampPart current;
+        current.enumType = (int)gameObject->type;
+        current.x = gameObject->getPosition().x;
+        current.y = gameObject->getPosition().y;
+        current.level = gameObject->getLevel();
+        parts.push_back(current);
+    }
+
+    std::vector<std::string> inv;
+    for(auto item : gameObjectManager_->getInventoryVector()) {
+        inv.push_back(item->getName());
+    }
+    settings_->saveCampData(parts);
+    settings_->saveInventory(inv);
 }
 
 #endif

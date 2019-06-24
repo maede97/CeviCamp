@@ -7,11 +7,11 @@
 
 class Logger {
 public:
-    enum Level { ALL,
+    enum Level { NOTHING,
+        ALL,
         ERROR,
         WARNING,
-        INFO,
-        NOTHING };
+        INFO };
 
     Logger(Level l)
     {

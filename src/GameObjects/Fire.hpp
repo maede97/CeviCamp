@@ -6,8 +6,8 @@
 
 class Fire : public GameObject {
 public:
-    Fire(Logger* logger)
-        : GameObject(logger, GameObject::Type::Fire)
+    Fire(Logger* logger, Settings* settings)
+        : GameObject(logger, settings, GameObject::Type::Fire)
     {
         if (!image_.loadFromFile("res/CampParts/Fire.png")) {
             logger_->error("Fire", "res/CampParts/Fire.png not found");
@@ -25,7 +25,7 @@ public:
 
         // paused = false, repeat = true
         sprite_ = AnimatedSprite(sf::seconds(0.2), false, true);
-        sprite_.setAnimation(stones_);
+        setAnimation();
     }
 
     bool checkClick(float x, float y)
@@ -36,6 +36,17 @@ public:
     void setPosition(int x, int y)
     {
         sprite_.setPosition(x, y);
+    }
+
+    void setAnimation()
+    {
+        if (level_ == 0)
+            current_ = &stones_;
+        else if (level_ == 1)
+            current_ = &wood_;
+        else
+            current_ = &burning_;
+        sprite_.setAnimation(*current_);
     }
 
     void handleClick()

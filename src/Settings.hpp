@@ -2,15 +2,30 @@
 #define SETTINGS_HPP
 
 #include "Logger.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <fstream>
+#include <vector>
 
 class Settings {
 public:
+    struct CampPart {
+        int enumType;
+        int x;
+        int y;
+        int level;
+    };
     Settings(Logger* logger);
+
     void readSettingsFromFile();
     void saveSettingsToFile();
+
+    std::vector<CampPart> readCampData();
+    void saveCampData(std::vector<CampPart>& parts);
+
+    std::vector<std::string> readInventory();
+    void saveInventory(std::vector<std::string>& inv);
 
     const char* title = "CeviCamp";
     unsigned int screenWidth = 1920;
@@ -20,6 +35,15 @@ public:
     int soundVolume = 100;
     sf::Font font;
 
+    float playerSpeed = 300.0f;
+    int movementSpeed = 10;
+
+    int seed = 42;
+
+    // map size
+    int mapWidth = 3000;
+    int mapHeight = 3000;
+
 private:
     Logger* logger_;
 };
@@ -27,11 +51,12 @@ private:
 Settings::Settings(Logger* logger)
 {
     logger_ = logger;
-    readSettingsFromFile();
     if (!font.loadFromFile("res/FreeSans.ttf")) {
         logger_->error("Settings", "Could not open res/FreeSans.ttf");
         return;
     }
+    readSettingsFromFile();
+    srand(seed);
 }
 
 void Settings::readSettingsFromFile()
@@ -56,6 +81,16 @@ void Settings::readSettingsFromFile()
                 musicVolume = std::stoi(value);
             } else if (name == "sound-volume") {
                 soundVolume = std::stoi(value);
+            } else if (name == "map-width") {
+                mapWidth = std::stoi(value);
+            } else if (name == "map-height") {
+                mapHeight = std::stoi(value);
+            } else if (name == "seed") {
+                seed = std::stoi(value);
+            } else if (name == "player-speed") {
+                playerSpeed = std::stof(value);
+            } else if (name == "movement-speed") {
+                movementSpeed = std::stoi(value);
             }
         }
     } else {
@@ -72,6 +107,77 @@ void Settings::saveSettingsToFile()
     out << "height=" << screenHeight << std::endl;
     out << "music-volume=" << musicVolume << std::endl;
     out << "sound-volume=" << soundVolume << std::endl;
+    out << "map-width=" << mapWidth << std::endl;
+    out << "map-height=" << mapHeight << std::endl;
+    out << "seed=" << seed << std::endl;
+    out << "player-speed=" << playerSpeed << std::endl;
+    out << "movement-speed=" << movementSpeed << std::endl;
+
+    out.close();
+}
+
+std::vector<Settings::CampPart> Settings::readCampData()
+{
+    std::vector<CampPart> parts;
+    std::ifstream cFile("cevicamp_parts.save");
+    if (cFile.is_open()) {
+        std::string line;
+        while (getline(cFile, line)) {
+            if (line[0] == '#' || line.empty())
+                continue;
+            auto delimiterPos = line.find("=");
+            auto name = line.substr(0, delimiterPos);
+            auto value = line.substr(delimiterPos + 1);
+
+            auto delim1 = value.find("/");
+            auto delim2 = value.find("/", delim1 + 1);
+
+            CampPart current;
+            current.enumType = std::stoi(name);
+            current.x = std::stoi(value.substr(0, delim1));
+            current.y = std::stoi(value.substr(delim1 + 1, delim2));
+            current.level = std::stoi(value.substr(delim2 + 1));
+            parts.push_back(current);
+        }
+    } else {
+        logger_->error("Settings", "cevicamp_parts.save could not be openend");
+    }
+    return parts;
+}
+
+std::vector<std::string> Settings::readInventory()
+{
+    std::vector<std::string> inv;
+    std::ifstream cFile("cevicamp_inventory.save");
+    if (cFile.is_open()) {
+        std::string line;
+        while (getline(cFile, line)) {
+            if (line[0] == '#' || line.empty())
+                continue;
+            inv.push_back(line);
+        }
+    } else {
+        logger_->error("Settings", "cevicamp_inventory.save could not be openend");
+    }
+    return inv;
+}
+void Settings::saveInventory(std::vector<std::string>& inv)
+{
+    logger_->info("Settings", "Saving inventory");
+    std::ofstream out("cevicamp_inventory.save");
+    for (auto s : inv) {
+        out << s << std::endl;
+    }
+    out.close();
+}
+
+void Settings::saveCampData(std::vector<Settings::CampPart>& parts)
+{
+    logger_->info("Settings", "Saving camp data");
+    std::ofstream out("cevicamp_parts.save");
+    for (auto campPart : parts) {
+        out << campPart.enumType << "=" << campPart.x << "/" << campPart.y << "/" << campPart.level << std::endl;
+    }
     out.close();
 }
 

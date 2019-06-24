@@ -6,8 +6,8 @@
 
 class Grass : public GameObject {
 public:
-    Grass(Logger* logger, sf::Vector2i windowSize)
-        : GameObject(logger, GameObject::Type::Grass)
+    Grass(Logger* logger, Settings* settings)
+        : GameObject(logger, settings, GameObject::Type::Grass)
     {
         if (!image_.loadFromFile("res/CampParts/Grass.png")) {
             logger_->error("Grass", "res/CampParts/Grass.png not found");
@@ -17,11 +17,11 @@ public:
         image_.setRepeated(true);
 
         animation_.setSpriteSheet(image_);
-        animation_.addFrame(sf::IntRect(0, 0, windowSize.x, windowSize.y));
+        animation_.addFrame(sf::IntRect(0, 0, settings_->mapWidth, settings_->mapHeight));
         sprite_ = AnimatedSprite(sf::seconds(1), true, false);
         sprite_.setAnimation(animation_);
 
-        sprite_.setPosition(0, 0);
+        sprite_.setPosition(0,0); // map starts top left
     }
 
     void play() {}

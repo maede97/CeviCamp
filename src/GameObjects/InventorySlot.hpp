@@ -7,8 +7,8 @@
 
 class InventorySlot : public GameObject {
 public:
-    InventorySlot(Logger* logger, int inventoryX, int inventoryY, int slotSize)
-        : GameObject(logger, GameObject::Type::InventorySlot)
+    InventorySlot(Logger* logger, Settings* settings, int inventoryX, int inventoryY, int slotSize)
+        : GameObject(logger, settings, GameObject::Type::InventorySlot)
     {
         if (!image_.loadFromFile("res/CampParts/InventorySlot.png")) {
             logger_->error("InventorySlot", "res/CampParts/InventorySlot.png not found");

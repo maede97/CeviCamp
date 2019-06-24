@@ -1,24 +1,26 @@
 #ifndef GAMEOBJECT_HPP
 #define GAMEOBJECT_HPP
 
-#include "../GameObjectManager.hpp"
 #include "../Logger.hpp"
+#include "../Settings.hpp"
 #include "AnimatedSprite.hpp"
 
 class GameObject {
 public:
     // this order matters, because of item sorting for drawing!
-    enum Type { Cursor,
-        Player,
-        InventorySlot,
-        Inventory,
-        Fire,
-        Tree,
-        Stone,
-        Grass };
-    GameObject(Logger* logger, Type t)
+    enum Type { Cursor, // 0
+        Player, // 1
+        InventorySlot, //2
+        Inventory, //3
+        Fire, // 4
+        Tree, // 5
+        Stone, // 6
+        Grass // 7
+    };
+    GameObject(Logger* logger, Settings* settings, Type t)
     {
         logger_ = logger;
+        settings_ = settings;
         type = t;
     }
 
@@ -45,6 +47,7 @@ public:
     virtual void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY) {}
     virtual bool validClick(int mouseX, int mouseY, int playerX, int playerY) { return false; }
     virtual sf::Vector2f getPosition() const { return sprite_.getPosition(); };
+    virtual void setAnimation() {}
 
     // These 4 functions need to be overridden
     virtual void play() = 0;
@@ -55,6 +58,7 @@ public:
 
 protected:
     Logger* logger_;
+    Settings* settings_;
     AnimatedSprite sprite_;
     unsigned int level_ = 0;
 };

@@ -7,8 +7,8 @@
 
 class MouseCursor : public GameObject {
 public:
-    MouseCursor(Logger* logger)
-        : GameObject(logger, GameObject::Type::Cursor)
+    MouseCursor(Logger* logger, Settings* settings)
+        : GameObject(logger, settings, GameObject::Type::Cursor)
     {
         if (!image_.loadFromFile("res/CampParts/MouseCursor.png")) {
             logger_->error("MouseCursor", "res/CampParts/MouseCursor.png not found");

@@ -4,12 +4,12 @@
 #include "AnimatedSprite.hpp"
 #include "GameObject.hpp"
 
+
 class Player : public GameObject {
 public:
-    Player(Logger* logger, sf::Vector2i windowSize)
-        : GameObject(logger, GameObject::Type::Player)
+    Player(Logger* logger, Settings* settings)
+        : GameObject(logger, settings, GameObject::Type::Player)
     {
-        windowSize_ = windowSize;
         if (!image_.loadFromFile("res/CampParts/Player.png")) {
             logger_->error("Player", "res/CampParts/Player.png not found");
             return;
@@ -42,9 +42,14 @@ public:
 
         // paused = false, repeat = true
         sprite_ = AnimatedSprite(sf::seconds(0.2), true, false);
-        sprite_.setPosition(sf::Vector2f(windowSize / 2));
+        sprite_.setPosition(sf::Vector2f(settings_->screenWidth / 2 - playerSize_ / 2, settings_->screenHeight / 2- playerSize_ / 2));
 
         movement_ = sf::Vector2f(0.0f, 0.0f);
+    }
+
+    void setAnimation() {
+        current_ = &walkingDown_;
+        sprite_.setAnimation(*current_);
     }
 
     sf::Vector2f getPosition() const
@@ -95,7 +100,7 @@ public:
             sprite_.stop();
         }
         sprite_.update(frametime);
-        sprite_.move(movement_ * frametime.asSeconds());
+        //sprite_.move(movement_ * frametime.asSeconds());
         noKeyWasPressed_ = true;
         movement_ = sf::Vector2f(0.0f, 0.0f);
     }
@@ -114,7 +119,7 @@ private:
 
     Animation* current_ = &walkingDown_;
 
-    float speed_ = 300.0f;
+    float speed_ = settings_->playerSpeed;
     sf::Vector2f movement_;
     sf::Vector2i windowSize_;
     bool noKeyWasPressed_ = true;

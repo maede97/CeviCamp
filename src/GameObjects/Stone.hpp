@@ -2,12 +2,13 @@
 #define STONE_HPP
 
 #include "GameObject.hpp"
+
 #include <SFML/Graphics.hpp>
 
 class Stone : public GameObject {
 public:
-    Stone(Logger* logger, int x, int y)
-        : GameObject(logger, GameObject::Type::Stone)
+    Stone(Logger* logger, Settings* settings, int x, int y)
+        : GameObject(logger, settings, GameObject::Type::Stone)
     {
         if (!image_.loadFromFile("res/CampParts/Stone.png")) {
             logger_->error("Stone", "res/CampParts/Stone.png not found");
@@ -22,6 +23,10 @@ public:
     }
 
     void play() {}
+    void setAnimation()
+    {
+        sprite_.setAnimation(animation_);
+    }
     void handleClick()
     {
     }
