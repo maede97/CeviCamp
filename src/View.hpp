@@ -40,8 +40,12 @@ void View::showCursor() {
 
 void View::openFrame()
 {
-    sf::VideoMode vm = sf::VideoMode(settings_->screenWidth, settings_->screenHeight);
-    window.create(vm, settings_->title, sf::Style::Default);   
+    sf::VideoMode vm = sf::VideoMode::getFullscreenModes().at(0);
+    settings_->screenHeight = vm.height;
+    settings_->screenWidth = vm.width;
+    settings_->mapHeight = 2*vm.height;
+    settings_->mapWidth = 2*vm.width;
+    window.create(vm, settings_->title, sf::Style::Fullscreen);  
 
     // only one of those:
     window.setVerticalSyncEnabled(true);
