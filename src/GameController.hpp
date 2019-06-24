@@ -152,11 +152,12 @@ void GameController::gameLoop()
         }
         case Playing: {
             switch (currentEvent.type) {
-            case sf::Event::Closed:
+            case sf::Event::Closed: {
                 gameState_ = Exiting;
                 delete gameObjectManager_;
                 break;
-            case sf::Event::EventType::KeyPressed:
+            }
+            case sf::Event::EventType::KeyPressed: {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                     view_->showCursor();
                     settings_->saveSettingsToFile();
@@ -190,16 +191,27 @@ void GameController::gameLoop()
                     gameObjectManager_->selectInventorySlot(7);
                 }
                 break;
-            case sf::Event::EventType::MouseButtonPressed:
+            }
+            case sf::Event::EventType::MouseButtonPressed: {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                     gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y);
                 }
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
                     gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y, false);
                 }
+                break;
+            }
+            case sf::Event::EventType::MouseWheelMoved: {
+                gameObjectManager_->selectInventorySlot(gameObjectManager_->getSelectedInventorySlot() + currentEvent.mouseWheel.delta);
+                break;
+            }
+            default:
+                break;
             }
             break;
         }
+        default:
+            break;
         }
     }
     // Do drawing here
@@ -287,7 +299,7 @@ void GameController::loadCampData()
     }
     gameObjectManager_->setNewIterators();
     std::vector<std::string> inv = settings_->readInventory();
-    for(std::string& s : inv) {
+    for (std::string& s : inv) {
         gameObjectManager_->addInventoryItem(s);
     }
 
@@ -307,7 +319,7 @@ void GameController::saveCampData()
     }
 
     std::vector<std::string> inv;
-    for(auto item : gameObjectManager_->getInventoryVector()) {
+    for (auto item : gameObjectManager_->getInventoryVector()) {
         inv.push_back(item->getName());
     }
     settings_->saveCampData(parts);

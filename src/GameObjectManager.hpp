@@ -373,14 +373,19 @@ public:
         setNewIterators();
     }
 
+    int getSelectedInventorySlot() const
+    {
+        return selectedSlot_;
+    }
+
     void selectInventorySlot(int slot)
     {
-        selectedSlot_ = slot;
+        selectedSlot_ = (slot + 8) % 8;
         sf::Vector2f invPos = (*inventoryIterator_)->getPosition();
 
         for (auto gameObject : gameObjects_) {
             if (gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->setPosition(invPos.x + slot * slotSize_, invPos.y);
+                gameObject->setPosition(invPos.x + selectedSlot_ * slotSize_, invPos.y);
             }
         }
     }
