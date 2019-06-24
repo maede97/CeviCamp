@@ -190,6 +190,9 @@ void GameController::gameLoop()
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
                     gameObjectManager_->selectInventorySlot(7);
                 }
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+                    gameObjectManager_->handleClick(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y, false);
+                }
                 break;
             }
             case sf::Event::EventType::MouseButtonPressed: {
