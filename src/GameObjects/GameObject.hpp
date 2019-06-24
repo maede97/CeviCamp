@@ -39,14 +39,15 @@ public:
     unsigned int getLevel() const { return level_; }
     void setLevel(unsigned int level) { level_ = level; }
 
+    sf::Vector2f getPosition() const { return sprite_.getPosition(); };
+
     // These functions can be overridden to grab information
     virtual void left() {}
     virtual void right() {}
     virtual void up() {}
     virtual void down() {}
-    virtual void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY) {}
-    virtual bool validClick(int mouseX, int mouseY, int playerX, int playerY) { return false; }
-    virtual sf::Vector2f getPosition() const { return sprite_.getPosition(); };
+    virtual void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerSize) {}
+    virtual bool validClick(int mouseX, int mouseY, int playerX, int playerY, int playerSize) { return false; }
     virtual void setAnimation() {}
 
     // These 4 functions need to be overridden

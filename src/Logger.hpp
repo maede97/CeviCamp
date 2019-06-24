@@ -7,40 +7,28 @@
 
 class Logger {
 public:
-    enum Level { NOTHING,
-        ALL,
-        ERROR,
-        WARNING,
-        INFO };
-
-    Logger(Level l)
+    Logger()
     {
-        level_ = l;
     }
 
     void info(std::string x, std::string y)
     {
-        log(x, y, INFO);
+        std::cout << "INFO    " << std::setfill(' ') << std::setw(20) << std::left << x << " ";
+        std::cout << std::setfill(' ') << std::setw(100) << std::left << y << std::endl;
     }
 
     void error(std::string x, std::string y)
     {
-        log(x, y, ERROR);
+        std::cout << "ERROR   " << std::setfill(' ') << std::setw(20) << std::left << x << " ";
+        std::cout << std::setfill(' ') << std::setw(100) << std::left << y << std::endl;
     }
     void warning(std::string x, std::string y)
     {
-        log(x, y, WARNING);
-    }
-    void log(std::string x, std::string y, Level l = ALL)
-    {
-        if (l <= level_) {
-            std::cout << std::setfill(' ') << std::setw(20) << std::left << x << " ";
-            std::cout << std::setfill(' ') << std::setw(100) << std::left << y << std::endl;
-        }
+        std::cout << "WARNING " << std::setfill(' ') << std::setw(20) << std::left << x << " ";
+        std::cout << std::setfill(' ') << std::setw(100) << std::left << y << std::endl;
     }
 
 private:
-    Level level_;
 };
 
 #endif

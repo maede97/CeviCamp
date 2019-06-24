@@ -4,7 +4,6 @@
 #include "AnimatedSprite.hpp"
 #include "GameObject.hpp"
 
-
 class Player : public GameObject {
 public:
     Player(Logger* logger, Settings* settings)
@@ -42,26 +41,24 @@ public:
 
         // paused = false, repeat = true
         sprite_ = AnimatedSprite(sf::seconds(0.2), true, false);
-        sprite_.setPosition(sf::Vector2f(settings_->screenWidth / 2 - playerSize_ / 2, settings_->screenHeight / 2- playerSize_ / 2));
+        //sprite_.setPosition(sf::Vector2f(settings_->screenWidth / 2 - playerSize_ / 2, settings_->screenHeight / 2 - playerSize_ / 2));
 
-        movement_ = sf::Vector2f(0.0f, 0.0f);
+        movement_ = sf::Vector2i(0, 0);
+
+        setAnimation();
     }
 
-    void setAnimation() {
+    void setAnimation()
+    {
         current_ = &walkingDown_;
         sprite_.setAnimation(*current_);
-    }
-
-    sf::Vector2f getPosition() const
-    {
-        return sf::Vector2f(sprite_.getPosition()) + sf::Vector2f(playerSize_, playerSize_) / 2.0f;
     }
 
     void down()
     {
         current_ = &walkingDown_;
         movement_.y += speed_;
-        if (sprite_.getPosition().y > windowSize_.y - playerSize_) {
+        if (sprite_.getPosition().y > settings_->screenHeight - playerSize_) {
             movement_.y = 0;
         }
         noKeyWasPressed_ = false;
@@ -69,7 +66,7 @@ public:
     void up()
     {
         current_ = &walkingUp_;
-        movement_.y -= speed_;
+        movement_.y += -speed_;
         if (sprite_.getPosition().y < 0) {
             movement_.y = 0;
         }
@@ -78,7 +75,7 @@ public:
     void left()
     {
         current_ = &walkingLeft_;
-        movement_.x -= speed_;
+        movement_.x += -speed_;
         if (sprite_.getPosition().x < 0) {
             movement_.x = 0;
         }
@@ -88,7 +85,7 @@ public:
     {
         current_ = &walkingRight_;
         movement_.x += speed_;
-        if (sprite_.getPosition().x > windowSize_.x - playerSize_) {
+        if (sprite_.getPosition().x > settings_->screenWidth - playerSize_) {
             movement_.x = 0;
         }
         noKeyWasPressed_ = false;
@@ -100,9 +97,9 @@ public:
             sprite_.stop();
         }
         sprite_.update(frametime);
-        //sprite_.move(movement_ * frametime.asSeconds());
+        sprite_.move(sf::Vector2f(movement_) * frametime.asSeconds());
         noKeyWasPressed_ = true;
-        movement_ = sf::Vector2f(0.0f, 0.0f);
+        movement_ = sf::Vector2i(0, 0);
     }
 
     bool checkClick(float x, float y) { return false; } // can't click on player
@@ -119,8 +116,8 @@ private:
 
     Animation* current_ = &walkingDown_;
 
-    float speed_ = settings_->playerSpeed;
-    sf::Vector2f movement_;
+    int speed_ = settings_->playerSpeed;
+    sf::Vector2i movement_;
     sf::Vector2i windowSize_;
     bool noKeyWasPressed_ = true;
 

@@ -4,6 +4,7 @@
 #include "Logger.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <cstdlib>
 #include <algorithm>
 #include <fstream>
 #include <vector>
@@ -28,14 +29,14 @@ public:
     void saveInventory(std::vector<std::string>& inv);
 
     const char* title = "CeviCamp";
-    unsigned int screenWidth = 1920;
-    unsigned int screenHeight = 1080;
+    int screenWidth = 1920;
+    int screenHeight = 1080;
     bool keepPlaying = false;
     int musicVolume = 100;
     int soundVolume = 100;
     sf::Font font;
 
-    float playerSpeed = 300.0f;
+    int playerSpeed = 10;
     int movementSpeed = 10;
 
     int seed = 42;
@@ -56,12 +57,11 @@ Settings::Settings(Logger* logger)
         return;
     }
     readSettingsFromFile();
-    srand(seed);
+    std::srand(seed); // does not work...
 }
 
 void Settings::readSettingsFromFile()
 {
-    logger_->log("Settings", "readSettingsFromFile");
     std::ifstream cFile("cevicamp.save");
     if (cFile.is_open()) {
         logger_->info("Settings", "Save found");
@@ -88,7 +88,7 @@ void Settings::readSettingsFromFile()
             } else if (name == "seed") {
                 seed = std::stoi(value);
             } else if (name == "player-speed") {
-                playerSpeed = std::stof(value);
+                playerSpeed = std::stoi(value);
             } else if (name == "movement-speed") {
                 movementSpeed = std::stoi(value);
             }
@@ -101,7 +101,6 @@ void Settings::readSettingsFromFile()
 }
 void Settings::saveSettingsToFile()
 {
-    logger_->log("Settings", "saveSettingsToFile");
     std::ofstream out("cevicamp.save");
     out << "width=" << screenWidth << std::endl;
     out << "height=" << screenHeight << std::endl;

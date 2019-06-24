@@ -3,7 +3,7 @@
 
 int main()
 {
-    Logger logger(Logger::NOTHING);
+    Logger logger;
     GameController controller(&logger);
     logger.info("main", "Game started");
     controller.start();

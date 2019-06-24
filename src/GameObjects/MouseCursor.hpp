@@ -20,19 +20,19 @@ public:
         sprite_.setAnimation(animation_);
     }
 
-    bool validClick(int mouseX, int mouseY, int playerX, int playerY)
+    bool validClick(int mouseX, int mouseY, int playerX, int playerY, int playerSize)
     {
-        return (std::sqrt(std::pow(mouseX - playerX, 2) + std::pow(mouseY - playerY, 2)) < interactionRadius_);
+        return (std::sqrt(std::pow(mouseX - playerX - playerSize / 2, 2) + std::pow(mouseY - playerY - playerSize / 2, 2)) < interactionRadius_);
     }
 
     void play() {}
     void handleClick() {}
     bool checkClick(float, float) { return false; }
 
-    void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY)
+    void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerSize)
     {
         sf::Vector2f mousePos(mouseX, mouseY);
-        sf::Vector2f playerPos(playerX, playerY);
+        sf::Vector2f playerPos(playerX + playerSize / 2, playerY + playerSize / 2);
         sf::Vector2f dist = (mousePos - playerPos);
         float len = std::sqrt(dist.x * dist.x + dist.y * dist.y);
         sf::Vector2f pos;

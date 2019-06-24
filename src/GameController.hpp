@@ -89,7 +89,7 @@ GameController::~GameController()
     delete view_;
     delete settings_;
     delete soundManager_;
-    delete gameObjectManager_;
+    //delete gameObjectManager_;
 }
 
 void GameController::gameLoop()
@@ -154,6 +154,7 @@ void GameController::gameLoop()
             switch (currentEvent.type) {
             case sf::Event::Closed:
                 gameState_ = Exiting;
+                delete gameObjectManager_;
                 break;
             case sf::Event::EventType::KeyPressed:
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
@@ -250,7 +251,7 @@ void GameController::loadCampData()
         case GameObject::Type::Player: {
             Player* player = new Player(logger_, settings_);
             player->setAnimation();
-            player->setPosition(part.x - player->getSprite().getLocalBounds().width / 2, part.y - player->getSprite().getLocalBounds().height / 2);
+            player->setPosition(part.x, part.y);
             gameObjectManager_->addGameObject(player);
             break;
         }
