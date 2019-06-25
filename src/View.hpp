@@ -14,9 +14,6 @@ public:
     void openFrame();
     void closeFrame();
     void clearFrame();
-    void hideCursor();
-    void showCursor();
-
     void displayFrame();
 
     sf::RenderWindow window;
@@ -37,19 +34,7 @@ View::View(Settings *settings, Logger *logger)
     settings_->screenHeight = vm_.height;
     settings_->screenWidth = vm_.width;
 
-    // TODO set fixed to like 5000*5000 or so
-    //settings_->mapHeight = 2 * vm_.height;
-    //settings_->mapWidth = 2 * vm_.width;
-}
-
-void View::hideCursor()
-{
-    // TODO remove all calls, not needed anymore
-    window.setMouseCursorVisible(true);
-}
-void View::showCursor()
-{
-    window.setMouseCursorVisible(true);
+    settings_->recalculateScaling();
 }
 
 void View::openFrame()

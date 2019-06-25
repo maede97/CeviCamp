@@ -32,7 +32,7 @@ public:
         InventorySlot* inventorySlot = new InventorySlot(logger_, settings_, playerInventory->getPosition().x,
             playerInventory->getPosition().y, slotSize_);
 
-        movementSpeed = settings_->movementSpeed;
+        movementSpeed_ = settings_->movementSpeed;
 
         // push objects into vector
         gameObjects_.push_back(cursor);
@@ -98,9 +98,9 @@ public:
         return true;
     }
 
-    void down()
+    void down(bool initial = false)
     {
-        if ((*grassIterator_)->getPosition().y < -(settings_->mapHeight - settings_->screenHeight - movementSpeed)) {
+        if (!initial && (*grassIterator_)->getPosition().y < -(settings_->mapHeight - settings_->screenHeight - movementSpeed_)) {
             (*playerIterator_)->down();
             return;
         }
@@ -108,19 +108,19 @@ public:
             gameObject->down();
             if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
                 gameObject->setPosition(gameObject->getPosition().x,
-                    gameObject->getPosition().y - movementSpeed);
+                    gameObject->getPosition().y - movementSpeed_);
             } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
                 gameObject->getSprite().move(
-                    0, -movementSpeed); // move other direction, to stay sticky
+                    0, -movementSpeed_); // move other direction, to stay sticky
             }
         }
         for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(0, -movementSpeed);
+            invItem->getSprite().move(0, -movementSpeed_);
         }
     }
     void up()
     {
-        if ((*grassIterator_)->getPosition().y > -movementSpeed) {
+        if ((*grassIterator_)->getPosition().y > -movementSpeed_) {
             (*playerIterator_)->up();
             return;
         }
@@ -128,51 +128,51 @@ public:
             gameObject->up();
             if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
                 gameObject->setPosition(gameObject->getPosition().x,
-                    gameObject->getPosition().y + movementSpeed);
+                    gameObject->getPosition().y + movementSpeed_);
             } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->getSprite().move(0, movementSpeed);
+                gameObject->getSprite().move(0, movementSpeed_);
             }
         }
         for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(0, movementSpeed);
+            invItem->getSprite().move(0, movementSpeed_);
         }
     }
     void left()
     {
-        if ((*grassIterator_)->getPosition().x > -movementSpeed) {
+        if ((*grassIterator_)->getPosition().x > -movementSpeed_) {
             (*playerIterator_)->left();
             return;
         }
         for (auto gameObject : gameObjects_) {
             gameObject->left();
             if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
-                gameObject->setPosition(gameObject->getPosition().x + movementSpeed,
+                gameObject->setPosition(gameObject->getPosition().x + movementSpeed_,
                     gameObject->getPosition().y);
             } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->getSprite().move(movementSpeed, 0);
+                gameObject->getSprite().move(movementSpeed_, 0);
             }
         }
         for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(movementSpeed, 0);
+            invItem->getSprite().move(movementSpeed_, 0);
         }
     }
-    void right()
+    void right(bool initial = false)
     {
-        if ((*grassIterator_)->getPosition().x < -(settings_->mapWidth - settings_->screenWidth - movementSpeed)) {
+        if (!initial && (*grassIterator_)->getPosition().x < -(settings_->mapWidth - settings_->screenWidth - movementSpeed_)) {
             (*playerIterator_)->right();
             return;
         }
         for (auto gameObject : gameObjects_) {
             gameObject->right();
             if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
-                gameObject->setPosition(gameObject->getPosition().x - movementSpeed,
+                gameObject->setPosition(gameObject->getPosition().x - movementSpeed_,
                     gameObject->getPosition().y);
             } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->getSprite().move(-movementSpeed, 0);
+                gameObject->getSprite().move(-movementSpeed_, 0);
             }
         }
         for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(-movementSpeed, 0);
+            invItem->getSprite().move(-movementSpeed_, 0);
         }
     }
 
@@ -203,19 +203,24 @@ public:
             gameObject->getSprite().setScale(settings_->scalingFactor,
                 settings_->scalingFactor);
             window.draw(gameObject->getSprite());
-        }
-        for (auto item : inventoryItems_) {
-            // TODO Bug: items are in front of player
-            item->getSprite().setScale(settings_->scalingFactor, settings_->scalingFactor);
-            window.draw(item->getSprite());
+            if (gameObject->type == GameObject::Type::Player) {
+                // draw items after player and before cursor
+                for (auto item : inventoryItems_) {
+                    item->getSprite().setScale(settings_->scalingFactor, settings_->scalingFactor);
+                    window.draw(item->getSprite());
+                }
+            }
         }
 
         // Draw Player pos in top left corner
         sf::Text player_pos;
         player_pos.setString(
-            std::to_string((int)(*playerIterator_)->getPosition().x) + "/" + std::to_string((int)(*playerIterator_)->getPosition().y));
+            std::to_string(static_cast<int>((*playerIterator_)->getPosition().x - (*grassIterator_)->getPosition().x + (*playerIterator_)->getSprite().getLocalBounds().width / 2))
+            + "/"
+            + std::to_string(static_cast<int>((*playerIterator_)->getPosition().y - (*grassIterator_)->getPosition().y + (*playerIterator_)->getSprite().getLocalBounds().height / 2)));
         player_pos.setFont(settings_->font);
         player_pos.setPosition(10, 10); // add some small spacing
+
         window.draw(player_pos);
     }
 
@@ -357,16 +362,26 @@ public:
 
     void setNewIterators()
     {
-        // TODO change to switch
         for (auto it = gameObjects_.begin(); it != gameObjects_.end(); it++) {
-            if ((*it)->type == GameObject::Type::Player) {
+            switch ((*it)->type) {
+            case GameObject::Type::Player: {
                 playerIterator_ = it;
-            } else if ((*it)->type == GameObject::Type::Grass) {
+                break;
+            }
+            case GameObject::Type::Grass: {
                 grassIterator_ = it;
-            } else if ((*it)->type == GameObject::Type::Inventory) {
+                break;
+            }
+            case GameObject::Type::Inventory: {
                 inventoryIterator_ = it;
-            } else if ((*it)->type == GameObject::Type::Cursor) {
+                break;
+            }
+            case GameObject::Type::Cursor: {
                 cursorIterator_ = it;
+                break;
+            }
+            default:
+                break;
             }
         }
     }
@@ -405,6 +420,7 @@ public:
         gameObjects_.push_back(grass);
 
         // place x trees and stones all over the map
+        // TODO make tree placement better
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
             Tree* tree = new Tree(logger_, settings_,
                 200 + std::rand() % (settings_->mapWidth - 400),
@@ -421,20 +437,17 @@ public:
         orderGameObjects();
 
         // move all to center
-        for (int i = 0; i < settings_->screenWidth / settings_->movementSpeed / 2.0;
-             i++) {
-            right();
-        }
-        for (int i = 0;
-             i < settings_->screenHeight / settings_->movementSpeed / 2.0; i++) {
-            down();
-        }
+        movementSpeed_ = settings_->mapWidth / 2 - settings_->screenWidth / 2;
+        right(true);
+        movementSpeed_ = settings_->mapHeight / 2 - settings_->screenHeight / 2;
+        down(true);
+        movementSpeed_ = settings_->movementSpeed;
 
         Player* player = new Player(logger_, settings_);
         gameObjects_.push_back(player);
 
-        player->setPosition(settings_->screenWidth / 2 - player->getSprite().getLocalBounds().width / 2,
-            settings_->screenHeight / 2 - player->getSprite().getLocalBounds().height / 2);
+        player->setPosition(settings_->screenWidth / 2 - player->getSprite().getLocalBounds().width * settings_->scalingFactor / 2,
+            settings_->screenHeight / 2 - player->getSprite().getLocalBounds().height * settings_->scalingFactor / 2);
         orderGameObjects();
 
         // Give some test items
@@ -451,7 +464,7 @@ private:
     unsigned int selectedSlot_ = 0;
     int slotSize_ = 112;
 
-    int movementSpeed;
+    int movementSpeed_;
 
     std::vector<GameObject*> gameObjects_;
     std::vector<GameObject*>::iterator playerIterator_;

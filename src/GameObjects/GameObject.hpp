@@ -9,9 +9,9 @@ class GameObject {
 public:
     // this order matters, because of item sorting for drawing!
     enum Type { Cursor, // 0
-        Player, // 1
-        InventorySlot, //2
-        Inventory, //3
+        InventorySlot, //1
+        Inventory, //2
+        Player, // 3
         Fire, // 4
         Tree, // 5
         Stone, // 6

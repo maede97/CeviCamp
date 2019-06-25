@@ -100,7 +100,6 @@ void GameController::gameLoop()
         case ShowSplash: {
             if (currentEvent.type == sf::Event::EventType::KeyPressed || currentEvent.type == sf::Event::EventType::MouseButtonPressed || currentEvent.type == sf::Event::EventType::Closed) {
                 gameState_ = ShowMenu;
-                view_->showCursor();
                 logger_->info("SplashScreen", "Quit Splash, show Menu");
             }
             break;
@@ -121,20 +120,17 @@ void GameController::gameLoop()
                     loadCampData();
                     gameState_ = Playing;
                     logger_->info("MenuResult", "KeepPlaying");
-                    view_->hideCursor();
                     break;
                 }
                 case MainMenu::MenuResult::StartGame: {
                     gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
                     gameObjectManager_->createNewGame();
                     logger_->info("MenuResult", "StartGame");
-                    view_->hideCursor();
                     gameState_ = Playing;
                     break;
                 }
                 case MainMenu::MenuResult::Options: {
                     logger_->info("MenuResult", "Options");
-                    view_->showCursor();
                     gameState_ = ShowOptions;
                     break;
                 }
@@ -145,7 +141,6 @@ void GameController::gameLoop()
         case ShowOptions: {
             if (currentEvent.type == sf::Event::EventType::KeyPressed || currentEvent.type == sf::Event::EventType::MouseButtonPressed || currentEvent.type == sf::Event::EventType::Closed) {
                 gameState_ = ShowMenu;
-                view_->showCursor();
                 logger_->info("Options", "Quit Options, show Menu");
             }
             break;
@@ -159,7 +154,6 @@ void GameController::gameLoop()
             }
             case sf::Event::EventType::KeyPressed: {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-                    view_->showCursor();
                     settings_->saveSettingsToFile();
                     saveCampData();
                     delete gameObjectManager_;

@@ -28,6 +28,8 @@ public:
     std::vector<std::string> readInventory();
     void saveInventory(std::vector<std::string>& inv);
 
+    void recalculateScaling();
+
     const char* title = "CeviCamp";
     int screenWidth = 1920;
     int screenHeight = 1080;
@@ -65,6 +67,10 @@ Settings::Settings(Logger* logger)
      * 0.5 for 1920x1080
      * 1.0 for 3840x2160
      */
+    recalculateScaling();
+}
+
+void Settings::recalculateScaling() {
     scalingFactor = 1.0f / 3840.0f * screenWidth;
 }
 
