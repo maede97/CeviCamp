@@ -11,6 +11,7 @@ public:
 private:
     sf::Texture image_;
     sf::Sprite sprite_;
+    sf::Text text_;
 };
 
 SplashScreen::SplashScreen(Logger* logger, Settings* settings)
@@ -23,11 +24,19 @@ SplashScreen::SplashScreen(Logger* logger, Settings* settings)
     sprite_ = sf::Sprite(image_);
     sprite_.setScale(settings_->scalingFactor, settings_->scalingFactor);
     sprite_.setPosition(settings_->screenWidth / 2 - image_.getSize().x*settings_->scalingFactor / 2, settings_->screenHeight / 2 - image_.getSize().y*settings_->scalingFactor / 2);
+
+    text_.setFont(settings_->font);
+    text_.setScale(settings_->scalingFactor, settings_->scalingFactor);
+    text_.setString(L"BELIEBIGE TASTE DRÜCKEN");
+    text_.setCharacterSize(200 * settings_->scalingFactor);
+    text_.setStyle(sf::Text::Bold);
+    text_.setPosition(settings_->screenWidth / 2 - text_.getLocalBounds().width / 2, settings_->screenHeight - 100 - text_.getLocalBounds().height);
 }
 
 void SplashScreen::show(sf::RenderWindow& window)
 {
     window.draw(sprite_);
+    window.draw(text_);
 }
 
 #endif

@@ -9,6 +9,11 @@
 #include <fstream>
 #include <vector>
 
+/**
+ * TODO
+ * font size
+ */
+
 class Settings {
 public:
     struct CampPart {
@@ -56,8 +61,8 @@ private:
 Settings::Settings(Logger* logger)
 {
     logger_ = logger;
-    if (!font.loadFromFile("res/FreeSans.ttf")) {
-        logger_->error("Settings", "Could not open res/FreeSans.ttf");
+    if (!font.loadFromFile("res/CeviBold.ttf")) {
+        logger_->error("Settings", "Could not open res/CeviBold.ttf");
         return;
     }
     readSettingsFromFile();
@@ -76,10 +81,15 @@ void Settings::recalculateScaling() {
 
 void Settings::readSettingsFromFile()
 {
+    std::ifstream gameSave("cevicamp_parts.save");
+    if(gameSave.is_open()) {
+        keepPlaying = true; // save found, show keepPlaying
+    } else {
+        keepPlaying = false;
+    }
     std::ifstream cFile("cevicamp.save");
     if (cFile.is_open()) {
         logger_->info("Settings", "Save found");
-        keepPlaying = true; // save found, show keepPlaying
         std::string line;
         while (getline(cFile, line)) {
             if (line[0] == '#' || line.empty())
@@ -108,8 +118,6 @@ void Settings::readSettingsFromFile()
             }
         }
     } else {
-        // no save found, generate new one
-        keepPlaying = false;
         logger_->error("Settings", "cevicamp.save could not be openend");
     }
 }
@@ -125,7 +133,6 @@ void Settings::saveSettingsToFile()
     out << "seed=" << seed << std::endl;
     out << "player-speed=" << playerSpeed << std::endl;
     out << "movement-speed=" << movementSpeed << std::endl;
-
     out.close();
 }
 

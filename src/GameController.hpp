@@ -139,10 +139,42 @@ void GameController::gameLoop()
             break;
         }
         case ShowOptions: {
-            if (currentEvent.type == sf::Event::EventType::KeyPressed || currentEvent.type == sf::Event::EventType::MouseButtonPressed || currentEvent.type == sf::Event::EventType::Closed) {
+            switch (currentEvent.type) {
+            case sf::Event::Closed: {
                 gameState_ = ShowMenu;
                 logger_->info("Options", "Quit Options, show Menu");
+                settings_->saveSettingsToFile();
+                break;
             }
+            case sf::Event::KeyPressed: {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    gameState_ = ShowMenu;
+                    logger_->info("Options", "Quit Options, show Menu");
+                    settings_->saveSettingsToFile();
+                }
+                break;
+            }
+            case sf::Event::EventType::MouseButtonPressed: {
+                if (options_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y)) {
+                    gameState_ = ShowMenu;
+                    logger_->info("Options", "Quit Options, show Menu");
+                    settings_->saveSettingsToFile();
+                }
+                break;
+            }
+            case sf::Event::EventType::MouseMoved: {
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                    if (options_->handleClick(sf::Mouse::getPosition(view_->window).x, sf::Mouse::getPosition(view_->window).y)) {
+                        gameState_ = ShowMenu;
+                        logger_->info("Options", "Quit Options, show Menu");
+                        settings_->saveSettingsToFile();
+                    }
+                }
+            }
+            default:
+                break;
+            }
+
             break;
         }
         case Playing: {
@@ -160,20 +192,6 @@ void GameController::gameLoop()
                     settings_->keepPlaying = true;
                     gameState_ = ShowMenu;
                 }
-                /*
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-                    gameObjectManager_->down();
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-                    gameObjectManager_->up();
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-                    gameObjectManager_->left();
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-                    gameObjectManager_->right();
-                }
-                */
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
                     gameObjectManager_->selectInventorySlot(0);
@@ -246,7 +264,6 @@ void GameController::gameLoop()
         break;
     case Playing:
         // check these here because hold down
-        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             gameObjectManager_->down();
         }
@@ -259,7 +276,7 @@ void GameController::gameLoop()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             gameObjectManager_->right();
         }
-        
+
         gameObjectManager_->drawAll(view_->window, deltaTime_.getElapsedTime());
         break;
     }
