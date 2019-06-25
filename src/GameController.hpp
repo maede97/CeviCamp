@@ -53,9 +53,9 @@ GameController::GameController(Logger* logger)
     soundManager_ = new SoundManager(logger_, settings_);
 
     // Screens
-    splashScreen_ = new SplashScreen(logger_);
-    mainMenu_ = new MainMenu(logger_);
-    options_ = new Options(logger_);
+    splashScreen_ = new SplashScreen(logger_, settings_);
+    mainMenu_ = new MainMenu(logger_,settings_);
+    options_ = new Options(logger_,settings_);
 }
 
 void GameController::start()

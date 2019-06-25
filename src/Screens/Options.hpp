@@ -1,25 +1,22 @@
 #ifndef OPTIONS_HPP
 #define OPTIONS_HPP
 
-#include "../Logger.hpp"
 #include "Screen.hpp"
 
 class Options : public Screen {
 public:
-    Options(Logger* logger);
+    Options(Logger* logger, Settings* settings);
     void show(sf::RenderWindow& window);
 
 private:
-    Logger* logger_;
     sf::Texture image_;
     sf::Sprite sprite_;
 };
 
-Options::Options(Logger* logger)
+Options::Options(Logger* logger, Settings* settings) : Screen(logger, settings)
 {
-    logger_ = logger;
-    if (image_.loadFromFile("res/logo_left.png") != true) {
-        logger_->error("Options", "file res/logo_left.png not found");
+    if (image_.loadFromFile("res/logo_right.png") != true) {
+        logger_->error("Options", "file res/logo_right.png not found");
         return;
     }
     sprite_ = sf::Sprite(image_);

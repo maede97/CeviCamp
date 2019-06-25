@@ -22,12 +22,19 @@ public:
 private:
     Settings* settings_;
     Logger* logger_;
+    sf::VideoMode vm_;
 };
 
 View::View(Settings* settings, Logger* logger)
 {
     settings_ = settings;
     logger_ = logger;
+
+    vm_ = sf::VideoMode::getFullscreenModes().at(0);
+    settings_->screenHeight = vm_.height;
+    settings_->screenWidth = vm_.width;
+    settings_->mapHeight = 2*vm_.height;
+    settings_->mapWidth = 2*vm_.width;
 }
 
 
@@ -40,12 +47,7 @@ void View::showCursor() {
 
 void View::openFrame()
 {
-    sf::VideoMode vm = sf::VideoMode::getFullscreenModes().at(0);
-    settings_->screenHeight = vm.height;
-    settings_->screenWidth = vm.width;
-    settings_->mapHeight = 2*vm.height;
-    settings_->mapWidth = 2*vm.width;
-    window.create(vm, settings_->title, sf::Style::Fullscreen);  
+    window.create(vm_, settings_->title, sf::Style::Fullscreen);  
 
     // only one of those:
     window.setVerticalSyncEnabled(true);

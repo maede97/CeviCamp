@@ -36,7 +36,7 @@ public:
     int soundVolume = 100;
     sf::Font font;
 
-    int playerSpeed = 10;
+    int playerSpeed = 500;
     int movementSpeed = 10;
 
     int seed = 42;

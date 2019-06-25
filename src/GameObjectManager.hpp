@@ -399,11 +399,11 @@ public:
 
         // place x trees and stones all over the map
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
-            Tree* tree = new Tree(logger_, settings_, 50 + std::rand() % (settings_->mapWidth - 100), 50 + std::rand() % (settings_->mapHeight - 100));
+            Tree* tree = new Tree(logger_, settings_, 200 + std::rand() % (settings_->mapWidth - 400), 200 + std::rand() % (settings_->mapHeight - 400));
             gameObjects_.push_back(tree);
         }
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
-            Stone* tree = new Stone(logger_, settings_, 50 + std::rand() % (settings_->mapWidth - 100), 50 + std::rand() % (settings_->mapHeight - 100));
+            Stone* tree = new Stone(logger_, settings_, 200 + std::rand() % (settings_->mapWidth - 400), 200 + std::rand() % (settings_->mapHeight - 400));
             gameObjects_.push_back(tree);
         }
 

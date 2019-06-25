@@ -1,7 +1,6 @@
 #ifndef MAINMENU_HPP
 #define MAINMENU_HPP
 
-#include "../Logger.hpp"
 #include "Screen.hpp"
 
 class MainMenu : public Screen {
@@ -10,7 +9,7 @@ public:
         KeepPlaying,
         StartGame,
         Options };
-    MainMenu(Logger* logger);
+    MainMenu(Logger* logger, Settings* settings);
     void updateKeepPlaying(bool keepPlaying)
     {
         keepPlaying_ = keepPlaying;
@@ -19,8 +18,6 @@ public:
     MenuResult handleClick(int x, int y);
 
 private:
-    Logger* logger_;
-
     bool keepPlaying_;
 
     sf::Texture keepPlayingImage_;
@@ -31,15 +28,13 @@ private:
     sf::Sprite optionsSprite_;
     sf::Texture versionImage_;
     sf::Sprite versionSprite_;
-    sf::Texture logoLeftImage_;
-    sf::Sprite logoLeftSprite_;
     sf::Texture logoRightImage_;
     sf::Sprite logoRightSprite_;
 };
 
-MainMenu::MainMenu(Logger* logger)
+MainMenu::MainMenu(Logger* logger, Settings* settings)
+    : Screen(logger, settings)
 {
-    logger_ = logger;
     if (keepPlayingImage_.loadFromFile("res/keep_playing.png") != true) {
         logger_->error("MainMenu", "file res/keep_playing.png not found");
         return;
@@ -56,10 +51,6 @@ MainMenu::MainMenu(Logger* logger)
         logger_->error("MainMenu", "file res/version.png not found");
         return;
     }
-    if (logoLeftImage_.loadFromFile("res/logo_left.png") != true) {
-        logger_->error("MainMenu", "file res/logo_left.png not found");
-        return;
-    }
     if (logoRightImage_.loadFromFile("res/logo_right.png") != true) {
         logger_->error("MainMenu", "file res/logo_right.png not found");
         return;
@@ -68,25 +59,32 @@ MainMenu::MainMenu(Logger* logger)
     gamestartSprite_ = sf::Sprite(gamestartImage_);
     optionsSprite_ = sf::Sprite(optionsImage_);
     versionSprite_ = sf::Sprite(versionImage_);
-    logoLeftSprite_ = sf::Sprite(logoLeftImage_);
     logoRightSprite_ = sf::Sprite(logoRightImage_);
 
-    logoLeftSprite_.setPosition(50, 50);
-    keepPlayingSprite_.setPosition(50, 250);
-    gamestartSprite_.setPosition(50, 350);
-    optionsSprite_.setPosition(50, 450);
-    versionSprite_.setPosition(50, 600);
-    logoRightSprite_.setPosition(1000, 300);
+    keepPlayingSprite_.setScale(0.8f, 0.8f);
+    gamestartSprite_.setScale(0.8f, 0.8f);
+    optionsSprite_.setScale(0.8f, 0.8f);
+
+    int availableSpace = settings_->screenHeight - 400;
+    int perItem = availableSpace / 5;
+    keepPlayingSprite_.setPosition(100, 400);
+    gamestartSprite_.setPosition(100, 400 + perItem * 1);
+    optionsSprite_.setPosition(100, 400 + perItem * 2);
+    versionSprite_.setPosition(100, settings_->screenHeight - 200);
+    logoRightSprite_.setPosition(settings_->screenWidth * 3 / 4 - logoRightImage_.getSize().x / 2 - 100, settings_->screenHeight / 2 - logoRightImage_.getSize().y / 2);
 }
 
 void MainMenu::show(sf::RenderWindow& window)
-{
-    if (keepPlaying_)
-        window.draw(keepPlayingSprite_);
+{   
+    sf::Sprite keepPlayingSprite_Changed = keepPlayingSprite_;
+    if (!keepPlaying_) {
+        keepPlayingSprite_Changed.setColor(sf::Color(150, 150, 150, 100));
+    }
+    window.draw(keepPlayingSprite_Changed);
+
     window.draw(gamestartSprite_);
     window.draw(optionsSprite_);
     window.draw(versionSprite_);
-    window.draw(logoLeftSprite_);
     window.draw(logoRightSprite_);
 }
 
