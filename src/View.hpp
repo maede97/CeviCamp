@@ -38,8 +38,8 @@ View::View(Settings *settings, Logger *logger)
     settings_->screenWidth = vm_.width;
 
     // TODO set fixed to like 5000*5000 or so
-    settings_->mapHeight = 2 * vm_.height;
-    settings_->mapWidth = 2 * vm_.width;
+    //settings_->mapHeight = 2 * vm_.height;
+    //settings_->mapWidth = 2 * vm_.width;
 }
 
 void View::hideCursor()

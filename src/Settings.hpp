@@ -36,22 +36,16 @@ public:
     int soundVolume = 100;
     sf::Font font;
 
-    int playerSpeed = 500;
+    int playerSpeed = 15;
     int movementSpeed = 10;
 
     int seed = 42;
 
     // map size
-    int mapWidth = 3000;
-    int mapHeight = 3000;
+    int mapWidth = 5000;
+    int mapHeight = 5000;
 
-    /**
-     * Scaling Factor
-     * 0.5 for 1920x1080
-     * 1.0 for 3840x2160
-     */
-
-    float scalingFactor = 1.0f / 3840.0f * screenWidth;
+    float scalingFactor;
 
 private:
     Logger* logger_;
@@ -66,6 +60,12 @@ Settings::Settings(Logger* logger)
     }
     readSettingsFromFile();
     std::srand(seed); // does not work...
+    /**
+     * Scaling Factor
+     * 0.5 for 1920x1080
+     * 1.0 for 3840x2160
+     */
+    scalingFactor = 1.0f / 3840.0f * screenWidth;
 }
 
 void Settings::readSettingsFromFile()
