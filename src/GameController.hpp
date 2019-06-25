@@ -68,6 +68,7 @@ void GameController::start()
 
     gameState_ = ShowSplash;
 
+    view_->window.requestFocus();
     while (!isExiting()) {
         gameLoop();
     }
@@ -132,6 +133,11 @@ void GameController::gameLoop()
                 case MainMenu::MenuResult::Options: {
                     logger_->info("MenuResult", "Options");
                     gameState_ = ShowOptions;
+                    break;
+                }
+                case MainMenu::MenuResult::Exiting: {
+                    logger_->info("MenuResult","Exiting");
+                    gameState_ = Exiting;
                     break;
                 }
                 }

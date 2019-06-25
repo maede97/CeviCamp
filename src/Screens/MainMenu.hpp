@@ -9,7 +9,8 @@ public:
         Nothing,
         KeepPlaying,
         StartGame,
-        Options
+        Options,
+        Exiting
     };
     MainMenu(Logger* logger, Settings* settings);
     void updateKeepPlaying(bool keepPlaying)
@@ -29,6 +30,7 @@ private:
     sf::Text gameStartText_;
     sf::Text optionsText_;
     sf::Text versionText_;
+    sf::Text exitText_;
 };
 
 MainMenu::MainMenu(Logger* logger, Settings* settings)
@@ -43,30 +45,35 @@ MainMenu::MainMenu(Logger* logger, Settings* settings)
     keepPlayingText_.setString("WEITERSPIELEN");
     gameStartText_.setString("SPIEL STARTEN");
     optionsText_.setString("OPTIONEN");
+    exitText_.setString("BEENDEN");
     versionText_.setString("VERSION 1.0.0 ALPHA");
 
     keepPlayingText_.setFont(settings_->font);
     gameStartText_.setFont(settings_->font);
     optionsText_.setFont(settings_->font);
+    exitText_.setFont(settings_->font);
     versionText_.setFont(settings_->font);
 
     keepPlayingText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
     gameStartText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
     optionsText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
+    exitText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
     versionText_.setScale(settings_->scalingFactor, settings_->scalingFactor);
     logoRightSprite_.setScale(settings_->scalingFactor, settings_->scalingFactor);
 
     keepPlayingText_.setCharacterSize(200 * settings_->scalingFactor);
     gameStartText_.setCharacterSize(200 * settings_->scalingFactor);
     optionsText_.setCharacterSize(200 * settings_->scalingFactor);
+    exitText_.setCharacterSize(200 * settings_->scalingFactor);
     versionText_.setCharacterSize(100 * settings_->scalingFactor);
 
     int availableSpace = settings_->screenHeight - 400 * settings_->scalingFactor;
-    int perItem = availableSpace / 5;
+    int perItem = availableSpace / 6;
 
     keepPlayingText_.setPosition(100 * settings_->scalingFactor, 400 * settings_->scalingFactor);
     gameStartText_.setPosition(100 * settings_->scalingFactor, (400 * settings_->scalingFactor + perItem * 1));
     optionsText_.setPosition(100 * settings_->scalingFactor, (400 * settings_->scalingFactor + perItem * 2));
+    exitText_.setPosition(100 * settings_->scalingFactor, (400 * settings_->scalingFactor + perItem * 3));
     versionText_.setPosition(100 * settings_->scalingFactor, settings_->screenHeight - 200 * settings_->scalingFactor);
     logoRightSprite_.setPosition(settings_->screenWidth * 3 / 4 - logoRightImage_.getSize().x * logoRightSprite_.getScale().x / 2 - 100 * settings_->scalingFactor, settings_->screenHeight / 2 - logoRightImage_.getSize().y * logoRightSprite_.getScale().y / 2);
 }
@@ -80,6 +87,7 @@ void MainMenu::show(sf::RenderWindow& window)
     window.draw(keepPlayingText_Changed);
     window.draw(gameStartText_);
     window.draw(optionsText_);
+    window.draw(exitText_);
     window.draw(versionText_);
     window.draw(logoRightSprite_);
 }
@@ -94,6 +102,9 @@ MainMenu::MenuResult MainMenu::handleClick(int x, int y)
     }
     if (optionsText_.getGlobalBounds().contains(x, y)) {
         return Options;
+    }
+    if (exitText_.getGlobalBounds().contains(x, y)) {
+        return Exiting;
     }
     return Nothing;
 }
