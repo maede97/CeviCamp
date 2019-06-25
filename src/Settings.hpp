@@ -4,8 +4,8 @@
 #include "Logger.hpp"
 
 #include <SFML/Graphics.hpp>
-#include <cstdlib>
 #include <algorithm>
+#include <cstdlib>
 #include <fstream>
 #include <vector>
 
@@ -44,6 +44,14 @@ public:
     // map size
     int mapWidth = 3000;
     int mapHeight = 3000;
+
+    /**
+     * Scaling Factor
+     * 0.5 for 1920x1080
+     * 1.0 for 3840x2160
+     */
+
+    float scalingFactor = 1.0f / 3840.0f * screenWidth;
 
 private:
     Logger* logger_;

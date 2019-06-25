@@ -54,8 +54,8 @@ GameController::GameController(Logger* logger)
 
     // Screens
     splashScreen_ = new SplashScreen(logger_, settings_);
-    mainMenu_ = new MainMenu(logger_,settings_);
-    options_ = new Options(logger_,settings_);
+    mainMenu_ = new MainMenu(logger_, settings_);
+    options_ = new Options(logger_, settings_);
 }
 
 void GameController::start()
@@ -166,6 +166,21 @@ void GameController::gameLoop()
                     settings_->keepPlaying = true;
                     gameState_ = ShowMenu;
                 }
+                /*
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                    gameObjectManager_->down();
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+                    gameObjectManager_->up();
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+                    gameObjectManager_->left();
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+                    gameObjectManager_->right();
+                }
+                */
+
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
                     gameObjectManager_->selectInventorySlot(0);
                 }
@@ -190,7 +205,7 @@ void GameController::gameLoop()
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
                     gameObjectManager_->selectInventorySlot(7);
                 }
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
                     gameObjectManager_->handleClick(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y, false);
                 }
                 break;
@@ -237,6 +252,7 @@ void GameController::gameLoop()
         break;
     case Playing:
         // check these here because hold down
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             gameObjectManager_->down();
         }
@@ -249,11 +265,12 @@ void GameController::gameLoop()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             gameObjectManager_->right();
         }
+        
         gameObjectManager_->drawAll(view_->window, deltaTime_.getElapsedTime());
         break;
     }
 
-    view_->window.display();
+    view_->displayFrame();
     deltaTime_.restart();
 }
 

@@ -6,26 +6,29 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-class View {
+class View
+{
 public:
-    View(Settings* settings, Logger* logger);
+    View(Settings *settings, Logger *logger);
 
     void openFrame();
     void closeFrame();
-    void updateFrame();
     void clearFrame();
     void hideCursor();
     void showCursor();
 
+    void displayFrame();
+
     sf::RenderWindow window;
 
 private:
-    Settings* settings_;
-    Logger* logger_;
+    Settings *settings_;
+    Logger *logger_;
     sf::VideoMode vm_;
+    sf::Clock frameClock_;
 };
 
-View::View(Settings* settings, Logger* logger)
+View::View(Settings *settings, Logger *logger)
 {
     settings_ = settings;
     logger_ = logger;
@@ -33,25 +36,29 @@ View::View(Settings* settings, Logger* logger)
     vm_ = sf::VideoMode::getFullscreenModes().at(0);
     settings_->screenHeight = vm_.height;
     settings_->screenWidth = vm_.width;
-    settings_->mapHeight = 2*vm_.height;
-    settings_->mapWidth = 2*vm_.width;
+
+    // TODO set fixed to like 5000*5000 or so
+    settings_->mapHeight = 2 * vm_.height;
+    settings_->mapWidth = 2 * vm_.width;
 }
 
-
-void View::hideCursor() {
+void View::hideCursor()
+{
+    // TODO remove all calls, not needed anymore
     window.setMouseCursorVisible(true);
 }
-void View::showCursor() {
+void View::showCursor()
+{
     window.setMouseCursorVisible(true);
 }
 
 void View::openFrame()
 {
-    window.create(vm_, settings_->title, sf::Style::Fullscreen);  
+    window.create(vm_, settings_->title, sf::Style::Fullscreen);
 
     // only one of those:
-    window.setVerticalSyncEnabled(true);
-    //window.setFramerateLimit(60);
+    //window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(60);
 
     logger_->info("View", "openFrame");
 }
@@ -64,11 +71,18 @@ void View::clearFrame()
 {
     window.clear(sf::Color::Black);
 }
-void View::updateFrame()
+
+void View::displayFrame()
 {
-    window.clear(sf::Color::Black);
-    // draw stuff here using window.draw for text
     window.display();
+
+    sf::Time frameDuration = frameClock_.restart();
+    // 60 FPS means 1000ms / 60F = 16.66 ms per Frame, meaning if frameDuration < 17ms, wait the difference
+    if (frameDuration.asMicroseconds() < sf::Int64(16667))
+    {
+        //sf::sleep(sf::microseconds(sf::Int64(16667) - frameDuration.asMicroseconds()));
+        //std::cout << "TIME " << sf::Int64(16667) - frameDuration.asMicroseconds() << std::endl;
+    }
 }
 
 #endif

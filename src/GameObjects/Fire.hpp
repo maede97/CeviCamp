@@ -63,11 +63,6 @@ public:
 
     void play() { sprite_.play(*current_); }
 
-    void update(sf::Time frametime)
-    {
-        sprite_.update(frametime);
-    }
-
 private:
     sf::Texture image_;
 

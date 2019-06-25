@@ -21,7 +21,8 @@ SplashScreen::SplashScreen(Logger* logger, Settings* settings)
         return;
     }
     sprite_ = sf::Sprite(image_);
-    sprite_.setPosition(settings_->screenWidth / 2 - image_.getSize().x / 2, settings_->screenHeight / 2 - image_.getSize().y / 2);
+    sprite_.setScale(settings_->scalingFactor, settings_->scalingFactor);
+    sprite_.setPosition(settings_->screenWidth / 2 - image_.getSize().x*settings_->scalingFactor / 2, settings_->screenHeight / 2 - image_.getSize().y*settings_->scalingFactor / 2);
 }
 
 void SplashScreen::show(sf::RenderWindow& window)

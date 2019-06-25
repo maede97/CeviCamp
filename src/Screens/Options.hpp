@@ -19,6 +19,7 @@ Options::Options(Logger* logger, Settings* settings) : Screen(logger, settings)
         logger_->error("Options", "file res/logo_right.png not found");
         return;
     }
+    // TODO
     sprite_ = sf::Sprite(image_);
     sprite_.setPosition(300,300);
 }

@@ -31,11 +31,6 @@ public:
 
     AnimatedSprite getSprite() const { return sprite_; };
 
-    virtual void update(sf::Time dt)
-    {
-        sprite_.update(dt);
-    }
-
     unsigned int getLevel() const { return level_; }
     void setLevel(unsigned int level) { level_ = level; }
 
@@ -49,6 +44,7 @@ public:
     virtual void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerSize) {}
     virtual bool validClick(int mouseX, int mouseY, int playerX, int playerY, int playerSize) { return false; }
     virtual void setAnimation() {}
+    virtual void update() { sprite_.update(internalTime_.restart()); } // update Sprite with frametime
 
     // These 4 functions need to be overridden
     virtual void play() = 0;
@@ -61,6 +57,7 @@ protected:
     Logger* logger_;
     Settings* settings_;
     AnimatedSprite sprite_;
+    sf::Clock internalTime_;
     unsigned int level_ = 0;
 };
 

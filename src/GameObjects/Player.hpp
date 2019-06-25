@@ -4,12 +4,14 @@
 #include "AnimatedSprite.hpp"
 #include "GameObject.hpp"
 
-class Player : public GameObject {
+class Player : public GameObject
+{
 public:
-    Player(Logger* logger, Settings* settings)
+    Player(Logger *logger, Settings *settings)
         : GameObject(logger, settings, GameObject::Type::Player)
     {
-        if (!image_.loadFromFile("res/CampParts/Player.png")) {
+        if (!image_.loadFromFile("res/CampParts/Player.png"))
+        {
             logger_->error("Player", "res/CampParts/Player.png not found");
             return;
         }
@@ -58,7 +60,8 @@ public:
     {
         current_ = &walkingDown_;
         movement_.y += speed_;
-        if (sprite_.getPosition().y > settings_->screenHeight - playerSize_) {
+        if (sprite_.getPosition().y > settings_->screenHeight - playerSize_)
+        {
             movement_.y = 0;
         }
         noKeyWasPressed_ = false;
@@ -67,7 +70,8 @@ public:
     {
         current_ = &walkingUp_;
         movement_.y += -speed_;
-        if (sprite_.getPosition().y < 0) {
+        if (sprite_.getPosition().y < 0)
+        {
             movement_.y = 0;
         }
         noKeyWasPressed_ = false;
@@ -76,7 +80,8 @@ public:
     {
         current_ = &walkingLeft_;
         movement_.x += -speed_;
-        if (sprite_.getPosition().x < 0) {
+        if (sprite_.getPosition().x < 0)
+        {
             movement_.x = 0;
         }
         noKeyWasPressed_ = false;
@@ -85,19 +90,22 @@ public:
     {
         current_ = &walkingRight_;
         movement_.x += speed_;
-        if (sprite_.getPosition().x > settings_->screenWidth - playerSize_) {
+        if (sprite_.getPosition().x > settings_->screenWidth - playerSize_)
+        {
             movement_.x = 0;
         }
         noKeyWasPressed_ = false;
     }
 
-    void update(sf::Time frametime)
+    void update()
     {
-        if (noKeyWasPressed_) {
+        if (noKeyWasPressed_)
+        {
             sprite_.stop();
         }
-        sprite_.update(frametime);
-        sprite_.move(sf::Vector2f(movement_) * frametime.asSeconds());
+        sprite_.update(internalTime_.restart());
+        
+        sprite_.move(sf::Vector2f(movement_));//*frametime.asSeconds());
         noKeyWasPressed_ = true;
         movement_ = sf::Vector2i(0, 0);
     }
@@ -114,7 +122,7 @@ private:
     Animation walkingRight_;
     Animation walkingUp_;
 
-    Animation* current_ = &walkingDown_;
+    Animation *current_ = &walkingDown_;
 
     int speed_ = settings_->playerSpeed;
     sf::Vector2i movement_;
