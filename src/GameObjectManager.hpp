@@ -7,9 +7,11 @@
 #include "GameObjects/InventoryItem.hpp"
 #include "GameObjects/InventorySlot.hpp"
 #include "GameObjects/MouseCursor.hpp"
+#include "GameObjects/Paloxe.hpp"
 #include "GameObjects/Player.hpp"
 #include "GameObjects/Stone.hpp"
 #include "GameObjects/Tree.hpp"
+#include "GameObjects/Blache.hpp"
 #include "Logger.hpp"
 #include "Settings.hpp"
 #include "SoundManager.hpp"
@@ -287,6 +289,12 @@ public:
                     }
                     break;
                 }
+                case GameObject::Type::Paloxe: {
+                    if (addInventoryItem("ItemBlache")) {
+                        // soundManager_->playSound("ItemBlache"); // TODO
+                        exit = true;
+                    }
+                }
                 default:
                     break;
                 }
@@ -337,6 +345,12 @@ public:
                 tree->setPosition(x - tree->getSprite().getLocalBounds().width / 2,
                     y - tree->getSprite().getLocalBounds().height / 2);
                 gameObjects_.push_back(tree);
+                needSorting = true;
+            } else if(!leftClick && checkItemInSlot("ItemBlache") && removeInventoryItem("ItemBlache")) {
+                //soundManager_->playSound("PlaceBlache"); // TODO
+                Blache* blache = new Blache(logger_, settings_,x,y);
+                blache->setPosition(x - blache->getSprite().getLocalBounds().width / 2, y - blache->getSprite().getLocalBounds().height / 2);
+                gameObjects_.push_back(blache);
                 needSorting = true;
             }
         }
@@ -423,16 +437,20 @@ public:
         // TODO make tree placement better
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
             Tree* tree = new Tree(logger_, settings_,
-                200 + std::rand() % (settings_->mapWidth - 400),
-                200 + std::rand() % (settings_->mapHeight - 400));
+                200 + std::rand() % static_cast<int>(settings_->mapWidth - 400 * settings_->scalingFactor),
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400 * settings_->scalingFactor));
             gameObjects_.push_back(tree);
         }
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
             Stone* tree = new Stone(logger_, settings_,
-                200 + std::rand() % (settings_->mapWidth - 400),
-                200 + std::rand() % (settings_->mapHeight - 400));
+                200 + std::rand() % static_cast<int>(settings_->mapWidth - 400 * settings_->scalingFactor),
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400 * settings_->scalingFactor));
             gameObjects_.push_back(tree);
         }
+
+        // add J+S-Paloxe all the way to the right
+        Paloxe* paloxe = new Paloxe(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactor, settings_->mapHeight / 2);
+        gameObjects_.push_back(paloxe);
 
         orderGameObjects();
 

@@ -13,9 +13,11 @@ public:
         Inventory, //2
         Player, // 3
         Fire, // 4
-        Tree, // 5
-        Stone, // 6
-        Grass // 7
+        Paloxe, // 5
+        Blache, // 6
+        Tree, // 7
+        Stone, // 8
+        Grass // 9
     };
     GameObject(Logger* logger, Settings* settings, Type t)
     {

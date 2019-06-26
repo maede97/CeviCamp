@@ -197,6 +197,10 @@ void GameController::gameLoop()
                 break;
             }
             case sf::Event::EventType::KeyPressed: {
+                // Do calulations only if window is in focus
+                if (!view_->window.hasFocus()) {
+                    break;
+                }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
                     settings_->saveSettingsToFile();
                     saveCampData();
@@ -235,6 +239,10 @@ void GameController::gameLoop()
                 break;
             }
             case sf::Event::EventType::MouseButtonPressed: {
+                // Do calulations only if window is in focus
+                if (!view_->window.hasFocus()) {
+                    break;
+                }
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                     gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y);
                 }
@@ -244,7 +252,11 @@ void GameController::gameLoop()
                 break;
             }
             case sf::Event::EventType::MouseWheelMoved: {
-                gameObjectManager_->selectInventorySlot(gameObjectManager_->getSelectedInventorySlot() + currentEvent.mouseWheel.delta);
+                // Do calulations only if window is in focus
+                if (!view_->window.hasFocus()) {
+                    break;
+                }
+                gameObjectManager_->selectInventorySlot(gameObjectManager_->getSelectedInventorySlot() - currentEvent.mouseWheel.delta);
                 break;
             }
             default:
@@ -279,19 +291,22 @@ void GameController::gameLoop()
         options_->show(view_->window);
         break;
     case Playing:
+        // Do calulations only if window is in focus
+        if (view_->window.hasFocus()) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                gameObjectManager_->down();
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+                gameObjectManager_->up();
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+                gameObjectManager_->left();
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+                gameObjectManager_->right();
+            }
+        }
         // check these here because hold down
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            gameObjectManager_->down();
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            gameObjectManager_->up();
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            gameObjectManager_->left();
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            gameObjectManager_->right();
-        }
 
         gameObjectManager_->drawAll(view_->window, deltaTime_.getElapsedTime());
         break;
@@ -338,6 +353,16 @@ void GameController::loadCampData()
             Tree* tree = new Tree(logger_, settings_, part.x, part.y);
             tree->setAnimation();
             gameObjectManager_->addGameObject(tree);
+            break;
+        }
+        case GameObject::Type::Paloxe: {
+            Paloxe* paloxe = new Paloxe(logger_, settings_, part.x, part.y);
+            gameObjectManager_->addGameObject(paloxe);
+            break;
+        }
+        case GameObject::Type::Blache: {
+            Blache* blache = new Blache(logger_, settings_, part.x, part.y);
+            gameObjectManager_->addGameObject(blache);
             break;
         }
         default:
