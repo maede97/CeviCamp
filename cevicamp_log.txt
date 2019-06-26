@@ -1,6 +1,0 @@
-INFO    Settings             Save found                                                                                          
-INFO    main                 Game started                                                                                        
-INFO    View                 openFrame                                                                                           
-INFO    SplashScreen         Quit Splash, show Menu                                                                              
-INFO    MenuResult           Exiting                                                                                             
-INFO    View                 closeFrame                                                                                          
