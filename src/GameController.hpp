@@ -16,6 +16,7 @@ public:
     ~GameController();
 
 private:
+    // GameState internally
     enum GameState { Uninitialized,
         Paused,
         Playing,
@@ -23,13 +24,15 @@ private:
         ShowMenu,
         ShowSplash,
         ShowOptions };
-    bool isExiting();
-    void gameLoop();
+    bool isExiting(); // checks if we should exit the game
+    void gameLoop(); // do a gametick
 
-    void saveCampData();
-    void loadCampData();
+    void saveCampData(); // save camp data (after game exit)
+    void loadCampData(); // before keepplaying
 
     GameState gameState_ = Uninitialized;
+
+    // create pointers to all classes we use
     Settings* settings_;
     View* view_;
     SoundManager* soundManager_;
@@ -46,7 +49,7 @@ private:
 
 GameController::GameController(Logger* logger)
 {
-    // Later: load async
+    // Later: load async?
     logger_ = logger;
     settings_ = new Settings(logger_);
     view_ = new View(settings_, logger_);
@@ -60,6 +63,7 @@ GameController::GameController(Logger* logger)
 
 void GameController::start()
 {
+    // setup game, and start gameloop
     if (gameState_ != Uninitialized)
         return;
 
@@ -95,6 +99,8 @@ GameController::~GameController()
 
 void GameController::gameLoop()
 {
+    // poll all events, then do drawing
+    // switch event handling based on current screen
     sf::Event currentEvent;
     while (view_->window.pollEvent(currentEvent)) {
         switch (gameState_) {
@@ -136,7 +142,7 @@ void GameController::gameLoop()
                     break;
                 }
                 case MainMenu::MenuResult::Exiting: {
-                    logger_->info("MenuResult","Exiting");
+                    logger_->info("MenuResult", "Exiting");
                     gameState_ = Exiting;
                     break;
                 }
@@ -250,8 +256,11 @@ void GameController::gameLoop()
             break;
         }
     }
-    // Do drawing here
-    view_->clearFrame();
+
+    // stop event handling, do "just" drawing here
+    // also, switch here based on gamestate
+
+    view_->clearFrame(); // clear frame for later drawing
 
     sf::Vector2i mousePos = sf::Mouse::getPosition(view_->window);
     if (gameState_ == Playing)
@@ -266,6 +275,7 @@ void GameController::gameLoop()
         mainMenu_->show(view_->window);
         break;
     case ShowOptions:
+        soundManager_->setMusicVolume(); // do this here, because if options are open, maybe user changed music volume
         options_->show(view_->window);
         break;
     case Playing:
@@ -286,8 +296,6 @@ void GameController::gameLoop()
         gameObjectManager_->drawAll(view_->window, deltaTime_.getElapsedTime());
         break;
     }
-
-    soundManager_->setMusicVolume();
 
     view_->displayFrame();
     deltaTime_.restart();

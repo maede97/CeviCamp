@@ -20,15 +20,13 @@ public:
         sprite_.setAnimation(animation_);
     }
 
+    // true if mouse is close enough to player
     bool validClick(int mouseX, int mouseY, int playerX, int playerY, int playerSize)
     {
         return (std::sqrt(std::pow(mouseX - playerX - playerSize / 2, 2) + std::pow(mouseY - playerY - playerSize / 2, 2)) < interactionRadius_);
     }
 
-    void play() {}
-    void handleClick() {}
-    bool checkClick(float, float) { return false; }
-
+    // set it's position based on mouse and player
     void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerSize)
     {
         sf::Vector2f mousePos(mouseX, mouseY);

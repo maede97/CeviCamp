@@ -15,6 +15,8 @@ public:
             logger_->error("Player", "res/CampParts/Player.png not found");
             return;
         }
+
+        // setup animation frames
         walkingDown_.setSpriteSheet(image_);
         walkingLeft_.setSpriteSheet(image_);
         walkingRight_.setSpriteSheet(image_);
@@ -56,6 +58,7 @@ public:
         sprite_.setAnimation(*current_);
     }
 
+    // move methods
     void down()
     {
         current_ = &walkingDown_;
@@ -97,6 +100,7 @@ public:
         noKeyWasPressed_ = false;
     }
 
+    // update player, move in set direction
     void update()
     {
         if (noKeyWasPressed_)
@@ -110,9 +114,7 @@ public:
         movement_ = sf::Vector2i(0, 0);
     }
 
-    bool checkClick(float x, float y) { return false; } // can't click on player
     void play() { sprite_.play(*current_); }
-    void handleClick() {}
 
 private:
     sf::Texture image_;

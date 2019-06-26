@@ -5,6 +5,7 @@
 
 class Slider {
 public:
+    // Class to show a slider, using multiple sf elements
     Slider(Logger* logger, Settings* settings, const wchar_t* name, int x, int y, int minValue, int maxValue, int* toChange)
     {
         logger_ = logger;
@@ -51,6 +52,7 @@ public:
 
     void updateValue()
     {
+        // update slider based on current selected value
         value_.setString(std::to_string(currentValue_));
         double frac;
         if (currentValue_ == minValue_) {
@@ -64,9 +66,10 @@ public:
 
     void draw(sf::RenderWindow& window)
     {
+        // change value position to be placed centered inside slider
         int textHeight = 100 * settings_->scalingFactor;
         value_.setPosition(x_ + background_.getLocalBounds().width * settings_->scalingFactor / 2 - value_.getLocalBounds().width * settings_->scalingFactor / 2,
-            y_ + textHeight + spacing_ + background_.getLocalBounds().height * settings_->scalingFactor / 2 - 48*settings_->scalingFactor);
+            y_ + textHeight + spacing_ + background_.getLocalBounds().height * settings_->scalingFactor / 2 - 48 * settings_->scalingFactor);
 
         window.draw(background_);
         window.draw(slider_);

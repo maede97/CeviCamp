@@ -40,6 +40,7 @@ public:
 
     void setAnimation()
     {
+        // set animation based on current level
         if (level_ == 0)
             current_ = &stones_;
         else if (level_ == 1)
@@ -51,6 +52,7 @@ public:
 
     void handleClick()
     {
+        // fire was clicked, handle click (upgrade)
         logger_->info("Fire", "Upgraded");
         if (current_ == &stones_) {
             current_ = &wood_;

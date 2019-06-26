@@ -21,10 +21,6 @@ public:
         sprite_.setPosition(x, y);
     }
 
-    void play() {}
-    void handleClick()
-    {
-    }
     bool checkClick(float x, float y)
     {
         return sprite_.getGlobalBounds().contains(x, y);

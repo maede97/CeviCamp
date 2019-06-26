@@ -22,14 +22,11 @@ public:
         sprite_.setPosition(x, y);
     }
 
-    void play() {}
     void setAnimation()
     {
         sprite_.setAnimation(animation_);
     }
-    void handleClick()
-    {
-    }
+    
     bool checkClick(float x, float y)
     {
         return sprite_.getGlobalBounds().contains(x, y);

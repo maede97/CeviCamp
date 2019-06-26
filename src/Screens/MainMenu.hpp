@@ -40,6 +40,7 @@ MainMenu::MainMenu(Logger* logger, Settings* settings)
         logger_->error("MainMenu", "file res/logo_right.png not found");
         return;
     }
+    // setup texts and sprite
     logoRightSprite_ = sf::Sprite(logoRightImage_);
 
     keepPlayingText_.setString("WEITERSPIELEN");
@@ -94,6 +95,7 @@ void MainMenu::show(sf::RenderWindow& window)
 
 MainMenu::MenuResult MainMenu::handleClick(int x, int y)
 {
+    // return result based on click
     if (keepPlaying_ && keepPlayingText_.getGlobalBounds().contains(x, y)) {
         return KeepPlaying;
     }

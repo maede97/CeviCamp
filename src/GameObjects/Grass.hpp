@@ -14,19 +14,17 @@ public:
             return;
         }
 
+        // repeat image
         image_.setRepeated(true);
 
         animation_.setSpriteSheet(image_);
+        // set size of grass to map size
         animation_.addFrame(sf::IntRect(0, 0, settings_->mapWidth, settings_->mapHeight));
         sprite_ = AnimatedSprite(sf::seconds(1), true, false);
         sprite_.setAnimation(animation_);
 
         sprite_.setPosition(0,0); // map starts top left
     }
-
-    void play() {}
-    bool checkClick(float, float) { return false; }
-    void handleClick() {}
 
 private:
     sf::Texture image_;

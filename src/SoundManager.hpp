@@ -29,11 +29,11 @@ public:
         }
     }
 
-    void playSound(std::string item)
+    void playSound(std::string soundName)
     {
         sf::SoundBuffer* buffer = new sf::SoundBuffer();
-        if (!buffer->loadFromFile("res/Sounds/" + item + ".wav")) {
-            logger_->error("SoundManager", "res/Sounds/" + item + ".wav could not be loaded");
+        if (!buffer->loadFromFile("res/Sounds/" + soundName + ".wav")) {
+            logger_->error("SoundManager", "res/Sounds/" + soundName + ".wav could not be loaded");
             return;
         }
         sf::Sound* sound = new sf::Sound();

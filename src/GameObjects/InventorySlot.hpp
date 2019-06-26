@@ -23,9 +23,7 @@ public:
         sprite_.setAnimation(animation_);
     }
 
-    void play() {}
-    void handleClick() {}
-    bool checkClick(float x, float y) { return sprite_.getGlobalBounds().contains(x, y); } // maybe change slot later here
+    bool checkClick(float x, float y) { return sprite_.getGlobalBounds().contains(x, y); }
 
 private:
     sf::Texture image_;

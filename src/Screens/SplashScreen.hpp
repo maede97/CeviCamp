@@ -24,7 +24,7 @@ SplashScreen::SplashScreen(Logger* logger, Settings* settings)
     sprite_ = sf::Sprite(image_);
     sprite_.setScale(settings_->scalingFactor, settings_->scalingFactor);
     sprite_.setPosition(settings_->screenWidth / 2 - image_.getSize().x * settings_->scalingFactor / 2, settings_->screenHeight / 2 - image_.getSize().y * settings_->scalingFactor / 2);
-
+    // show a text on bottom of page
     text_.setFont(settings_->font);
     text_.setScale(settings_->scalingFactor, settings_->scalingFactor);
     text_.setString(L"BELIEBIGE TASTE DRÜCKEN");

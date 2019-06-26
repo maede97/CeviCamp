@@ -20,9 +20,9 @@ public:
         sprite_.setPosition(x, y);
     }
 
+    // some getters
     std::string getName() const { return name_; }
     unsigned int getSlot() const {return slot_;}
-
     sf::Sprite getSprite() const { return sprite_; }
 
 
