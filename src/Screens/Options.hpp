@@ -14,13 +14,17 @@ public:
         currentValue_ = *toChange;
         toChange_ = toChange;
 
-        spacing_ *= settings_->scalingFactor;
+        x_ = x;
+        y_ = y;
 
-        background_.setSize(sf::Vector2f(800.0f * settings_->scalingFactor, 100.0f * settings_->scalingFactor));
-        slider_.setSize(sf::Vector2f(800.0f * settings_->scalingFactor, 100.0f * settings_->scalingFactor));
+        background_.setSize(sf::Vector2f(800.0f, 100.0f));
+        slider_.setSize(sf::Vector2f(800.0f, 100.0f));
 
         background_.setFillColor(sf::Color(100, 100, 100));
         slider_.setFillColor(sf::Color(200, 200, 200, 100)); // add some alpha
+
+        background_.setScale(settings_->scalingFactor, settings_->scalingFactor);
+        slider_.setScale(settings_->scalingFactor, settings_->scalingFactor);
 
         name_.setFont(settings_->font);
         value_.setFont(settings_->font);
@@ -36,10 +40,11 @@ public:
         updateValue();
 
         // set positions
+        spacing_ = 50 * settings_->scalingFactor; // spacing after text before slider
+
         name_.setPosition(x, y);
-        int textHeight = name_.getLocalBounds().height * settings_->scalingFactor;
-            value_.setPosition(x + background_.getLocalBounds().width * settings_->scalingFactor / 2 - value_.getLocalBounds().width * settings_->scalingFactor / 2,
-        y + textHeight + spacing_ + background_.getLocalBounds().height * settings_->scalingFactor / 2 - value_.getLocalBounds().height * settings_->scalingFactor / 2);
+        int textHeight = 100 * settings_->scalingFactor;
+        // value_ will be positioned each time it is drawn
         background_.setPosition(x, y + textHeight + spacing_);
         slider_.setPosition(x, y + textHeight + spacing_);
     }
@@ -53,12 +58,16 @@ public:
         } else {
             frac = 1.0f / (maxValue_ - minValue_) * (currentValue_ - minValue_);
         }
-        slider_.setScale(frac, 1);
+        slider_.setScale(frac * settings_->scalingFactor, settings_->scalingFactor);
         *toChange_ = currentValue_;
     }
 
     void draw(sf::RenderWindow& window)
     {
+        int textHeight = 100 * settings_->scalingFactor;
+        value_.setPosition(x_ + background_.getLocalBounds().width * settings_->scalingFactor / 2 - value_.getLocalBounds().width * settings_->scalingFactor / 2,
+            y_ + textHeight + spacing_ + background_.getLocalBounds().height * settings_->scalingFactor / 2 - 48*settings_->scalingFactor);
+
         window.draw(background_);
         window.draw(slider_);
         window.draw(value_);
@@ -68,7 +77,7 @@ public:
     void checkClick(int x, int y)
     {
         if (background_.getGlobalBounds().contains(x, y)) {
-            float length = background_.getLocalBounds().width;
+            float length = background_.getLocalBounds().width * settings_->scalingFactor;
             float part = (x - background_.getPosition().x) / length;
             currentValue_ = minValue_ + part * (maxValue_ - minValue_);
             updateValue();
@@ -80,9 +89,10 @@ private:
     int maxValue_;
     int currentValue_;
 
-    int* toChange_;
+    int x_;
+    int y_;
 
-    int spacing_ = 50;
+    int* toChange_;
 
     sf::RectangleShape background_;
     sf::RectangleShape slider_;
@@ -92,6 +102,8 @@ private:
 
     Settings* settings_;
     Logger* logger_;
+
+    int spacing_;
 };
 
 class Options : public Screen {
@@ -110,7 +122,7 @@ Options::Options(Logger* logger, Settings* settings)
     : Screen(logger, settings)
 {
     sliders_.push_back(new Slider(logger, settings, L"MUSIKLAUTSTÄRKE", 200 * settings_->scalingFactor, 200 * settings_->scalingFactor, 0, 100, &settings_->musicVolume));
-    sliders_.push_back(new Slider(logger, settings, L"SOUNDLAUTSTÄRKE", 200 * settings_->scalingFactor, 500 * settings_->scalingFactor, 0, 100, &settings_->soundVolume));
+    sliders_.push_back(new Slider(logger, settings, L"EFFEKTLAUTSTÄRKE", 200 * settings_->scalingFactor, 500 * settings_->scalingFactor, 0, 100, &settings_->soundVolume));
     sliders_.push_back(new Slider(logger, settings, L"SPIELERGESCHWINDIGKEIT", 200 * settings_->scalingFactor, 800 * settings_->scalingFactor, 0, 100, &settings_->playerSpeed));
     sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 200 * settings_->scalingFactor, 1100 * settings_->scalingFactor, 0, 100, &settings_->movementSpeed));
     sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 200 * settings_->scalingFactor, 1400 * settings_->scalingFactor, settings_->screenWidth, 10000, &settings_->mapWidth));
@@ -121,7 +133,7 @@ Options::Options(Logger* logger, Settings* settings)
     back_.setString(L"ZURÜCK");
     back_.setCharacterSize(200 * settings_->scalingFactor);
     back_.setStyle(sf::Text::Bold);
-    back_.setPosition(settings_->screenWidth / 2 - back_.getLocalBounds().width*settings_->scalingFactor / 2, settings_->screenHeight - 100 - back_.getLocalBounds().height*settings_->scalingFactor);
+    back_.setPosition(settings_->screenWidth / 2 - back_.getLocalBounds().width * settings_->scalingFactor / 2, settings_->screenHeight - 100 - back_.getLocalBounds().height * settings_->scalingFactor);
 }
 
 Options::~Options()

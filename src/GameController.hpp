@@ -287,6 +287,8 @@ void GameController::gameLoop()
         break;
     }
 
+    soundManager_->setMusicVolume();
+
     view_->displayFrame();
     deltaTime_.restart();
 }

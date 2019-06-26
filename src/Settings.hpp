@@ -67,22 +67,24 @@ Settings::Settings(Logger* logger)
     }
     readSettingsFromFile();
     std::srand(seed); // does not work...
+
+    recalculateScaling();
+}
+
+void Settings::recalculateScaling()
+{
     /**
      * Scaling Factor
      * 0.5 for 1920x1080
      * 1.0 for 3840x2160
      */
-    recalculateScaling();
-}
-
-void Settings::recalculateScaling() {
     scalingFactor = 1.0f / 3840.0f * screenWidth;
 }
 
 void Settings::readSettingsFromFile()
 {
     std::ifstream gameSave("cevicamp_parts.save");
-    if(gameSave.is_open()) {
+    if (gameSave.is_open()) {
         keepPlaying = true; // save found, show keepPlaying
     } else {
         keepPlaying = false;

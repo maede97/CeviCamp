@@ -53,9 +53,8 @@ public:
         soundtrack_.stop();
     }
 
-    void setVolume(float level)
-    {
-        soundtrack_.setVolume(level);
+    void setMusicVolume() {
+        soundtrack_.setVolume(settings_->musicVolume);
     }
 
 private:
