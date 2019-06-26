@@ -120,7 +120,7 @@ void Settings::readSettingsFromFile()
             }
         }
     } else {
-        logger_->error("Settings", "cevicamp.save could not be openend");
+        logger_->warning("Settings", "cevicamp.save could not be openend");
     }
 }
 void Settings::saveSettingsToFile()
