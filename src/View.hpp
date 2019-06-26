@@ -6,9 +6,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-class View {
+class View
+{
 public:
-    View(Settings* settings, Logger* logger);
+    View(Settings *settings, Logger *logger);
 
     void openFrame();
     void closeFrame();
@@ -18,13 +19,13 @@ public:
     sf::RenderWindow window;
 
 private:
-    Settings* settings_;
-    Logger* logger_;
+    Settings *settings_;
+    Logger *logger_;
     sf::VideoMode vm_;
     sf::Clock frameClock_;
 };
 
-View::View(Settings* settings, Logger* logger)
+View::View(Settings *settings, Logger *logger)
 {
     settings_ = settings;
     logger_ = logger;
@@ -44,13 +45,7 @@ void View::openFrame()
     //window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
 
-    sf::Image icon;
-    if (!icon.loadFromFile("res/icon.png")) {
-        logger_->error("View", "res/icon.png could not be opened");
-        return;
-    }
-    window.setIcon(128,128,icon.getPixelsPtr());
-        logger_->info("View", "openFrame");
+    logger_->info("View", "openFrame");
 }
 void View::closeFrame()
 {
@@ -68,7 +63,8 @@ void View::displayFrame()
 
     sf::Time frameDuration = frameClock_.restart();
     // 60 FPS means 1000ms / 60F = 16.66 ms per Frame, meaning if frameDuration < 17ms, wait the difference
-    if (frameDuration.asMicroseconds() < sf::Int64(16667)) {
+    if (frameDuration.asMicroseconds() < sf::Int64(16667))
+    {
         //sf::sleep(sf::microseconds(sf::Int64(16667) - frameDuration.asMicroseconds()));
         //std::cout << "TIME " << sf::Int64(16667) - frameDuration.asMicroseconds() << std::endl;
     }

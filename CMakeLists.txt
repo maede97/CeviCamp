@@ -8,24 +8,14 @@ endif()
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_HOME_DIRECTORY}/install)
 
+# on windows, do this:
 if(WIN32)
     set(SFML_STATIC_LIBRARIES TRUE)
-    if(CMAKE_BUILD_TYPE MATCHES RELEASE)
-        add_executable(main WIN32 src/main.cpp ${SRCS} project.rc)
-    else()
-        add_executable(main src/main.cpp ${SRCS} project.rc)
-    endif()
-else()
-    add_executable(main src/main.cpp)
 endif()
-
-find_package(SFML 2.5 COMPONENTS audio graphics window system main)
+find_package(SFML 2.5 COMPONENTS audio graphics window system)
 
 if(SFML_FOUND)
-    if(CMAKE_BUILD_TYPE MATCHES RELEASE)
-        target_link_libraries(main sfml-audio sfml-graphics sfml-window sfml-system sfml-main)
-    else()
-        target_link_libraries(main sfml-audio sfml-graphics sfml-window sfml-system)
-    endif()
+    add_executable(main src/main.cpp)
+    target_link_libraries(main sfml-audio sfml-graphics sfml-window sfml-system)
     install(TARGETS main DESTINATION bin)
 endif()
