@@ -57,9 +57,15 @@ public:
 
     void addGameObject(GameObject* object) { gameObjects_.push_back(object); }
 
-    bool addInventoryItem(std::string item)
+    bool addInventoryItem(std::string newItem)
     {
         sf::Vector2i invPos = sf::Vector2i((*inventoryIterator_)->getPosition());
+        for (auto item : inventoryItems_) {
+            if (item->getName() == newItem) {
+                item->addItem();
+                return true;
+            }
+        }
         int slot = 0;
         while (slot < 8) {
             bool empty = true;
@@ -70,8 +76,7 @@ public:
                 }
             }
             if (empty) {
-                inventoryItems_.push_back(new InventoryItem(
-                    logger_, item, invPos.x + slot * 112, invPos.y, slot));
+                inventoryItems_.push_back(new InventoryItem(logger_, settings_, newItem, invPos.x + slot * 112, invPos.y, slot));
                 return true;
             } else {
                 slot++;
@@ -95,8 +100,12 @@ public:
         if (position == inventoryItems_.end()) {
             return false;
         }
-        delete *position;
-        inventoryItems_.erase(position);
+        if ((*position)->getAmount() == 1) {
+            delete *position;
+            inventoryItems_.erase(position);
+        } else {
+            (*position)->removeItem();
+        }
         logger_->info("Inventory", "Remove Item " + item);
         return true;
     }
@@ -117,9 +126,6 @@ public:
                     0, -movementSpeed_); // move other direction, to stay sticky
             }
         }
-        for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(0, -movementSpeed_);
-        }
     }
     void up()
     {
@@ -135,9 +141,6 @@ public:
             } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
                 gameObject->getSprite().move(0, movementSpeed_);
             }
-        }
-        for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(0, movementSpeed_);
         }
     }
     void left()
@@ -155,9 +158,6 @@ public:
                 gameObject->getSprite().move(movementSpeed_, 0);
             }
         }
-        for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(movementSpeed_, 0);
-        }
     }
     void right(bool initial = false)
     {
@@ -173,9 +173,6 @@ public:
             } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
                 gameObject->getSprite().move(-movementSpeed_, 0);
             }
-        }
-        for (auto invItem : inventoryItems_) {
-            invItem->getSprite().move(-movementSpeed_, 0);
         }
     }
 
@@ -210,7 +207,7 @@ public:
                 // draw items after player and before cursor
                 for (auto item : inventoryItems_) {
                     item->getSprite().setScale(settings_->scalingFactor, settings_->scalingFactor);
-                    window.draw(item->getSprite());
+                    item->draw(window);
                 }
             }
         }
@@ -464,7 +461,7 @@ public:
         Paloxe* paloxe = new Paloxe(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactor, settings_->mapHeight / 2);
         gameObjects_.push_back(paloxe);
 
-        Trash* trash = new Trash(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactor, settings_->mapHeight / 2 + settings_->scalingFactor * 400);
+        Trash* trash = new Trash(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactor, settings_->mapHeight / 2 + settings_->scalingFactor * 500);
         gameObjects_.push_back(trash);
 
         orderGameObjects();

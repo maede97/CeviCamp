@@ -397,7 +397,8 @@ void GameController::saveCampData()
 
     std::vector<std::string> inv;
     for (auto item : gameObjectManager_->getInventoryVector()) {
-        inv.push_back(item->getName());
+        for (unsigned int i = 0; i < item->getAmount(); i++)
+            inv.push_back(item->getName());
     }
     settings_->saveCampData(parts);
     settings_->saveInventory(inv);
