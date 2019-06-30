@@ -360,6 +360,11 @@ void GameController::loadCampData()
             gameObjectManager_->addGameObject(paloxe);
             break;
         }
+        case GameObject::Type::Trash: {
+            Trash* trash = new Trash(logger_, settings_, part.x, part.y);
+            gameObjectManager_->addGameObject(trash);
+            break;
+        }
         case GameObject::Type::Blache: {
             Blache* blache = new Blache(logger_, settings_, part.x, part.y);
             gameObjectManager_->addGameObject(blache);

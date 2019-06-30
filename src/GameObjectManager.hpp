@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECTMANAGER_HPP
 #define GAMEOBJECTMANAGER_HPP
 
+#include "GameObjects/Blache.hpp"
 #include "GameObjects/Fire.hpp"
 #include "GameObjects/Grass.hpp"
 #include "GameObjects/Inventory.hpp"
@@ -10,8 +11,8 @@
 #include "GameObjects/Paloxe.hpp"
 #include "GameObjects/Player.hpp"
 #include "GameObjects/Stone.hpp"
+#include "GameObjects/Trash.hpp"
 #include "GameObjects/Tree.hpp"
-#include "GameObjects/Blache.hpp"
 #include "Logger.hpp"
 #include "Settings.hpp"
 #include "SoundManager.hpp"
@@ -322,6 +323,17 @@ public:
                     }
                     break;
                 }
+                case GameObject::Type::Trash: {
+                    for (auto item : inventoryItems_) {
+                        if (item->getSlot() == getSelectedInventorySlot()) {
+                            if (removeInventoryItem(item->getName())) {
+                                soundManager_->playSound("ThrowTrash");
+                                exit = true;
+                            }
+                        }
+                    }
+                    break;
+                }
                 default:
                     break;
                 }
@@ -346,9 +358,9 @@ public:
                     y - tree->getSprite().getLocalBounds().height / 2);
                 gameObjects_.push_back(tree);
                 needSorting = true;
-            } else if(!leftClick && checkItemInSlot("ItemBlache") && removeInventoryItem("ItemBlache")) {
+            } else if (!leftClick && checkItemInSlot("ItemBlache") && removeInventoryItem("ItemBlache")) {
                 //soundManager_->playSound("PlaceBlache"); // TODO
-                Blache* blache = new Blache(logger_, settings_,x,y);
+                Blache* blache = new Blache(logger_, settings_, x, y);
                 blache->setPosition(x - blache->getSprite().getLocalBounds().width / 2, y - blache->getSprite().getLocalBounds().height / 2);
                 gameObjects_.push_back(blache);
                 needSorting = true;
@@ -451,6 +463,9 @@ public:
         // add J+S-Paloxe all the way to the right
         Paloxe* paloxe = new Paloxe(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactor, settings_->mapHeight / 2);
         gameObjects_.push_back(paloxe);
+
+        Trash* trash = new Trash(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactor, settings_->mapHeight / 2 + settings_->scalingFactor * 400);
+        gameObjects_.push_back(trash);
 
         orderGameObjects();
 

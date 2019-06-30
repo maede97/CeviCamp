@@ -14,6 +14,7 @@ public:
         Player, // 3
         Fire, // 4
         Paloxe, // 5
+        Trash,
         Blache, // 6
         Tree, // 7
         Stone, // 8
