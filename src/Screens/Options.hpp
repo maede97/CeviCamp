@@ -119,6 +119,8 @@ public:
 private:
     std::vector<Slider*> sliders_;
     sf::Text back_;
+    sf::Text keyMap_;
+    sf::Text keyMapKeys_;
 };
 
 Options::Options(Logger* logger, Settings* settings)
@@ -130,6 +132,18 @@ Options::Options(Logger* logger, Settings* settings)
     sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 200 * settings_->scalingFactor, 1100 * settings_->scalingFactor, 0, 100, &settings_->movementSpeed));
     sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 200 * settings_->scalingFactor, 1400 * settings_->scalingFactor, settings_->screenWidth, 10000, &settings_->mapWidth));
     sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 200 * settings_->scalingFactor, 1700 * settings_->scalingFactor, settings_->screenHeight, 10000, &settings_->mapHeight));
+
+    keyMap_.setFont(settings_->font);
+    keyMap_.setScale(settings_->scalingFactor, settings_->scalingFactor);
+    keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu");
+    keyMap_.setCharacterSize(200 * settings_->scalingFactor);
+    keyMap_.setPosition(settings_->screenWidth / 2 + 200*settings_->scalingFactor, 100 * settings_->scalingFactor);
+
+    keyMapKeys_.setFont(settings_->font);
+    keyMapKeys_.setScale(settings_->scalingFactor, settings_->scalingFactor);
+    keyMapKeys_.setString(L"\n\nW\nS\nA\nD\nB\nM");
+    keyMapKeys_.setCharacterSize(200 * settings_->scalingFactor);
+    keyMapKeys_.setPosition(settings_->screenWidth / 2, 100 * settings_->scalingFactor);
 
     back_.setFont(settings_->font);
     back_.setScale(settings_->scalingFactor, settings_->scalingFactor);
@@ -151,6 +165,9 @@ void Options::show(sf::RenderWindow& window)
     for (auto slider : sliders_) {
         slider->draw(window);
     }
+
+    window.draw(keyMapKeys_);
+    window.draw(keyMap_);
     window.draw(back_);
 }
 

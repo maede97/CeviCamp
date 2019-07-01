@@ -2,6 +2,7 @@
 #define GAMEOBJECTMANAGER_HPP
 
 #include "GameObjects/Blache.hpp"
+#include "GameObjects/ClickableMessageBox.hpp"
 #include "GameObjects/Fire.hpp"
 #include "GameObjects/Grass.hpp"
 #include "GameObjects/Inventory.hpp"
@@ -190,6 +191,21 @@ public:
         }
     }
 
+    void addCheatMenu()
+    {
+        hasMenu_ = true;
+        ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"CheatMenu", L"Klicke, um Items zu erhalten.");
+        box->addButton("ItemMatch", [&]() { addInventoryItem("ItemMatch"); });
+        box->addButton("ItemWood", [&]() { addInventoryItem("ItemWood"); });
+        box->addButton("ItemStone", [&]() { addInventoryItem("ItemStone"); });
+        box->addButton("ItemSapling", [&]() { addInventoryItem("ItemSapling"); });
+        box->addNewButtonRow();
+        box->addButton("ItemBlache", [&]() { addInventoryItem("ItemBlache"); });
+        box->addButton("ItemRope", [&]() { addInventoryItem("ItemRope"); });
+        box->addButton("Delete", [&]() { inventoryItems_.clear(); });
+        messageBox_ = box;
+    }
+
     void drawAll(sf::RenderWindow& window, sf::Time dT)
     {
         // Update members (all gameObjects)
@@ -210,6 +226,10 @@ public:
                     item->draw(window);
                 }
             }
+        }
+
+        if (hasMenu_) {
+            messageBox_->draw(window);
         }
 
         // Draw Player pos in top left corner
@@ -236,8 +256,25 @@ public:
 
     bool inventorySpace(int spots) { return inventoryItems_.size() + spots <= 8; }
 
+    bool ifMenuCloseMenu() {
+        if(hasMenu_) {
+            delete messageBox_;
+            hasMenu_ = false;
+            return true;
+        }
+        return false;
+    }
+
     void handleClick(int x, int y, bool leftClick = true)
     {
+        if (hasMenu_) {
+            if (messageBox_->checkAndHandleClick(x, y)) {
+                delete messageBox_;
+                hasMenu_ = false;
+            }
+            return;
+        }
+
         bool valid = false;
         sf::Vector2i playerPos = sf::Vector2i((*playerIterator_)->getPosition());
 
@@ -288,10 +325,13 @@ public:
                     break;
                 }
                 case GameObject::Type::Paloxe: {
-                    if (addInventoryItem("ItemBlache")) {
-                        // soundManager_->playSound("ItemBlache"); // TODO
-                        exit = true;
-                    }
+                    // show menu with Blache & Rope
+                    ClickableMessageBox* menu = new ClickableMessageBox(logger_, settings_, L"J+S-Paloxe",L"Wähle aus:");
+                    menu->addButton("ItemBlache",[&](){addInventoryItem("ItemBlache");});
+                    menu->addButton("ItemRope",[&](){addInventoryItem("ItemRope");});
+                    hasMenu_ = true;
+                    messageBox_ = menu;
+                    exit = true;
                 }
                 default:
                     break;
@@ -495,6 +535,9 @@ private:
     int slotSize_ = 112;
 
     int movementSpeed_;
+
+    bool hasMenu_ = false;
+    ClickableMessageBox* messageBox_;
 
     std::vector<GameObject*> gameObjects_;
     std::vector<GameObject*>::iterator playerIterator_;

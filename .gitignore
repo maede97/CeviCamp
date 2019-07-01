@@ -34,9 +34,11 @@
 # Folders
 .vscode/
 build/
+release/
 
 # Game Files
 cevicamp.save
 cevicamp_parts.save
 cevicamp_inventory.save
 cevicamp_log.txt
+release.zip

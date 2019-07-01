@@ -202,6 +202,9 @@ void GameController::gameLoop()
                     break;
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    if(gameObjectManager_->ifMenuCloseMenu()){
+                        break;
+                    }
                     settings_->saveSettingsToFile();
                     saveCampData();
                     delete gameObjectManager_;
@@ -235,6 +238,9 @@ void GameController::gameLoop()
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
                     gameObjectManager_->handleClick(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y, false);
+                }
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)){
+                    gameObjectManager_->addCheatMenu();
                 }
                 break;
             }
