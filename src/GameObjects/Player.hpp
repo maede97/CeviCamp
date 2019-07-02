@@ -23,25 +23,25 @@ public:
         walkingUp_.setSpriteSheet(image_);
 
         // addFrame(Rect(x, y, size, size))
-        walkingDown_.addFrame(sf::IntRect(playerSize_, 0, playerSize_, playerSize_));
-        walkingDown_.addFrame(sf::IntRect(playerSize_ * 2, 0, playerSize_, playerSize_));
-        walkingDown_.addFrame(sf::IntRect(playerSize_, 0, playerSize_, playerSize_));
-        walkingDown_.addFrame(sf::IntRect(0, 0, playerSize_, playerSize_));
+        walkingDown_.addFrame(sf::IntRect(playerSizeX_, 0, playerSizeX_, playerSizeY_));
+        walkingDown_.addFrame(sf::IntRect(playerSizeX_ * 2, 0, playerSizeX_, playerSizeY_));
+        walkingDown_.addFrame(sf::IntRect(playerSizeX_, 0, playerSizeX_, playerSizeY_));
+        walkingDown_.addFrame(sf::IntRect(0, 0, playerSizeX_, playerSizeY_));
 
-        walkingLeft_.addFrame(sf::IntRect(playerSize_, playerSize_, playerSize_, playerSize_));
-        walkingLeft_.addFrame(sf::IntRect(playerSize_ * 2, playerSize_, playerSize_, playerSize_));
-        walkingLeft_.addFrame(sf::IntRect(playerSize_, playerSize_, playerSize_, playerSize_));
-        walkingLeft_.addFrame(sf::IntRect(0, playerSize_, playerSize_, playerSize_));
+        walkingLeft_.addFrame(sf::IntRect(playerSizeX_, playerSizeY_, playerSizeX_, playerSizeY_));
+        walkingLeft_.addFrame(sf::IntRect(playerSizeX_ * 2, playerSizeY_, playerSizeX_, playerSizeY_));
+        walkingLeft_.addFrame(sf::IntRect(playerSizeX_, playerSizeY_, playerSizeX_, playerSizeY_));
+        walkingLeft_.addFrame(sf::IntRect(0, playerSizeY_, playerSizeX_, playerSizeY_));
 
-        walkingRight_.addFrame(sf::IntRect(playerSize_, playerSize_ * 2, playerSize_, playerSize_));
-        walkingRight_.addFrame(sf::IntRect(playerSize_ * 2, playerSize_ * 2, playerSize_, playerSize_));
-        walkingRight_.addFrame(sf::IntRect(playerSize_, playerSize_ * 2, playerSize_, playerSize_));
-        walkingRight_.addFrame(sf::IntRect(0, playerSize_ * 2, playerSize_, playerSize_));
+        walkingRight_.addFrame(sf::IntRect(playerSizeX_, playerSizeY_ * 2, playerSizeX_, playerSizeY_));
+        walkingRight_.addFrame(sf::IntRect(playerSizeX_ * 2, playerSizeY_ * 2, playerSizeX_, playerSizeY_));
+        walkingRight_.addFrame(sf::IntRect(playerSizeX_, playerSizeY_ * 2, playerSizeX_, playerSizeY_));
+        walkingRight_.addFrame(sf::IntRect(0, playerSizeY_ * 2, playerSizeX_, playerSizeY_));
 
-        walkingUp_.addFrame(sf::IntRect(playerSize_, playerSize_ * 3, playerSize_, playerSize_));
-        walkingUp_.addFrame(sf::IntRect(playerSize_ * 2, playerSize_ * 3, playerSize_, playerSize_));
-        walkingUp_.addFrame(sf::IntRect(playerSize_, playerSize_ * 3, playerSize_, playerSize_));
-        walkingUp_.addFrame(sf::IntRect(0, playerSize_ * 3, playerSize_, playerSize_));
+        walkingUp_.addFrame(sf::IntRect(playerSizeX_, playerSizeY_ * 3, playerSizeX_, playerSizeY_));
+        walkingUp_.addFrame(sf::IntRect(playerSizeX_ * 2, playerSizeY_ * 3, playerSizeX_, playerSizeY_));
+        walkingUp_.addFrame(sf::IntRect(playerSizeX_, playerSizeY_ * 3, playerSizeX_, playerSizeY_));
+        walkingUp_.addFrame(sf::IntRect(0, playerSizeY_ * 3, playerSizeX_, playerSizeY_));
 
         // paused = false, repeat = true
         sprite_ = AnimatedSprite(sf::seconds(0.2), true, false);
@@ -63,7 +63,7 @@ public:
     {
         current_ = &walkingDown_;
         movement_.y += speed_;
-        if (sprite_.getPosition().y > settings_->screenHeight - playerSize_)
+        if (sprite_.getPosition().y > settings_->screenHeight - playerSizeY_)
         {
             movement_.y = 0;
         }
@@ -93,7 +93,7 @@ public:
     {
         current_ = &walkingRight_;
         movement_.x += speed_;
-        if (sprite_.getPosition().x > settings_->screenWidth - playerSize_)
+        if (sprite_.getPosition().x > settings_->screenWidth - playerSizeX_)
         {
             movement_.x = 0;
         }
@@ -131,7 +131,8 @@ private:
     sf::Vector2i windowSize_;
     bool noKeyWasPressed_ = true;
 
-    int playerSize_ = 256;
+    int playerSizeX_ = 160;
+    int playerSizeY_ = 240;
 };
 
 #endif

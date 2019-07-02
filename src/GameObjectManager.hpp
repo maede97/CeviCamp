@@ -256,8 +256,9 @@ public:
 
     bool inventorySpace(int spots) { return inventoryItems_.size() + spots <= 8; }
 
-    bool ifMenuCloseMenu() {
-        if(hasMenu_) {
+    bool ifMenuCloseMenu()
+    {
+        if (hasMenu_) {
             delete messageBox_;
             hasMenu_ = false;
             return true;
@@ -326,9 +327,9 @@ public:
                 }
                 case GameObject::Type::Paloxe: {
                     // show menu with Blache & Rope
-                    ClickableMessageBox* menu = new ClickableMessageBox(logger_, settings_, L"J+S-Paloxe",L"Wähle aus:");
-                    menu->addButton("ItemBlache",[&](){addInventoryItem("ItemBlache");});
-                    menu->addButton("ItemRope",[&](){addInventoryItem("ItemRope");});
+                    ClickableMessageBox* menu = new ClickableMessageBox(logger_, settings_, L"J+S-Paloxe", L"Wähle aus:");
+                    menu->addButton("ItemBlache", [&]() { addInventoryItem("ItemBlache"); });
+                    menu->addButton("ItemRope", [&]() { addInventoryItem("ItemRope"); });
                     hasMenu_ = true;
                     messageBox_ = menu;
                     exit = true;
