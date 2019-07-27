@@ -376,6 +376,10 @@ void GameController::loadCampData()
             gameObjectManager_->addGameObject(blache);
             break;
         }
+        case GameObject::Type::Sarasani: {
+            Sarasani* sarasani = new Sarasani(logger_, settings_, part.x, part.y);
+            gameObjectManager_->addGameObject(sarasani);
+        }
         default:
             break;
         }

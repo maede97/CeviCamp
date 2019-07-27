@@ -1,17 +1,17 @@
-#ifndef PALOXE_HPP
-#define PALOXE_HPP
+#ifndef SARASANI_HPP
+#define SARASANI_HPP
 
 #include "GameObject.hpp"
 
 #include <SFML/Graphics.hpp>
 
-class Paloxe : public GameObject {
+class Sarasani : public GameObject {
 public:
-    Paloxe(Logger* logger, Settings* settings, int x, int y)
-        : GameObject(logger, settings, GameObject::Type::Paloxe)
+    Sarasani(Logger* logger, Settings* settings, int x, int y)
+        : GameObject(logger, settings, GameObject::Type::Sarasani)
     {
-        if (!image_.loadFromFile("res/CampParts/Paloxe.png")) {
-            logger_->error("Paloxe", "res/CampParts/Paloxe.png not found");
+        if (!image_.loadFromFile("res/CampParts/Sarasani.png")) {
+            logger_->error("Sarasani", "res/CampParts/Sarasani.png not found");
             return;
         }
         animation_.setSpriteSheet(image_);
@@ -25,11 +25,6 @@ public:
     void setAnimation()
     {
         sprite_.setAnimation(animation_);
-    }
-    
-    bool checkClick(float x, float y)
-    {
-        return sprite_.getGlobalBounds().contains(x, y);
     }
 
 private:

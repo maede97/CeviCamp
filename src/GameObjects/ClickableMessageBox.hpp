@@ -12,7 +12,7 @@
 class Button {
 public:
     Button() {}
-    Button(Logger* logger, Settings* settings, int x, int y, int buttonSizeX, int buttonSizeY, std::string image)
+    Button(Logger* logger, Settings* settings, int x, int y, int buttonSizeX, int buttonSizeY, std::string image, const wchar_t* text)
     {
         logger_ = logger;
         settings_ = settings;
@@ -29,6 +29,12 @@ public:
         boundary_.setOutlineThickness(-8);
         boundary_.setPosition(x, y);
         boundary_.setSize(sf::Vector2f(buttonSizeX, buttonSizeY));
+
+        text_.setFont(settings->font);
+        text_.setCharacterSize(30 * settings->scalingFactorHeight);
+        text_.setString(text);
+        text_.setFillColor(sf::Color::Black);
+        text_.setPosition(x + buttonSizeX / 2 - text_.getLocalBounds().width / 2, y + buttonSizeY / 2 - text_.getLocalBounds().height / 2);
     }
     bool checkClick(int x, int y)
     {
@@ -39,6 +45,7 @@ public:
     {
         window.draw(boundary_);
         window.draw(background_);
+        window.draw(text_);
     }
 
 private:
@@ -47,6 +54,8 @@ private:
 
     sf::Texture image_;
     sf::Sprite background_;
+
+    sf::Text text_;
 
     sf::RectangleShape boundary_;
 };
@@ -78,10 +87,14 @@ public:
         question_.setCharacterSize(60 * settings_->scalingFactorHeight);
         question_.setString(question);
         question_.setFillColor(sf::Color::Black);
-        question_.setPosition(x_ + background_.getSize().x / 2 - question_.getLocalBounds().width / 2, y_ + title_.getLocalBounds().height + 40*settings_->scalingFactorHeight);
+        question_.setPosition(x_ + background_.getSize().x / 2 - question_.getLocalBounds().width / 2, y_ + title_.getLocalBounds().height + 40 * settings_->scalingFactorHeight);
 
         currX_ = x_ + 20 * settings_->scalingFactorWidth; // initial offset
         currY_ = y_ + title_.getLocalBounds().height + question_.getLocalBounds().height + 80 * settings_->scalingFactorHeight;
+
+        cancel_ = new Button(logger_, settings_,
+            background_.getPosition().x + background_.getLocalBounds().width - 150 * settings_->scalingFactorWidth, background_.getPosition().y + 20*settings_->scalingFactorHeight,
+            108 * settings_->scalingFactorWidth, 108 * settings_->scalingFactorHeight, "CancelButton", L"");
     }
 
     ~ClickableMessageBox()
@@ -89,6 +102,7 @@ public:
         for (auto pair : buttons_) {
             delete pair.first;
         }
+        delete cancel_;
     }
 
     void addNewButtonRow()
@@ -98,13 +112,13 @@ public:
     }
 
     // returns index of button
-    void addButton(std::string image, std::function<void()> callback)
+    void addButton(std::string image, const wchar_t* text, std::function<void()> callback)
     {
         int amount = buttons_.size();
         // offset:
         // x: spacing + buttons
         // y: title + text
-        Button* button = new Button(logger_, settings_, currX_, currY_, buttonSizeX_, buttonSizeY_, image);
+        Button* button = new Button(logger_, settings_, currX_, currY_, buttonSizeX_, buttonSizeY_, image, text);
         buttons_.push_back(std::make_pair(button, callback));
         currX_ += 40 * settings_->scalingFactorWidth + buttonSizeX_;
     }
@@ -117,10 +131,15 @@ public:
         for (auto pair : buttons_) {
             pair.first->draw(window);
         }
+        cancel_->draw(window);
     }
 
     bool checkAndHandleClick(int x, int y)
     {
+        if (cancel_->checkClick(x, y)) {
+            // do nothing and quit menu
+            return true;
+        }
         for (auto pair : buttons_) {
             if (pair.first->checkClick(x, y)) {
                 pair.second();
@@ -134,6 +153,7 @@ private:
     int x_, y_, currX_, currY_;
     int buttonSizeX_ = 112;
     int buttonSizeY_ = 112;
+    Button* cancel_;
     Logger* logger_;
     Settings* settings_;
     sf::Text title_;

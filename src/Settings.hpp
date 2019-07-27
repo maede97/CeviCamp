@@ -9,11 +9,6 @@
 #include <fstream>
 #include <vector>
 
-/**
- * TODO
- * font size
- */
-
 class Settings {
 public:
     struct CampPart {

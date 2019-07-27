@@ -8,17 +8,18 @@
 class GameObject {
 public:
     // this order matters, because of item sorting for drawing!
-    enum Type { Cursor, // 0
-        InventorySlot, //1
-        Inventory, //2
-        Player, // 3
-        Fire, // 4
-        Paloxe, // 5
+    enum Type { Cursor,
+        InventorySlot,
+        Inventory,
+        Sarasani,
+        Player,
+        Fire,
+        Paloxe,
         Trash,
-        Blache, // 6
-        Tree, // 7
-        Stone, // 8
-        Grass // 9
+        Blache,
+        Tree,
+        Stone,
+        Grass
     };
     GameObject(Logger* logger, Settings* settings, Type t)
     {

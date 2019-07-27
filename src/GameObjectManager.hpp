@@ -11,6 +11,7 @@
 #include "GameObjects/MouseCursor.hpp"
 #include "GameObjects/Paloxe.hpp"
 #include "GameObjects/Player.hpp"
+#include "GameObjects/Sarasani.hpp"
 #include "GameObjects/Stone.hpp"
 #include "GameObjects/Trash.hpp"
 #include "GameObjects/Tree.hpp"
@@ -96,6 +97,7 @@ public:
         for (auto it = inventoryItems_.begin(); it != inventoryItems_.end(); it++) {
             if ((*it)->getSlot() == selectedSlot_ && (*it)->getName() == item) {
                 position = it;
+                break;
             }
         }
         if (position == inventoryItems_.end()) {
@@ -109,6 +111,34 @@ public:
         }
         logger_->info("Inventory", "Remove Item " + item);
         return true;
+    }
+
+    bool checkInventoryItemAmount(std::string item, int amount)
+    {
+        for (auto it = inventoryItems_.begin(); it != inventoryItems_.end(); it++) {
+            if ((*it)->getName() == item && (*it)->getAmount() >= amount) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void removeInventoryItemAmount(std::string item, int amount)
+    {
+        for (auto it = inventoryItems_.begin(); it != inventoryItems_.end(); it++) {
+            if ((*it)->getName() == item && (*it)->getAmount() >= amount) {
+                if ((*it)->getAmount() == amount) {
+                    delete *it;
+                    inventoryItems_.erase(it);
+                } else {
+                    for (int i = 0; i < amount; i++) {
+                        (*it)->removeItem();
+                        // subtract 1 from this item counter
+                    }
+                }
+                return;
+            }
+        }
     }
 
     void down(bool initial = false)
@@ -195,14 +225,14 @@ public:
     {
         hasMenu_ = true;
         ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"CheatMenu", L"Klicke, um Items zu erhalten.");
-        box->addButton("ItemMatch", [&]() { addInventoryItem("ItemMatch"); });
-        box->addButton("ItemWood", [&]() { addInventoryItem("ItemWood"); });
-        box->addButton("ItemStone", [&]() { addInventoryItem("ItemStone"); });
-        box->addButton("ItemSapling", [&]() { addInventoryItem("ItemSapling"); });
+        box->addButton("ItemMatch", L"Zündholz", [&]() { addInventoryItem("ItemMatch"); });
+        box->addButton("ItemWood", L"Holz", [&]() { addInventoryItem("ItemWood"); });
+        box->addButton("ItemStone", L"Stein", [&]() { addInventoryItem("ItemStone"); });
+        box->addButton("ItemSapling", L"Setzling", [&]() { addInventoryItem("ItemSapling"); });
         box->addNewButtonRow();
-        box->addButton("ItemBlache", [&]() { addInventoryItem("ItemBlache"); });
-        box->addButton("ItemRope", [&]() { addInventoryItem("ItemRope"); });
-        box->addButton("Delete", [&]() { inventoryItems_.clear(); });
+        box->addButton("ItemBlache", L"Blache", [&]() { addInventoryItem("ItemBlache"); });
+        box->addButton("ItemRope", L"Seil", [&]() { addInventoryItem("ItemRope"); });
+        box->addButton("Delete", L"Löschen", [&]() { inventoryItems_.clear(); });
         messageBox_ = box;
     }
 
@@ -219,13 +249,11 @@ public:
             gameObject->getSprite().setScale(settings_->scalingFactorWidth,
                 settings_->scalingFactorHeight);
             window.draw(gameObject->getSprite());
-            if (gameObject->type == GameObject::Type::Player) {
-                // draw items after player and before cursor
-                for (auto item : inventoryItems_) {
-                    item->getSprite().setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
-                    item->draw(window);
-                }
-            }
+        }
+
+        for (auto item : inventoryItems_) {
+            item->getSprite().setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
+            item->draw(window);
         }
 
         if (hasMenu_) {
@@ -328,8 +356,8 @@ public:
                 case GameObject::Type::Paloxe: {
                     // show menu with Blache & Rope
                     ClickableMessageBox* menu = new ClickableMessageBox(logger_, settings_, L"J+S-Paloxe", L"Wähle aus:");
-                    menu->addButton("ItemBlache", [&]() { addInventoryItem("ItemBlache"); });
-                    menu->addButton("ItemRope", [&]() { addInventoryItem("ItemRope"); });
+                    menu->addButton("ItemBlache", L"Blache", [&]() { addInventoryItem("ItemBlache"); });
+                    menu->addButton("ItemRope", L"Seil", [&]() { addInventoryItem("ItemRope"); });
                     hasMenu_ = true;
                     messageBox_ = menu;
                     exit = true;
@@ -402,6 +430,17 @@ public:
                 blache->setPosition(x - blache->getSprite().getLocalBounds().width / 2, y - blache->getSprite().getLocalBounds().height / 2);
                 gameObjects_.push_back(blache);
                 needSorting = true;
+            } else if (!leftClick) {
+                // show a menu with a selection to build
+                hasMenu_ = true;
+                ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"Bau-Menu", L"Klicke, um an dieser Stelle zu bauen.");
+                // TEMP item for sarasani
+                if (checkInventoryItemAmount("ItemBlache", 10) && checkInventoryItemAmount("ItemRope", 3)) {
+                    box->addButton("ItemWood", L"Sarasani", [&, x, y]() { buildMenuBuildItem(x, y, GameObject::Type::Sarasani); });
+                }
+                messageBox_ = box;
+            } else {
+                // nothing to do here
             }
         }
 
@@ -411,6 +450,24 @@ public:
         }
         if (needSorting) {
             orderGameObjects();
+        }
+    }
+
+    void buildMenuBuildItem(int x, int y, GameObject::Type build)
+    {
+        switch (build) {
+        case GameObject::Type::Sarasani: {
+            Sarasani* sarasani = new Sarasani(logger_, settings_, x, y);
+            sarasani->setPosition(x - sarasani->getSprite().getLocalBounds().width / 2, y - sarasani->getSprite().getLocalBounds().height / 2);
+            gameObjects_.push_back(sarasani);
+            // remove items
+            removeInventoryItemAmount("ItemBlache", 10);
+            removeInventoryItemAmount("ItemRope", 3);
+            orderGameObjects();
+            break;
+        }
+        default:
+            break;
         }
     }
 
