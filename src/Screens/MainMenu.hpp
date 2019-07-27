@@ -55,28 +55,28 @@ MainMenu::MainMenu(Logger* logger, Settings* settings)
     exitText_.setFont(settings_->font);
     versionText_.setFont(settings_->font);
 
-    keepPlayingText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
-    gameStartText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
-    optionsText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
-    exitText_.setScale(0.8f * settings_->scalingFactor, 0.8f * settings_->scalingFactor);
-    versionText_.setScale(settings_->scalingFactor, settings_->scalingFactor);
-    logoRightSprite_.setScale(settings_->scalingFactor, settings_->scalingFactor);
+    keepPlayingText_.setScale(0.8f * settings_->scalingFactorWidth, 0.8f * settings_->scalingFactorHeight);
+    gameStartText_.setScale(0.8f * settings_->scalingFactorWidth, 0.8f * settings_->scalingFactorHeight);
+    optionsText_.setScale(0.8f * settings_->scalingFactorWidth, 0.8f * settings_->scalingFactorHeight);
+    exitText_.setScale(0.8f * settings_->scalingFactorWidth, 0.8f * settings_->scalingFactorHeight);
+    versionText_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
+    logoRightSprite_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
 
-    keepPlayingText_.setCharacterSize(200 * settings_->scalingFactor);
-    gameStartText_.setCharacterSize(200 * settings_->scalingFactor);
-    optionsText_.setCharacterSize(200 * settings_->scalingFactor);
-    exitText_.setCharacterSize(200 * settings_->scalingFactor);
-    versionText_.setCharacterSize(100 * settings_->scalingFactor);
+    keepPlayingText_.setCharacterSize(200 * settings_->scalingFactorHeight);
+    gameStartText_.setCharacterSize(200 * settings_->scalingFactorHeight);
+    optionsText_.setCharacterSize(200 * settings_->scalingFactorHeight);
+    exitText_.setCharacterSize(200 * settings_->scalingFactorHeight);
+    versionText_.setCharacterSize(100 * settings_->scalingFactorHeight);
 
-    int availableSpace = settings_->screenHeight - 400 * settings_->scalingFactor;
+    int availableSpace = settings_->screenHeight - 400 * settings_->scalingFactorHeight;
     int perItem = availableSpace / 6;
 
-    keepPlayingText_.setPosition(100 * settings_->scalingFactor, 400 * settings_->scalingFactor);
-    gameStartText_.setPosition(100 * settings_->scalingFactor, (400 * settings_->scalingFactor + perItem * 1));
-    optionsText_.setPosition(100 * settings_->scalingFactor, (400 * settings_->scalingFactor + perItem * 2));
-    exitText_.setPosition(100 * settings_->scalingFactor, (400 * settings_->scalingFactor + perItem * 3));
-    versionText_.setPosition(100 * settings_->scalingFactor, settings_->screenHeight - 200 * settings_->scalingFactor);
-    logoRightSprite_.setPosition(settings_->screenWidth * 3 / 4 - logoRightImage_.getSize().x * logoRightSprite_.getScale().x / 2 - 100 * settings_->scalingFactor, settings_->screenHeight / 2 - logoRightImage_.getSize().y * logoRightSprite_.getScale().y / 2);
+    keepPlayingText_.setPosition(100 * settings_->scalingFactorWidth, 400 * settings_->scalingFactorHeight);
+    gameStartText_.setPosition(100 * settings_->scalingFactorWidth, (400 * settings_->scalingFactorHeight + perItem * 1));
+    optionsText_.setPosition(100 * settings_->scalingFactorWidth, (400 * settings_->scalingFactorHeight + perItem * 2));
+    exitText_.setPosition(100 * settings_->scalingFactorWidth, (400 * settings_->scalingFactorHeight + perItem * 3));
+    versionText_.setPosition(100 * settings_->scalingFactorWidth, settings_->scalingFactorHeight - 200 * settings_->scalingFactorHeight);
+    logoRightSprite_.setPosition(settings_->screenWidth * 3 / 4 - logoRightImage_.getSize().x * logoRightSprite_.getScale().x / 2 - 100 * settings_->scalingFactorWidth, settings_->screenHeight / 2 - logoRightImage_.getSize().y * logoRightSprite_.getScale().y / 2);
 }
 
 void MainMenu::show(sf::RenderWindow& window)

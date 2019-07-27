@@ -68,20 +68,20 @@ public:
         x_ = settings->screenWidth / 4;
         y_ = settings->screenHeight / 4;
 
-        title_.setCharacterSize(80 * settings_->scalingFactor);
+        title_.setCharacterSize(80 * settings_->scalingFactorHeight);
         title_.setFont(settings_->font);
         title_.setString(title);
         title_.setFillColor(sf::Color::Black);
-        title_.setPosition(x_ + background_.getSize().x / 2 - title_.getLocalBounds().width / 2, y_ + 20 * settings_->scalingFactor);
+        title_.setPosition(x_ + background_.getSize().x / 2 - title_.getLocalBounds().width / 2, y_ + 20 * settings_->scalingFactorHeight);
 
         question_.setFont(settings_->font);
-        question_.setCharacterSize(60 * settings_->scalingFactor);
+        question_.setCharacterSize(60 * settings_->scalingFactorHeight);
         question_.setString(question);
         question_.setFillColor(sf::Color::Black);
-        question_.setPosition(x_ + background_.getSize().x / 2 - question_.getLocalBounds().width / 2, y_ + title_.getLocalBounds().height + 40*settings_->scalingFactor);
+        question_.setPosition(x_ + background_.getSize().x / 2 - question_.getLocalBounds().width / 2, y_ + title_.getLocalBounds().height + 40*settings_->scalingFactorHeight);
 
-        currX_ = x_ + 20 * settings_->scalingFactor; // initial offset
-        currY_ = y_ + title_.getLocalBounds().height + question_.getLocalBounds().height + 80 * settings_->scalingFactor;
+        currX_ = x_ + 20 * settings_->scalingFactorWidth; // initial offset
+        currY_ = y_ + title_.getLocalBounds().height + question_.getLocalBounds().height + 80 * settings_->scalingFactorHeight;
     }
 
     ~ClickableMessageBox()
@@ -93,8 +93,8 @@ public:
 
     void addNewButtonRow()
     {
-        currY_ += 40 * settings_->scalingFactor + buttonSizeY_;
-        currX_ = x_ + 20 * settings_->scalingFactor;
+        currY_ += 40 * settings_->scalingFactorHeight + buttonSizeY_;
+        currX_ = x_ + 20 * settings_->scalingFactorWidth;
     }
 
     // returns index of button
@@ -106,7 +106,7 @@ public:
         // y: title + text
         Button* button = new Button(logger_, settings_, currX_, currY_, buttonSizeX_, buttonSizeY_, image);
         buttons_.push_back(std::make_pair(button, callback));
-        currX_ += 40 * settings_->scalingFactor + buttonSizeX_;
+        currX_ += 40 * settings_->scalingFactorWidth + buttonSizeX_;
     }
 
     void draw(sf::RenderWindow& window)
