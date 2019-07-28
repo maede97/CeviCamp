@@ -1,34 +1,80 @@
-<!DOCTYPE html
-	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-		type="text/css" charset="utf-8" />
-	<link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8" />
+    <link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8" />
 
-	<style type="text/css">
-		body {
-			font-family: 'cevibold';
-		}
-	</style>
+    <style type="text/css">
+        body {
+            font-family: 'cevibold';
+        }
+    </style>
 
-	<title>CEVICAMP</title>
+    <title>CEVICAMP</title>
 </head>
 
 <body>
-	<div class="container text-center">
-			<h1>CEVICAMP</h1>
-			<br />
-			<p>DIESE SEITE ENTHÄLT MOMENTAN NOCH KEINEN TEXT.</p>
-			<img src="logo_right.png" width="50%">
+    <div class="container text-center">
+        <h1>CEVICAMP</h1>
+        <br />
+        <p>DIESE SEITE ENTHÄLT MOMENTAN NOCH KEINEN TEXT.</p>
+        <img src="logo_right.png" width="50%">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(() => {
+
+                $.ajax({
+
+                    url: "https://api.github.com/repos/maede97/CeviCamp/releases",
+
+                    type: "GET",
+
+                    success: function(arr) {
+
+                        var cList = $('#releases');
+
+                        $.each(arr, function(index, release) {
+
+                            var li = $('<li/>')
+
+                            .addClass('list-group-item')
+
+                            .text(release.tag_name + ": " + release.name + " ")
+
+                            .appendTo(cList);
+
+                            $.each(release.assets, function(i, a) {
+
+                                var aaa = $('<a/>')
+
+                                .addClass('btn btn-primary btn-block')
+
+                                .text("Download " + a.name)
+
+                                .attr("href", a.browser_download_url)
+
+                                .appendTo(li);
+
+                            });
+
+                        });
+
+                        $("#releases-loading").hide();
+
+                    }
+
+                });
+
+            });
+        </script>
+        <footer>
+            <br />
+            <p>&copy;2019 MATTHIAS BUSENHART V/O SCIROCCO.</p>
+        </footer>
 </body>
-<footer >
-	<br />
-	<p>&copy;2019 MATTHIAS BUSENHART V/O SCIROCCO.</p>
-</footer>
 
 </html>
