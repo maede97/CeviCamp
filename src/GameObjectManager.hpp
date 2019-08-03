@@ -35,8 +35,14 @@ public:
         soundManager_ = soundManager;
         view_ = view;
 
+        slotSize_ *= settings_->getGUIFactor();
+
         MouseCursor* cursor = new MouseCursor(logger_, settings_);
+
         Inventory* playerInventory = new Inventory(logger_, settings_, slotSize_);
+        playerInventory->setPosition((settings_->screenWidth - playerInventory->getSprite().getGlobalBounds().width) / 2,
+            settings_->screenHeight - playerInventory->getSprite().getGlobalBounds().height);
+
         InventorySlot* inventorySlot = new InventorySlot(logger_, settings_, playerInventory->getPosition().x,
             playerInventory->getPosition().y, slotSize_);
 
@@ -81,7 +87,7 @@ public:
                 }
             }
             if (empty) {
-                inventoryItems_.push_back(new InventoryItem(logger_, settings_, newItem, invPos.x + slot * 112, invPos.y, slot));
+                inventoryItems_.push_back(new InventoryItem(logger_, settings_, newItem, invPos.x + slot * slotSize_, invPos.y, slot));
                 return true;
             } else {
                 slot++;
@@ -246,6 +252,7 @@ public:
             + std::to_string(static_cast<int>((*playerIterator_)->getPosition().y - (*grassIterator_)->getPosition().y + (*playerIterator_)->getSprite().getLocalBounds().height / 2)));
         player_pos.setFont(settings_->font);
         player_pos.setPosition(10, 10); // add some small spacing
+        player_pos.setCharacterSize(24*settings_->getGUIFactor());
 
         window.draw(player_pos);
 

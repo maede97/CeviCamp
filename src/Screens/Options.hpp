@@ -27,8 +27,8 @@ public:
         name_.setFont(settings_->font);
         value_.setFont(settings_->font);
 
-        name_.setCharacterSize(36);
-        value_.setCharacterSize(32);
+        name_.setCharacterSize(36 * settings_->getGUIFactor());
+        value_.setCharacterSize(32 * settings_->getGUIFactor());
 
         name_.setString(name);
 
@@ -120,26 +120,28 @@ private:
 Options::Options(Logger* logger, Settings* settings)
     : Screen(logger, settings)
 {
+    int perSlider = (settings_->screenHeight - 200) / 7;
     sliders_.push_back(new Slider(logger, settings, L"MUSIKLAUTSTÄRKE", 100, 100, 0, 100, &settings_->musicVolume));
-    sliders_.push_back(new Slider(logger, settings, L"EFFEKTLAUTSTÄRKE", 100, 250, 0, 100, &settings_->soundVolume));
-    sliders_.push_back(new Slider(logger, settings, L"SPIELERGESCHWINDIGKEIT", 100, 400, 0, 100, &settings_->playerSpeed));
-    sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 100, 550, 0, 100, &settings_->movementSpeed));
-    sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 100, 700, settings_->screenWidth, 10000, &settings_->mapWidth));
-    sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 100, 850, settings_->screenHeight, 10000, &settings_->mapHeight));
+    sliders_.push_back(new Slider(logger, settings, L"EFFEKTLAUTSTÄRKE", 100, 100 + perSlider * 1, 0, 100, &settings_->soundVolume));
+    sliders_.push_back(new Slider(logger, settings, L"SPIELERGESCHWINDIGKEIT", 100, 100 + perSlider * 2, 0, 100, &settings_->playerSpeed));
+    sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 100, 100 + perSlider * 3, 0, 100, &settings_->movementSpeed));
+    sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 100, 100 + perSlider * 4, settings_->screenWidth, 10000, &settings_->mapWidth));
+    sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 100, 100 + perSlider * 5, settings_->screenHeight, 10000, &settings_->mapHeight));
+    sliders_.push_back(new Slider(logger, settings, L"GUI-GRÖSSE (BRAUCHT NEUSTART)", 100, 100 + perSlider * 6, 1, 200, &settings_->guiSize));
 
     keyMap_.setFont(settings_->font);
     keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");
-    keyMap_.setCharacterSize(36);
+    keyMap_.setCharacterSize(36 * settings_->getGUIFactor());
     keyMap_.setPosition(settings_->screenWidth / 2 + 100, 50);
 
     keyMapKeys_.setFont(settings_->font);
     keyMapKeys_.setString(L"\n\nW\nS\nA\nD\nB\nM\nR");
-    keyMapKeys_.setCharacterSize(36);
+    keyMapKeys_.setCharacterSize(36 * settings_->getGUIFactor());
     keyMapKeys_.setPosition(settings_->screenWidth / 2, 50);
 
     back_.setFont(settings_->font);
     back_.setString(L"ZURÜCK");
-    back_.setCharacterSize(48);
+    back_.setCharacterSize(48 * settings_->getGUIFactor());
     back_.setStyle(sf::Text::Bold);
     back_.setPosition(settings_->screenWidth / 2 - back_.getLocalBounds().width / 2, settings_->screenHeight - 100 - back_.getLocalBounds().height);
 }

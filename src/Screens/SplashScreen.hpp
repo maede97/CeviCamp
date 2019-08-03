@@ -29,7 +29,7 @@ SplashScreen::SplashScreen(Logger* logger, Settings* settings)
     // show a text on bottom of page
     text_.setFont(settings_->font);
     text_.setString(L"BELIEBIGE TASTE DRÜCKEN");
-    text_.setCharacterSize(48);
+    text_.setCharacterSize(48*settings_->getGUIFactor());
     text_.setStyle(sf::Text::Bold);
     text_.setPosition(settings_->screenWidth / 2 - text_.getLocalBounds().width / 2, settings_->screenHeight - 100 - text_.getLocalBounds().height);
 }

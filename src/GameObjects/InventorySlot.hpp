@@ -19,6 +19,7 @@ public:
         sprite_ = AnimatedSprite(sf::seconds(1), true, false);
 
         sprite_.setPosition(inventoryX, inventoryY);
+        sprite_.setScale(settings_->getGUIFactor(), settings_->getGUIFactor());
 
         sprite_.setAnimation(animation_);
     }

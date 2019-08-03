@@ -58,11 +58,11 @@ MainMenu::MainMenu(Logger* logger, Settings* settings)
     float factor = std::min(logoRightImage_.getSize().x / settings_->screenWidth / 2.f, logoRightImage_.getSize().y / settings_->screenWidth / 2.f);
     logoRightSprite_.setScale(factor, factor);
 
-    keepPlayingText_.setCharacterSize(48);
-    gameStartText_.setCharacterSize(48);
-    optionsText_.setCharacterSize(48);
-    exitText_.setCharacterSize(48);
-    versionText_.setCharacterSize(24);
+    keepPlayingText_.setCharacterSize(48*settings_->getGUIFactor());
+    gameStartText_.setCharacterSize(48*settings_->getGUIFactor());
+    optionsText_.setCharacterSize(48*settings_->getGUIFactor());
+    exitText_.setCharacterSize(48*settings_->getGUIFactor());
+    versionText_.setCharacterSize(24*settings_->getGUIFactor());
 
     int availableSpace = settings_->screenHeight - 200;
     int perItem = availableSpace / 6;

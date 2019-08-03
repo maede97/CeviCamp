@@ -28,6 +28,8 @@ public:
     std::vector<std::string> readInventory();
     void saveInventory(std::vector<std::string>& inv);
 
+    float getGUIFactor() const;
+
     const char* title = "CeviCamp";
     int screenWidth = 1920;
     int screenHeight = 1080;
@@ -40,6 +42,8 @@ public:
     int movementSpeed = 10;
 
     int seed = 42;
+
+    int guiSize = 100; // percent
 
     // map size
     int mapWidth = 5000;
@@ -60,6 +64,10 @@ Settings::Settings(Logger* logger)
     std::srand(seed); // does not work...
 }
 
+float Settings::getGUIFactor() const
+{
+    return guiSize / 100.f;
+}
 
 void Settings::readSettingsFromFile()
 {
@@ -97,6 +105,8 @@ void Settings::readSettingsFromFile()
                 playerSpeed = std::stoi(value);
             } else if (name == "movement-speed") {
                 movementSpeed = std::stoi(value);
+            } else if (name == "gui-size") {
+                guiSize = std::stoi(value);
             }
         }
     } else {
@@ -115,6 +125,7 @@ void Settings::saveSettingsToFile()
     out << "seed=" << seed << std::endl;
     out << "player-speed=" << playerSpeed << std::endl;
     out << "movement-speed=" << movementSpeed << std::endl;
+    out << "gui-size=" << guiSize << std::endl;
     out.close();
 }
 

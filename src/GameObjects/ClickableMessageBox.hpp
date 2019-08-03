@@ -24,6 +24,7 @@ public:
 
         background_ = sf::Sprite(image_);
         background_.setPosition(x, y);
+        background_.setScale(settings_->getGUIFactor(), settings_->getGUIFactor());
 
         boundary_.setOutlineColor(sf::Color::Black);
         boundary_.setOutlineThickness(-8);
@@ -31,7 +32,7 @@ public:
         boundary_.setSize(sf::Vector2f(buttonSizeX, buttonSizeY));
 
         text_.setFont(settings->font);
-        text_.setCharacterSize(16);
+        text_.setCharacterSize(16 * settings_->getGUIFactor());
         text_.setString(text);
         text_.setFillColor(sf::Color::Black);
         text_.setPosition(x + buttonSizeX / 2 - text_.getLocalBounds().width / 2, y + buttonSizeY / 2 - text_.getLocalBounds().height / 2);
@@ -67,6 +68,9 @@ public:
         logger_ = logger;
         settings_ = settings;
 
+        buttonSizeX_ *= settings_->getGUIFactor();
+        buttonSizeY_ *= settings_->getGUIFactor();
+
         background_.setPosition(settings->screenWidth / 4, settings->screenHeight / 4);
         background_.setSize(sf::Vector2f(settings_->screenWidth / 2, settings_->screenHeight / 2));
         background_.setFillColor(sf::Color::White);
@@ -77,14 +81,14 @@ public:
         x_ = settings->screenWidth / 4;
         y_ = settings->screenHeight / 4;
 
-        title_.setCharacterSize(48);
+        title_.setCharacterSize(48 * settings_->getGUIFactor());
         title_.setFont(settings_->font);
         title_.setString(title);
         title_.setFillColor(sf::Color::Black);
         title_.setPosition(x_ + background_.getSize().x / 2 - title_.getLocalBounds().width / 2, y_ + 10);
 
         question_.setFont(settings_->font);
-        question_.setCharacterSize(32);
+        question_.setCharacterSize(32 * settings_->getGUIFactor());
         question_.setString(question);
         question_.setFillColor(sf::Color::Black);
         question_.setPosition(x_ + background_.getSize().x / 2 - question_.getLocalBounds().width / 2, y_ + title_.getLocalBounds().height + 20);
@@ -93,8 +97,8 @@ public:
         currY_ = y_ + title_.getLocalBounds().height + question_.getLocalBounds().height + 40;
 
         cancel_ = new Button(logger_, settings_,
-            background_.getPosition().x + background_.getLocalBounds().width - 75, background_.getPosition().y + 10,
-            54, 54, "CancelButton", L"");
+            background_.getPosition().x + background_.getLocalBounds().width - 75*settings_->getGUIFactor(), background_.getPosition().y + 10*settings_->getGUIFactor(),
+            54 * settings_->getGUIFactor(), 54 * settings_->getGUIFactor(), "CancelButton", L"");
     }
 
     ~ClickableMessageBox()

@@ -20,9 +20,7 @@ public:
         animation_.addFrame(sf::IntRect(0, 0, image_.getSize().x, image_.getSize().y));
         sprite_ = AnimatedSprite(sf::seconds(1), true, false);
 
-        int x_off = settings_->screenWidth - image_.getSize().x;
-        sprite_.setPosition(x_off / 2, settings_->screenHeight - image_.getSize().y);
-
+        sprite_.setScale(settings_->getGUIFactor(), settings_->getGUIFactor());
         sprite_.setAnimation(animation_);
     }
 

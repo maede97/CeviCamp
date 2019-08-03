@@ -20,11 +20,13 @@ public:
         amount_ = 1;
 
         amountText_.setFont(settings_->font);
-        amountText_.setCharacterSize(40);
+        amountText_.setCharacterSize(32 * settings_->getGUIFactor());
         amountText_.setString(std::to_string(amount_));
 
         sprite_ = sf::Sprite(image_);
         sprite_.setPosition(x, y);
+
+        sprite_.setScale(settings_->getGUIFactor(), settings_->getGUIFactor());
 
         x_ = x;
         y_ = y;
@@ -32,7 +34,7 @@ public:
 
     void updateText()
     {
-        amountText_.setPosition(x_ + image_.getSize().x / 2 - amountText_.getLocalBounds().width / 2, y_ + image_.getSize().y / 2 - amountText_.getLocalBounds().height / 2);
+        amountText_.setPosition(x_ + sprite_.getGlobalBounds().width / 2 - amountText_.getGlobalBounds().width / 2, y_ + sprite_.getGlobalBounds().width / 2 - amountText_.getGlobalBounds().height / 2);
     }
 
     sf::Sprite getSprite() const { return sprite_; }
