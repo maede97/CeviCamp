@@ -59,6 +59,8 @@ GameController::GameController(Logger* logger)
     splashScreen_ = new SplashScreen(logger_, settings_);
     mainMenu_ = new MainMenu(logger_, settings_);
     options_ = new Options(logger_, settings_);
+
+    view_->gameView.setSize(sf::Vector2f(settings_->screenWidth, settings_->screenHeight));
 }
 
 void GameController::start()
@@ -123,14 +125,14 @@ void GameController::gameLoop()
                     break;
                 case MainMenu::MenuResult::KeepPlaying: {
                     // settings load gamestate
-                    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
+                    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_, view_);
                     loadCampData();
                     gameState_ = Playing;
                     logger_->info("MenuResult", "KeepPlaying");
                     break;
                 }
                 case MainMenu::MenuResult::StartGame: {
-                    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_);
+                    gameObjectManager_ = new GameObjectManager(logger_, settings_, soundManager_, view_);
                     gameObjectManager_->createNewGame();
                     logger_->info("MenuResult", "StartGame");
                     gameState_ = Playing;
@@ -202,7 +204,7 @@ void GameController::gameLoop()
                     break;
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-                    if(gameObjectManager_->ifMenuCloseMenu()){
+                    if (gameObjectManager_->ifMenuCloseMenu()) {
                         break;
                     }
                     settings_->saveSettingsToFile();
@@ -237,10 +239,15 @@ void GameController::gameLoop()
                     gameObjectManager_->selectInventorySlot(7);
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-                    gameObjectManager_->handleClick(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y, false);
+                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Mouse::getPosition(),view_->gameView);
+                    gameObjectManager_->handleClick(worldPos.x, worldPos.y, false);
                 }
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)){
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
                     gameObjectManager_->addCheatMenu();
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+                    view_->resetZoomLevel();
+                    gameObjectManager_->moveCameraToPlayer();
                 }
                 break;
             }
@@ -250,10 +257,12 @@ void GameController::gameLoop()
                     break;
                 }
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-                    gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y);
+                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Vector2i(currentEvent.mouseButton.x, currentEvent.mouseButton.y),view_->gameView);
+                    gameObjectManager_->handleClick(worldPos.x, worldPos.y);
                 }
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-                    gameObjectManager_->handleClick(currentEvent.mouseButton.x, currentEvent.mouseButton.y, false);
+                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Vector2i(currentEvent.mouseButton.x, currentEvent.mouseButton.y),view_->gameView);
+                    gameObjectManager_->handleClick(worldPos.x, worldPos.y, false);
                 }
                 break;
             }
@@ -262,7 +271,7 @@ void GameController::gameLoop()
                 if (!view_->window.hasFocus()) {
                     break;
                 }
-                gameObjectManager_->selectInventorySlot(gameObjectManager_->getSelectedInventorySlot() - currentEvent.mouseWheel.delta);
+                view_->gameView.zoom(0.5f + -(currentEvent.mouseWheel.delta - 1.0f) / 2.0f);
                 break;
             }
             default:
@@ -280,19 +289,26 @@ void GameController::gameLoop()
 
     view_->clearFrame(); // clear frame for later drawing
 
-    sf::Vector2i mousePos = sf::Mouse::getPosition(view_->window);
-    if (gameState_ == Playing)
+    sf::Vector2f mousePos = view_->window.mapPixelToCoords(sf::Mouse::getPosition(view_->window),view_->gameView);
+    if (gameState_ == Playing) {
         gameObjectManager_->updateMousePosition(mousePos.x, mousePos.y);
+    }
 
     switch (gameState_) {
     case ShowSplash:
+        //view_->resetViews();
+        view_->window.setView(view_->originalView);
         splashScreen_->show(view_->window);
         break;
     case ShowMenu:
+        //view_->resetViews();
+        view_->window.setView(view_->originalView);
         mainMenu_->updateKeepPlaying(settings_->keepPlaying);
         mainMenu_->show(view_->window);
         break;
     case ShowOptions:
+        //view_->resetViews();
+        view_->window.setView(view_->originalView);
         soundManager_->setMusicVolume(); // do this here, because if options are open, maybe user changed music volume
         options_->show(view_->window);
         break;
@@ -313,7 +329,6 @@ void GameController::gameLoop()
             }
         }
         // check these here because hold down
-
         gameObjectManager_->drawAll(view_->window, deltaTime_.getElapsedTime());
         break;
     }

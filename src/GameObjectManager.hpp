@@ -18,6 +18,7 @@
 #include "Logger.hpp"
 #include "Settings.hpp"
 #include "SoundManager.hpp"
+#include "View.hpp"
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <vector>
@@ -26,11 +27,13 @@ class GameObjectManager {
 public:
     GameObjectManager(Logger* logger,
         Settings* settings,
-        SoundManager* soundManager)
+        SoundManager* soundManager,
+        View* view)
     {
         logger_ = logger;
         settings_ = settings;
         soundManager_ = soundManager;
+        view_ = view;
 
         MouseCursor* cursor = new MouseCursor(logger_, settings_);
         Inventory* playerInventory = new Inventory(logger_, settings_, slotSize_);
@@ -141,69 +144,37 @@ public:
         }
     }
 
-    void down(bool initial = false)
+    void down()
     {
-        if (!initial && (*grassIterator_)->getPosition().y < -(settings_->mapHeight - settings_->screenHeight - movementSpeed_)) {
+        view_->gameView.move(0, settings_->movementSpeed);
+        if ((*grassIterator_)->getPosition().y < settings_->mapHeight - movementSpeed_) {
             (*playerIterator_)->down();
             return;
-        }
-        for (auto gameObject : gameObjects_) {
-            gameObject->down();
-            if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
-                gameObject->setPosition(gameObject->getPosition().x,
-                    gameObject->getPosition().y - movementSpeed_);
-            } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->getSprite().move(
-                    0, -movementSpeed_); // move other direction, to stay sticky
-            }
         }
     }
     void up()
     {
+        view_->gameView.move(0, -settings_->movementSpeed);
         if ((*grassIterator_)->getPosition().y > -movementSpeed_) {
             (*playerIterator_)->up();
             return;
         }
-        for (auto gameObject : gameObjects_) {
-            gameObject->up();
-            if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
-                gameObject->setPosition(gameObject->getPosition().x,
-                    gameObject->getPosition().y + movementSpeed_);
-            } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->getSprite().move(0, movementSpeed_);
-            }
-        }
     }
     void left()
     {
+        view_->gameView.move(-settings_->movementSpeed, 0);
         if ((*grassIterator_)->getPosition().x > -movementSpeed_) {
             (*playerIterator_)->left();
             return;
         }
-        for (auto gameObject : gameObjects_) {
-            gameObject->left();
-            if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
-                gameObject->setPosition(gameObject->getPosition().x + movementSpeed_,
-                    gameObject->getPosition().y);
-            } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->getSprite().move(movementSpeed_, 0);
-            }
-        }
     }
-    void right(bool initial = false)
+    void right()
     {
-        if (!initial && (*grassIterator_)->getPosition().x < -(settings_->mapWidth - settings_->screenWidth - movementSpeed_)) {
+        view_->gameView.move(settings_->movementSpeed, 0);
+
+        if ((*grassIterator_)->getPosition().x < settings_->mapWidth - movementSpeed_) {
             (*playerIterator_)->right();
             return;
-        }
-        for (auto gameObject : gameObjects_) {
-            gameObject->right();
-            if (gameObject->type != GameObject::Type::Inventory && gameObject->type != GameObject::Type::InventorySlot) {
-                gameObject->setPosition(gameObject->getPosition().x - movementSpeed_,
-                    gameObject->getPosition().y);
-            } else if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->getSprite().move(-movementSpeed_, 0);
-            }
         }
     }
 
@@ -244,18 +215,27 @@ public:
         // Play Animations
         playAnimations();
 
+        window.setView(view_->gameView);
+
         // Draw members
         for (auto gameObject : gameObjects_) {
+            if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
+                continue;
+            }
             gameObject->getSprite().setScale(settings_->scalingFactorWidth,
                 settings_->scalingFactorHeight);
             window.draw(gameObject->getSprite());
         }
 
+        // Draw static things onto original view
+        window.setView(view_->originalView);
+
+        window.draw((*inventoryIterator_)->getSprite());
         for (auto item : inventoryItems_) {
             item->getSprite().setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
             item->draw(window);
         }
-
+        window.draw((*inventorySelectorIterator_)->getSprite());
         if (hasMenu_) {
             messageBox_->draw(window);
         }
@@ -270,11 +250,23 @@ public:
         player_pos.setPosition(10, 10); // add some small spacing
 
         window.draw(player_pos);
+
+        // now draw minimap
+        window.setView(view_->miniMapView);
+        for (auto gameObject : gameObjects_) {
+            if (gameObject->type == GameObject::Type::Cursor || gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
+                continue;
+            }
+            gameObject->getSprite().setScale(settings_->scalingFactorWidth,
+                settings_->scalingFactorHeight);
+            window.draw(gameObject->getSprite());
+        }
     }
 
     void updateMousePosition(int mouseX, int mouseY)
     {
         sf::Vector2i playerPos = sf::Vector2i((*playerIterator_)->getPosition());
+
         for (auto gameObject : gameObjects_) {
             gameObject->updateMousePlayerPosition(
                 mouseX, mouseY, playerPos.x, playerPos.y,
@@ -297,7 +289,8 @@ public:
     void handleClick(int x, int y, bool leftClick = true)
     {
         if (hasMenu_) {
-            if (messageBox_->checkAndHandleClick(x, y)) {
+            sf::Vector2i pos = view_->window.mapCoordsToPixel(sf::Vector2f(sf::Mouse::getPosition(view_->window)), view_->originalView);
+            if (messageBox_->checkAndHandleClick(pos.x, pos.y)) {
                 delete messageBox_;
                 hasMenu_ = false;
             }
@@ -307,8 +300,9 @@ public:
         bool valid = false;
         sf::Vector2i playerPos = sf::Vector2i((*playerIterator_)->getPosition());
 
-        if ((*inventoryIterator_)->checkClick(x, y)) {
-            int xd = x - (*inventoryIterator_)->getPosition().x;
+        sf::Vector2i pos = view_->window.mapCoordsToPixel(sf::Vector2f(sf::Mouse::getPosition(view_->window)), view_->originalView);
+        if ((*inventoryIterator_)->checkClick(pos.x, pos.y)) {
+            int xd = pos.x - (*inventoryIterator_)->getPosition().x;
             int s = xd / slotSize_;
             selectInventorySlot(s);
         }
@@ -453,6 +447,12 @@ public:
         }
     }
 
+    void moveCameraToPlayer()
+    {
+        sf::Vector2f playerPos = (*playerIterator_)->getPosition();
+        view_->gameView.setCenter(playerPos);
+    }
+
     void buildMenuBuildItem(int x, int y, GameObject::Type build)
     {
         switch (build) {
@@ -499,6 +499,10 @@ public:
             }
             case GameObject::Type::Cursor: {
                 cursorIterator_ = it;
+                break;
+            }
+            case GameObject::Type::InventorySlot: {
+                inventorySelectorIterator_ = it;
                 break;
             }
             default:
@@ -564,18 +568,16 @@ public:
 
         orderGameObjects();
 
-        // move all to center
-        movementSpeed_ = settings_->mapWidth / 2 - settings_->screenWidth / 2;
-        right(true);
-        movementSpeed_ = settings_->mapHeight / 2 - settings_->screenHeight / 2;
-        down(true);
-        movementSpeed_ = settings_->movementSpeed;
-
         Player* player = new Player(logger_, settings_);
         gameObjects_.push_back(player);
 
+        /*
         player->setPosition(settings_->screenWidth / 2 - player->getSprite().getLocalBounds().width * settings_->scalingFactorWidth / 2,
             settings_->screenHeight / 2 - player->getSprite().getLocalBounds().height * settings_->scalingFactorHeight / 2);
+        */
+
+        player->setPosition(settings_->mapWidth / 2 - player->getSprite().getLocalBounds().width * settings_->scalingFactorWidth / 2,
+            settings_->mapHeight / 2 - player->getSprite().getLocalBounds().height * settings_->scalingFactorHeight / 2);
         orderGameObjects();
 
         // Give some test items
@@ -586,6 +588,7 @@ public:
 private:
     Logger* logger_;
     Settings* settings_;
+    View* view_;
 
     SoundManager* soundManager_;
 
@@ -601,6 +604,7 @@ private:
     std::vector<GameObject*>::iterator playerIterator_;
     std::vector<GameObject*>::iterator grassIterator_;
     std::vector<GameObject*>::iterator inventoryIterator_;
+    std::vector<GameObject*>::iterator inventorySelectorIterator_;
     std::vector<GameObject*>::iterator cursorIterator_;
     std::vector<InventoryItem*> inventoryItems_;
 };

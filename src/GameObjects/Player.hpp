@@ -63,7 +63,7 @@ public:
     {
         current_ = &walkingDown_;
         movement_.y += speed_;
-        if (sprite_.getPosition().y > settings_->screenHeight - playerSizeY_)
+        if (sprite_.getPosition().y > settings_->mapHeight - playerSizeY_)
         {
             movement_.y = 0;
         }
@@ -93,7 +93,7 @@ public:
     {
         current_ = &walkingRight_;
         movement_.x += speed_;
-        if (sprite_.getPosition().x > settings_->screenWidth - playerSizeX_)
+        if (sprite_.getPosition().x > settings_->mapWidth - playerSizeX_)
         {
             movement_.x = 0;
         }

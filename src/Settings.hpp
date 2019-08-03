@@ -47,8 +47,8 @@ public:
     int mapWidth = 5000;
     int mapHeight = 5000;
 
-    float scalingFactorWidth;
-    float scalingFactorHeight;
+    float scalingFactorWidth = 1.f;
+    float scalingFactorHeight = 1.f;
 
 private:
     Logger* logger_;
@@ -76,6 +76,7 @@ void Settings::recalculateScaling()
      */
     scalingFactorWidth = 1.0f / 3840.0f * screenWidth;
     scalingFactorHeight = 1.0f / 2160.0f * screenHeight;
+    
 }
 
 void Settings::readSettingsFromFile()

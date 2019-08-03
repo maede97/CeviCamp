@@ -15,7 +15,14 @@ public:
     void clearFrame();
     void displayFrame();
 
+    void resetViews();
+    void resetZoomLevel();
+
     sf::RenderWindow window;
+
+    sf::View gameView;
+    sf::View miniMapView;
+    sf::View originalView;
 
 private:
     Settings* settings_;
@@ -34,6 +41,27 @@ View::View(Settings* settings, Logger* logger)
     settings_->screenWidth = vm_.width;
 
     settings_->recalculateScaling();
+
+    // set up views
+    resetViews();
+}
+
+void View::resetZoomLevel() {
+    gameView.reset(sf::FloatRect(0.f, 0.f, settings_->mapWidth, settings_->mapHeight));
+    gameView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
+    gameView.setSize(originalView.getSize());
+}
+
+void View::resetViews()
+{
+    gameView.reset(sf::FloatRect(0.f, 0.f, settings_->mapWidth, settings_->mapHeight));
+    gameView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
+
+    miniMapView.reset(sf::FloatRect(0.f, 0.f, settings_->mapWidth, settings_->mapHeight));
+    miniMapView.setViewport(sf::FloatRect(0.8f, 0.f, 0.2f, 0.2f)); // TODO: fix scaling issue (aspect ratio)
+
+    originalView.reset(sf::FloatRect(0.f, 0.f, settings_->screenWidth, settings_->screenHeight));
+    originalView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
 }
 
 void View::openFrame()
@@ -41,16 +69,16 @@ void View::openFrame()
     window.create(vm_, settings_->title, sf::Style::Fullscreen);
 
     // only one of those:
-    //window.setVerticalSyncEnabled(true);
-    window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(true);
+    //window.setFramerateLimit(60);
 
     sf::Image icon;
     if (!icon.loadFromFile("res/icon.png")) {
         logger_->error("View", "res/icon.png could not be opened");
         return;
     }
-    window.setIcon(128,128,icon.getPixelsPtr());
-        logger_->info("View", "openFrame");
+    window.setIcon(128, 128, icon.getPixelsPtr());
+    logger_->info("View", "openFrame");
 }
 void View::closeFrame()
 {
@@ -65,13 +93,6 @@ void View::clearFrame()
 void View::displayFrame()
 {
     window.display();
-
-    sf::Time frameDuration = frameClock_.restart();
-    // 60 FPS means 1000ms / 60F = 16.66 ms per Frame, meaning if frameDuration < 17ms, wait the difference
-    if (frameDuration.asMicroseconds() < sf::Int64(16667)) {
-        //sf::sleep(sf::microseconds(sf::Int64(16667) - frameDuration.asMicroseconds()));
-        //std::cout << "TIME " << sf::Int64(16667) - frameDuration.asMicroseconds() << std::endl;
-    }
 }
 
 #endif

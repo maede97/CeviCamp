@@ -135,13 +135,13 @@ Options::Options(Logger* logger, Settings* settings)
 
     keyMap_.setFont(settings_->font);
     keyMap_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
-    keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu");
+    keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");
     keyMap_.setCharacterSize(100 * settings_->scalingFactorHeight);
     keyMap_.setPosition(settings_->screenWidth / 2 + 200*settings_->scalingFactorWidth, 100 * settings_->scalingFactorHeight);
 
     keyMapKeys_.setFont(settings_->font);
     keyMapKeys_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
-    keyMapKeys_.setString(L"\n\nW\nS\nA\nD\nB\nM");
+    keyMapKeys_.setString(L"\n\nW\nS\nA\nD\nB\nM\nR");
     keyMapKeys_.setCharacterSize(100 * settings_->scalingFactorHeight);
     keyMapKeys_.setPosition(settings_->screenWidth / 2, 100 * settings_->scalingFactorHeight);
 
