@@ -4,7 +4,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        type="text/css" charset="utf-8" />
     <link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8" />
 
     <style type="text/css">
@@ -20,61 +21,41 @@
     <div class="container text-center">
         <h1>CEVICAMP</h1>
         <br />
-        <p id="releases-loading">Releases werden geladen.</p>
-        <ul id="releases" class="list-group"></ul>
+        <p id="releases-loading">Releases werden geladen. Falls nichts geschieht, kann es sein, dass du diese Seite in der letzten Stunde schon zu oft aufgerufen hast.</p>
+        <div id="releases"></div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script>
             $(document).ready(() => {
-
                 $.ajax({
-
                     url: "https://api.github.com/repos/maede97/CeviCamp/releases",
-
                     type: "GET",
-
-                    success: function(arr) {
-
+                    success: function (arr) {
                         var cList = $('#releases');
-
-                        $.each(arr, function(index, release) {
-
-                            var li = $('<li/>')
-
-                            .addClass('list-group-item')
-
-                            .text(release.tag_name + ": " + release.name + " ")
-
-                            .appendTo(cList);
-
-                            $.each(release.assets, function(i, a) {
-
+                        $.each(arr, function (index, release) {
+                            var div = $("<div/>").addClass('list-group');
+                            var curr_header = $('<a/>')
+                                .addClass("list-group-item list-group-item-action active")
+                                .text(release.name).appendTo(cList);
+                            $("<span/>").addClass("badge badge-primary pull-right").text(release.tag_name).appendTo(curr_header);
+                            $.each(release.assets, function (i, a) {
                                 var aaa = $('<a/>')
-
-                                .addClass('btn btn-primary btn-block')
-
-                                .text("Download " + a.name)
-
-                                .attr("href", a.browser_download_url)
-
-                                .appendTo(li);
-
+                                    .addClass('list-group-item list-group-item-action')
+                                    .text("Download " + a.name)
+                                    .attr("href", a.browser_download_url)
+                                    .appendTo(div);
                             });
-
+                            div.appendTo(cList);
                         });
-
+                        
                         $("#releases-loading").hide();
-
                     }
-
                 });
-
             });
         </script>
         <footer>
             <br />
-            <p>&copy;2019 MATTHIAS BUSENHART V/O SCIROCCO.</p>
+            <p>(c) 2019 MATTHIAS BUSENHART V/O SCIROCCO.</p>
         </footer>
 </body>
-
 </html>
