@@ -222,8 +222,7 @@ public:
             if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
                 continue;
             }
-            gameObject->getSprite().setScale(settings_->scalingFactorWidth,
-                settings_->scalingFactorHeight);
+
             window.draw(gameObject->getSprite());
         }
 
@@ -232,7 +231,6 @@ public:
 
         window.draw((*inventoryIterator_)->getSprite());
         for (auto item : inventoryItems_) {
-            item->getSprite().setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
             item->draw(window);
         }
         window.draw((*inventorySelectorIterator_)->getSprite());
@@ -257,8 +255,6 @@ public:
             if (gameObject->type == GameObject::Type::Cursor || gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
                 continue;
             }
-            gameObject->getSprite().setScale(settings_->scalingFactorWidth,
-                settings_->scalingFactorHeight);
             window.draw(gameObject->getSprite());
         }
     }
@@ -548,22 +544,22 @@ public:
         // TODO make tree placement better
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
             Tree* tree = new Tree(logger_, settings_,
-                200 + std::rand() % static_cast<int>(settings_->mapWidth - 400 * settings_->scalingFactorWidth),
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400 * settings_->scalingFactorHeight));
+                200 + std::rand() % static_cast<int>(settings_->mapWidth - 200),
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 200));
             gameObjects_.push_back(tree);
         }
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
             Stone* tree = new Stone(logger_, settings_,
-                200 + std::rand() % static_cast<int>(settings_->mapWidth - 400 * settings_->scalingFactorWidth),
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400 * settings_->scalingFactorHeight));
+                200 + std::rand() % static_cast<int>(settings_->mapWidth - 200),
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 200));
             gameObjects_.push_back(tree);
         }
 
         // add J+S-Paloxe all the way to the right
-        Paloxe* paloxe = new Paloxe(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactorWidth, settings_->mapHeight / 2);
+        Paloxe* paloxe = new Paloxe(logger_, settings_, settings_->mapWidth - 400, settings_->mapHeight / 2);
         gameObjects_.push_back(paloxe);
 
-        Trash* trash = new Trash(logger_, settings_, settings_->mapWidth - 800 * settings_->scalingFactorWidth, settings_->mapHeight / 2 + settings_->scalingFactorHeight * 500);
+        Trash* trash = new Trash(logger_, settings_, settings_->mapWidth - 400, settings_->mapHeight / 2 + 250);
         gameObjects_.push_back(trash);
 
         orderGameObjects();
@@ -571,13 +567,8 @@ public:
         Player* player = new Player(logger_, settings_);
         gameObjects_.push_back(player);
 
-        /*
-        player->setPosition(settings_->screenWidth / 2 - player->getSprite().getLocalBounds().width * settings_->scalingFactorWidth / 2,
-            settings_->screenHeight / 2 - player->getSprite().getLocalBounds().height * settings_->scalingFactorHeight / 2);
-        */
-
-        player->setPosition(settings_->mapWidth / 2 - player->getSprite().getLocalBounds().width * settings_->scalingFactorWidth / 2,
-            settings_->mapHeight / 2 - player->getSprite().getLocalBounds().height * settings_->scalingFactorHeight / 2);
+        player->setPosition(settings_->mapWidth / 2 - player->getSprite().getLocalBounds().width / 2,
+            settings_->mapHeight / 2 - player->getSprite().getLocalBounds().height / 2);
         orderGameObjects();
 
         // Give some test items

@@ -28,8 +28,6 @@ public:
     std::vector<std::string> readInventory();
     void saveInventory(std::vector<std::string>& inv);
 
-    void recalculateScaling();
-
     const char* title = "CeviCamp";
     int screenWidth = 1920;
     int screenHeight = 1080;
@@ -47,9 +45,6 @@ public:
     int mapWidth = 5000;
     int mapHeight = 5000;
 
-    float scalingFactorWidth = 1.f;
-    float scalingFactorHeight = 1.f;
-
 private:
     Logger* logger_;
 };
@@ -63,21 +58,8 @@ Settings::Settings(Logger* logger)
     }
     readSettingsFromFile();
     std::srand(seed); // does not work...
-
-    recalculateScaling();
 }
 
-void Settings::recalculateScaling()
-{
-    /**
-     * Scaling Factor
-     * 0.5 for 1920x1080
-     * 1.0 for 3840x2160
-     */
-    scalingFactorWidth = 1.0f / 3840.0f * screenWidth;
-    scalingFactorHeight = 1.0f / 2160.0f * screenHeight;
-    
-}
 
 void Settings::readSettingsFromFile()
 {

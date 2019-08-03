@@ -20,7 +20,7 @@ public:
         amount_ = 1;
 
         amountText_.setFont(settings_->font);
-        amountText_.setCharacterSize(80 * settings_->scalingFactorHeight);
+        amountText_.setCharacterSize(40);
         amountText_.setString(std::to_string(amount_));
 
         sprite_ = sf::Sprite(image_);

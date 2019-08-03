@@ -40,8 +40,6 @@ View::View(Settings* settings, Logger* logger)
     settings_->screenHeight = vm_.height;
     settings_->screenWidth = vm_.width;
 
-    settings_->recalculateScaling();
-
     // set up views
     resetViews();
 }

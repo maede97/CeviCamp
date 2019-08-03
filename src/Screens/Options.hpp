@@ -18,33 +18,27 @@ public:
         x_ = x;
         y_ = y;
 
-        background_.setSize(sf::Vector2f(800.0f, 100.0f));
-        slider_.setSize(sf::Vector2f(800.0f, 100.0f));
+        background_.setSize(sf::Vector2f(400.0f, 50.0f));
+        slider_.setSize(sf::Vector2f(400.0f, 50.0f));
 
         background_.setFillColor(sf::Color(100, 100, 100));
         slider_.setFillColor(sf::Color(200, 200, 200, 100)); // add some alpha
 
-        background_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
-        slider_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
-
         name_.setFont(settings_->font);
         value_.setFont(settings_->font);
 
-        name_.setCharacterSize(100);
-        value_.setCharacterSize(80);
-
-        name_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
-        value_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
+        name_.setCharacterSize(36);
+        value_.setCharacterSize(32);
 
         name_.setString(name);
 
         updateValue();
 
         // set positions
-        spacing_ = 50 * settings_->scalingFactorHeight; // spacing after text before slider
+        spacing_ = 25; // spacing after text before slider
 
         name_.setPosition(x, y);
-        int textHeight = 100 * settings_->scalingFactorHeight;
+        int textHeight = 50;
         // value_ will be positioned each time it is drawn
         background_.setPosition(x, y + textHeight + spacing_);
         slider_.setPosition(x, y + textHeight + spacing_);
@@ -54,22 +48,22 @@ public:
     {
         // update slider based on current selected value
         value_.setString(std::to_string(currentValue_));
-        double frac;
+        float frac;
         if (currentValue_ == minValue_) {
             frac = 0;
         } else {
             frac = 1.0f / (maxValue_ - minValue_) * (currentValue_ - minValue_);
         }
-        slider_.setScale(frac * settings_->scalingFactorWidth, settings_->scalingFactorHeight);
+        slider_.setScale(frac, 1.f);
         *toChange_ = currentValue_;
     }
 
     void draw(sf::RenderWindow& window)
     {
         // change value position to be placed centered inside slider
-        int textHeight = 100 * settings_->scalingFactorHeight;
-        value_.setPosition(x_ + background_.getLocalBounds().width * settings_->scalingFactorWidth / 2 - value_.getLocalBounds().width * settings_->scalingFactorWidth / 2,
-            y_ + textHeight + spacing_ + background_.getLocalBounds().height * settings_->scalingFactorHeight / 2 - 48 * settings_->scalingFactorHeight);
+        int textHeight = 50;
+        value_.setPosition(x_ + background_.getLocalBounds().width / 2 - value_.getLocalBounds().width / 2,
+            y_ + textHeight + spacing_ + background_.getLocalBounds().height / 2 - 24);
 
         window.draw(background_);
         window.draw(slider_);
@@ -80,7 +74,7 @@ public:
     void checkClick(int x, int y)
     {
         if (background_.getGlobalBounds().contains(x, y)) {
-            float length = background_.getLocalBounds().width * settings_->scalingFactorWidth;
+            float length = background_.getLocalBounds().width;
             float part = (x - background_.getPosition().x) / length;
             currentValue_ = minValue_ + part * (maxValue_ - minValue_);
             updateValue();
@@ -126,31 +120,28 @@ private:
 Options::Options(Logger* logger, Settings* settings)
     : Screen(logger, settings)
 {
-    sliders_.push_back(new Slider(logger, settings, L"MUSIKLAUTSTÄRKE", 200 * settings_->scalingFactorWidth, 200 * settings_->scalingFactorHeight, 0, 100, &settings_->musicVolume));
-    sliders_.push_back(new Slider(logger, settings, L"EFFEKTLAUTSTÄRKE", 200 * settings_->scalingFactorWidth, 500 * settings_->scalingFactorHeight, 0, 100, &settings_->soundVolume));
-    sliders_.push_back(new Slider(logger, settings, L"SPIELERGESCHWINDIGKEIT", 200 * settings_->scalingFactorWidth, 800 * settings_->scalingFactorHeight, 0, 100, &settings_->playerSpeed));
-    sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 200 * settings_->scalingFactorWidth, 1100 * settings_->scalingFactorHeight, 0, 100, &settings_->movementSpeed));
-    sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 200 * settings_->scalingFactorWidth, 1400 * settings_->scalingFactorHeight, settings_->screenWidth, 10000, &settings_->mapWidth));
-    sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 200 * settings_->scalingFactorWidth, 1700 * settings_->scalingFactorHeight, settings_->screenHeight, 10000, &settings_->mapHeight));
+    sliders_.push_back(new Slider(logger, settings, L"MUSIKLAUTSTÄRKE", 100, 100, 0, 100, &settings_->musicVolume));
+    sliders_.push_back(new Slider(logger, settings, L"EFFEKTLAUTSTÄRKE", 100, 250, 0, 100, &settings_->soundVolume));
+    sliders_.push_back(new Slider(logger, settings, L"SPIELERGESCHWINDIGKEIT", 100, 400, 0, 100, &settings_->playerSpeed));
+    sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 100, 550, 0, 100, &settings_->movementSpeed));
+    sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 100, 700, settings_->screenWidth, 10000, &settings_->mapWidth));
+    sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 100, 850, settings_->screenHeight, 10000, &settings_->mapHeight));
 
     keyMap_.setFont(settings_->font);
-    keyMap_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
     keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");
-    keyMap_.setCharacterSize(100 * settings_->scalingFactorHeight);
-    keyMap_.setPosition(settings_->screenWidth / 2 + 200*settings_->scalingFactorWidth, 100 * settings_->scalingFactorHeight);
+    keyMap_.setCharacterSize(36);
+    keyMap_.setPosition(settings_->screenWidth / 2 + 100, 50);
 
     keyMapKeys_.setFont(settings_->font);
-    keyMapKeys_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
     keyMapKeys_.setString(L"\n\nW\nS\nA\nD\nB\nM\nR");
-    keyMapKeys_.setCharacterSize(100 * settings_->scalingFactorHeight);
-    keyMapKeys_.setPosition(settings_->screenWidth / 2, 100 * settings_->scalingFactorHeight);
+    keyMapKeys_.setCharacterSize(36);
+    keyMapKeys_.setPosition(settings_->screenWidth / 2, 50);
 
     back_.setFont(settings_->font);
-    back_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
     back_.setString(L"ZURÜCK");
-    back_.setCharacterSize(200 * settings_->scalingFactorHeight);
+    back_.setCharacterSize(48);
     back_.setStyle(sf::Text::Bold);
-    back_.setPosition(settings_->screenWidth / 2 - back_.getLocalBounds().width * settings_->scalingFactorWidth / 2, settings_->screenHeight - 100 - back_.getLocalBounds().height * settings_->scalingFactorHeight);
+    back_.setPosition(settings_->screenWidth / 2 - back_.getLocalBounds().width / 2, settings_->screenHeight - 100 - back_.getLocalBounds().height);
 }
 
 Options::~Options()

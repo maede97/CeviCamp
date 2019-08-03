@@ -22,15 +22,16 @@ SplashScreen::SplashScreen(Logger* logger, Settings* settings)
         return;
     }
     sprite_ = sf::Sprite(image_);
-    sprite_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
-    sprite_.setPosition(settings_->screenWidth / 2 - image_.getSize().x * settings_->scalingFactorWidth / 2, settings_->screenHeight / 2 - image_.getSize().y * settings_->scalingFactorHeight / 2);
+    float factor = std::min(image_.getSize().x / settings_->screenWidth / 2.f, image_.getSize().y / settings_->screenWidth / 2.f);
+    sprite_.setScale(factor, factor);
+    sprite_.setPosition(settings_->screenWidth / 2 - factor * image_.getSize().x / 2, settings_->screenHeight / 2 - factor * image_.getSize().y / 2);
+
     // show a text on bottom of page
     text_.setFont(settings_->font);
-    text_.setScale(settings_->scalingFactorWidth, settings_->scalingFactorHeight);
     text_.setString(L"BELIEBIGE TASTE DRÜCKEN");
-    text_.setCharacterSize(200 * settings_->scalingFactorHeight);
+    text_.setCharacterSize(48);
     text_.setStyle(sf::Text::Bold);
-    text_.setPosition(settings_->screenWidth / 2 - text_.getLocalBounds().width * settings_->scalingFactorWidth / 2, settings_->screenHeight - 100 - text_.getLocalBounds().height * settings_->scalingFactorHeight);
+    text_.setPosition(settings_->screenWidth / 2 - text_.getLocalBounds().width / 2, settings_->screenHeight - 100 - text_.getLocalBounds().height);
 }
 
 void SplashScreen::show(sf::RenderWindow& window)

@@ -31,7 +31,7 @@ public:
         boundary_.setSize(sf::Vector2f(buttonSizeX, buttonSizeY));
 
         text_.setFont(settings->font);
-        text_.setCharacterSize(30 * settings->scalingFactorHeight);
+        text_.setCharacterSize(16);
         text_.setString(text);
         text_.setFillColor(sf::Color::Black);
         text_.setPosition(x + buttonSizeX / 2 - text_.getLocalBounds().width / 2, y + buttonSizeY / 2 - text_.getLocalBounds().height / 2);
@@ -77,24 +77,24 @@ public:
         x_ = settings->screenWidth / 4;
         y_ = settings->screenHeight / 4;
 
-        title_.setCharacterSize(80 * settings_->scalingFactorHeight);
+        title_.setCharacterSize(48);
         title_.setFont(settings_->font);
         title_.setString(title);
         title_.setFillColor(sf::Color::Black);
-        title_.setPosition(x_ + background_.getSize().x / 2 - title_.getLocalBounds().width / 2, y_ + 20 * settings_->scalingFactorHeight);
+        title_.setPosition(x_ + background_.getSize().x / 2 - title_.getLocalBounds().width / 2, y_ + 10);
 
         question_.setFont(settings_->font);
-        question_.setCharacterSize(60 * settings_->scalingFactorHeight);
+        question_.setCharacterSize(32);
         question_.setString(question);
         question_.setFillColor(sf::Color::Black);
-        question_.setPosition(x_ + background_.getSize().x / 2 - question_.getLocalBounds().width / 2, y_ + title_.getLocalBounds().height + 40 * settings_->scalingFactorHeight);
+        question_.setPosition(x_ + background_.getSize().x / 2 - question_.getLocalBounds().width / 2, y_ + title_.getLocalBounds().height + 20);
 
-        currX_ = x_ + 20 * settings_->scalingFactorWidth; // initial offset
-        currY_ = y_ + title_.getLocalBounds().height + question_.getLocalBounds().height + 80 * settings_->scalingFactorHeight;
+        currX_ = x_ + 10; // initial offset
+        currY_ = y_ + title_.getLocalBounds().height + question_.getLocalBounds().height + 40;
 
         cancel_ = new Button(logger_, settings_,
-            background_.getPosition().x + background_.getLocalBounds().width - 150 * settings_->scalingFactorWidth, background_.getPosition().y + 20*settings_->scalingFactorHeight,
-            108 * settings_->scalingFactorWidth, 108 * settings_->scalingFactorHeight, "CancelButton", L"");
+            background_.getPosition().x + background_.getLocalBounds().width - 75, background_.getPosition().y + 10,
+            54, 54, "CancelButton", L"");
     }
 
     ~ClickableMessageBox()
@@ -107,8 +107,8 @@ public:
 
     void addNewButtonRow()
     {
-        currY_ += 40 * settings_->scalingFactorHeight + buttonSizeY_;
-        currX_ = x_ + 20 * settings_->scalingFactorWidth;
+        currY_ += 20 + buttonSizeY_;
+        currX_ = x_ + 10;
     }
 
     // returns index of button
@@ -120,7 +120,7 @@ public:
         // y: title + text
         Button* button = new Button(logger_, settings_, currX_, currY_, buttonSizeX_, buttonSizeY_, image, text);
         buttons_.push_back(std::make_pair(button, callback));
-        currX_ += 40 * settings_->scalingFactorWidth + buttonSizeX_;
+        currX_ += 20 + buttonSizeX_;
     }
 
     void draw(sf::RenderWindow& window)
