@@ -22,14 +22,15 @@ SplashScreen::SplashScreen(Logger* logger, Settings* settings)
         return;
     }
     sprite_ = sf::Sprite(image_);
-    float factor = std::min(image_.getSize().x / settings_->screenWidth / 2.f, image_.getSize().y / settings_->screenWidth / 2.f);
+    float factor = std::min(1.f / image_.getSize().x * (1.f*settings_->screenWidth), 1.f / image_.getSize().y * (1.f*settings_->screenHeight));
+    logger_->info("factor", std::to_string(factor));
     sprite_.setScale(factor, factor);
     sprite_.setPosition(settings_->screenWidth / 2 - factor * image_.getSize().x / 2, settings_->screenHeight / 2 - factor * image_.getSize().y / 2);
 
     // show a text on bottom of page
     text_.setFont(settings_->font);
     text_.setString(L"BELIEBIGE TASTE DRÜCKEN");
-    text_.setCharacterSize(48*settings_->getGUIFactor());
+    text_.setCharacterSize(48 * settings_->getGUIFactor());
     text_.setStyle(sf::Text::Bold);
     text_.setPosition(settings_->screenWidth / 2 - text_.getLocalBounds().width / 2, settings_->screenHeight - 100 - text_.getLocalBounds().height);
 }

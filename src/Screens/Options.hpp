@@ -127,7 +127,7 @@ Options::Options(Logger* logger, Settings* settings)
     sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 100, 100 + perSlider * 3, 0, 100, &settings_->movementSpeed));
     sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 100, 100 + perSlider * 4, settings_->screenWidth, 10000, &settings_->mapWidth));
     sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 100, 100 + perSlider * 5, settings_->screenHeight, 10000, &settings_->mapHeight));
-    sliders_.push_back(new Slider(logger, settings, L"GUI-GRÖSSE (BRAUCHT NEUSTART)", 100, 100 + perSlider * 6, 1, 200, &settings_->guiSize));
+    sliders_.push_back(new Slider(logger, settings, L"GUI-GRÖSSE (BRAUCHT NEUSTART)", 100, 100 + perSlider * 6, 1, 301, &settings_->guiSize));
 
     keyMap_.setFont(settings_->font);
     keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");

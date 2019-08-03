@@ -55,7 +55,7 @@ MainMenu::MainMenu(Logger* logger, Settings* settings)
     exitText_.setFont(settings_->font);
     versionText_.setFont(settings_->font);
 
-    float factor = std::min(logoRightImage_.getSize().x / settings_->screenWidth / 2.f, logoRightImage_.getSize().y / settings_->screenWidth / 2.f);
+    float factor = std::min(1.f / logoRightImage_.getSize().x * (1.f*settings_->screenWidth), 1.f / logoRightImage_.getSize().y * (1.f*settings_->screenHeight));
     logoRightSprite_.setScale(factor, factor);
 
     keepPlayingText_.setCharacterSize(48*settings_->getGUIFactor());
