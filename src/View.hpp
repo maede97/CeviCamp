@@ -44,7 +44,8 @@ View::View(Settings* settings, Logger* logger)
     resetViews();
 }
 
-void View::resetZoomLevel() {
+void View::resetZoomLevel()
+{
     gameView.reset(sf::FloatRect(0.f, 0.f, settings_->mapWidth, settings_->mapHeight));
     gameView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
     gameView.setSize(originalView.getSize());
@@ -56,8 +57,13 @@ void View::resetViews()
     gameView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
 
     miniMapView.reset(sf::FloatRect(0.f, 0.f, settings_->mapWidth, settings_->mapHeight));
-    miniMapView.setViewport(sf::FloatRect(0.8f, 0.f, 0.2f, 0.2f)); // TODO: fix scaling issue (aspect ratio)
-
+    float fac1 = settings_->screenWidth * 0.2f * settings_->mapHeight / settings_->screenHeight / settings_->mapWidth;
+    if (fac1 < 0.2f) {
+        miniMapView.setViewport(sf::FloatRect(0.8f, 0.f, 0.2f, fac1));
+    } else {
+        fac1 = settings_->screenHeight * settings_->mapWidth * 0.2f / settings_->mapHeight / settings_->screenWidth;
+        miniMapView.setViewport(sf::FloatRect(1.f-fac1, 0.f, fac1, 0.2f));
+    }
     originalView.reset(sf::FloatRect(0.f, 0.f, settings_->screenWidth, settings_->screenHeight));
     originalView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
 }

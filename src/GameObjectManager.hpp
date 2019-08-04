@@ -252,17 +252,19 @@ public:
             + std::to_string(static_cast<int>((*playerIterator_)->getPosition().y - (*grassIterator_)->getPosition().y + (*playerIterator_)->getSprite().getLocalBounds().height / 2)));
         player_pos.setFont(settings_->font);
         player_pos.setPosition(10, 10); // add some small spacing
-        player_pos.setCharacterSize(24*settings_->getGUIFactor());
+        player_pos.setCharacterSize(24 * settings_->getGUIFactor());
 
         window.draw(player_pos);
 
         // now draw minimap
-        window.setView(view_->miniMapView);
-        for (auto gameObject : gameObjects_) {
-            if (gameObject->type == GameObject::Type::Cursor || gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
-                continue;
+        if (settings_->showMiniMap) {
+            window.setView(view_->miniMapView);
+            for (auto gameObject : gameObjects_) {
+                if (gameObject->type == GameObject::Type::Cursor || gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
+                    continue;
+                }
+                window.draw(gameObject->getSprite());
             }
-            window.draw(gameObject->getSprite());
         }
     }
 
@@ -435,7 +437,12 @@ public:
                 if (checkInventoryItemAmount("ItemBlache", 10) && checkInventoryItemAmount("ItemRope", 3)) {
                     box->addButton("ItemWood", L"Sarasani", [&, x, y]() { buildMenuBuildItem(x, y, GameObject::Type::Sarasani); });
                 }
-                messageBox_ = box;
+                if (box->getButtonAmount() != 0) {
+                    messageBox_ = box;
+                } else {
+                    delete box;
+                    hasMenu_ = false;
+                }
             } else {
                 // nothing to do here
             }

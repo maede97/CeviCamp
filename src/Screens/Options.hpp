@@ -3,6 +3,82 @@
 
 #include "Screen.hpp"
 
+class CheckBox {
+public:
+    CheckBox(Logger* logger, Settings* settings, const wchar_t* name, int x, int y, bool checked, bool* toChange)
+    {
+        logger_ = logger;
+        settings_ = settings;
+        currentValue_ = *toChange;
+        toChange_ = toChange;
+
+        x_ = x;
+        y_ = y;
+
+        background_.setSize(sf::Vector2f(50.0f * settings_->getGUIFactor(), 50.0f * settings_->getGUIFactor()));
+        background_.setOutlineThickness(2.f);
+        background_.setFillColor(sf::Color::Black);
+        background_.setOutlineColor(sf::Color(100, 100, 100));
+
+        value_.setSize(sf::Vector2f(50.0f * settings_->getGUIFactor(), 50.0f * settings_->getGUIFactor()));
+
+        name_.setFont(settings_->font);
+
+        name_.setCharacterSize(36 * settings_->getGUIFactor());
+
+        name_.setString(name);
+
+        updateValue();
+
+        background_.setPosition(x, y);
+        value_.setPosition(x, y);
+
+        name_.setPosition(x + background_.getGlobalBounds().width + 10 * settings_->getGUIFactor(),
+            y + background_.getGlobalBounds().height / 2 - name_.getGlobalBounds().height / 2);
+    }
+
+    void updateValue()
+    {
+        if (currentValue_) {
+            value_.setFillColor(sf::Color(200, 200, 200));
+        } else {
+            value_.setFillColor(sf::Color::Black);
+        }
+        *toChange_ = currentValue_;
+    }
+
+    void draw(sf::RenderWindow& window)
+    {
+        window.draw(background_);
+        window.draw(name_);
+        window.draw(value_);
+    }
+    void checkClick(int x, int y)
+    {
+        if (background_.getGlobalBounds().contains(x, y)) {
+            currentValue_ = !currentValue_;
+            updateValue();
+        }
+    }
+
+private:
+    Logger* logger_;
+    Settings* settings_;
+
+    bool currentValue_;
+    bool* toChange_;
+
+    int x_;
+    int y_;
+
+    sf::RectangleShape background_;
+
+    sf::Text name_;
+    sf::RectangleShape value_;
+
+    int spacing_;
+};
+
 class Slider {
 public:
     // Class to show a slider, using multiple sf elements
@@ -18,11 +94,14 @@ public:
         x_ = x;
         y_ = y;
 
-        background_.setSize(sf::Vector2f(400.0f, 50.0f));
-        slider_.setSize(sf::Vector2f(400.0f, 50.0f));
+        background_.setSize(sf::Vector2f(400.0f * settings_->getGUIFactor(), 50.0f * settings_->getGUIFactor()));
+        slider_.setSize(sf::Vector2f(400.0f * settings_->getGUIFactor(), 50.0f * settings_->getGUIFactor()));
 
         background_.setFillColor(sf::Color(100, 100, 100));
         slider_.setFillColor(sf::Color(200, 200, 200, 100)); // add some alpha
+
+        boxLeftBackground_.setSize(sf::Vector2f(background_.getGlobalBounds().height, background_.getGlobalBounds().height));
+        boxRightBackground_.setSize(sf::Vector2f(background_.getGlobalBounds().height, background_.getGlobalBounds().height));
 
         name_.setFont(settings_->font);
         value_.setFont(settings_->font);
@@ -35,13 +114,16 @@ public:
         updateValue();
 
         // set positions
-        spacing_ = 25; // spacing after text before slider
+        spacing_ = 10 * settings_->getGUIFactor(); // spacing after text before slider
+        textHeight_ = 50 * settings_->getGUIFactor();
 
         name_.setPosition(x, y);
-        int textHeight = 50;
+
         // value_ will be positioned each time it is drawn
-        background_.setPosition(x, y + textHeight + spacing_);
-        slider_.setPosition(x, y + textHeight + spacing_);
+        boxLeftBackground_.setPosition(x - boxLeftBackground_.getGlobalBounds().width, y + textHeight_ + spacing_);
+        boxRightBackground_.setPosition(x + background_.getGlobalBounds().width, y + textHeight_ + spacing_);
+        background_.setPosition(x, y + textHeight_ + spacing_);
+        slider_.setPosition(x, y + textHeight_ + spacing_);
     }
 
     void updateValue()
@@ -61,11 +143,12 @@ public:
     void draw(sf::RenderWindow& window)
     {
         // change value position to be placed centered inside slider
-        int textHeight = 50;
-        value_.setPosition(x_ + background_.getLocalBounds().width / 2 - value_.getLocalBounds().width / 2,
-            y_ + textHeight + spacing_ + background_.getLocalBounds().height / 2 - 24);
+        value_.setPosition(x_ + background_.getGlobalBounds().width / 2 - value_.getGlobalBounds().width / 2,
+            y_ + textHeight_ + spacing_ + background_.getGlobalBounds().height / 2 - value_.getGlobalBounds().height / 2);
 
         window.draw(background_);
+        window.draw(boxLeftBackground_);
+        window.draw(boxRightBackground_);
         window.draw(slider_);
         window.draw(value_);
         window.draw(name_);
@@ -73,7 +156,13 @@ public:
 
     void checkClick(int x, int y)
     {
-        if (background_.getGlobalBounds().contains(x, y)) {
+        if (boxLeftBackground_.getGlobalBounds().contains(x, y)) {
+            currentValue_ = std::max(minValue_, currentValue_ - 1);
+            updateValue();
+        } else if (boxRightBackground_.getGlobalBounds().contains(x, y)) {
+            currentValue_ = std::min(maxValue_, currentValue_ + 1);
+            updateValue();
+        } else if (background_.getGlobalBounds().contains(x, y)) {
             float length = background_.getLocalBounds().width;
             float part = (x - background_.getPosition().x) / length;
             currentValue_ = minValue_ + part * (maxValue_ - minValue_);
@@ -86,6 +175,8 @@ private:
     int maxValue_;
     int currentValue_;
 
+    int textHeight_;
+
     int x_;
     int y_;
 
@@ -93,6 +184,9 @@ private:
 
     sf::RectangleShape background_;
     sf::RectangleShape slider_;
+
+    sf::RectangleShape boxLeftBackground_;
+    sf::RectangleShape boxRightBackground_;
 
     sf::Text name_;
     sf::Text value_;
@@ -112,6 +206,7 @@ public:
 
 private:
     std::vector<Slider*> sliders_;
+    std::vector<CheckBox*> checkboxes_;
     sf::Text back_;
     sf::Text keyMap_;
     sf::Text keyMapKeys_;
@@ -128,6 +223,9 @@ Options::Options(Logger* logger, Settings* settings)
     sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 100, 100 + perSlider * 4, settings_->screenWidth, 10000, &settings_->mapWidth));
     sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 100, 100 + perSlider * 5, settings_->screenHeight, 10000, &settings_->mapHeight));
     sliders_.push_back(new Slider(logger, settings, L"GUI-GRÖSSE (BRAUCHT NEUSTART)", 100, 100 + perSlider * 6, 1, 301, &settings_->guiSize));
+
+    int perCheckBox = (settings_->screenHeight / 2) / 1;
+    checkboxes_.push_back(new CheckBox(logger, settings, L"MINIMAP ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2, settings_->showMiniMap, &settings_->showMiniMap));
 
     keyMap_.setFont(settings_->font);
     keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");
@@ -158,6 +256,9 @@ void Options::show(sf::RenderWindow& window)
     for (auto slider : sliders_) {
         slider->draw(window);
     }
+    for (auto checkbox : checkboxes_) {
+        checkbox->draw(window);
+    }
 
     window.draw(keyMapKeys_);
     window.draw(keyMap_);
@@ -168,6 +269,9 @@ bool Options::handleClick(int x, int y)
 {
     for (auto slider : sliders_) {
         slider->checkClick(x, y);
+    }
+    for (auto checkbox : checkboxes_) {
+        checkbox->checkClick(x, y);
     }
 
     if (back_.getGlobalBounds().contains(x, y)) {

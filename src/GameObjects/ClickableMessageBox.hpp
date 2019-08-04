@@ -109,6 +109,10 @@ public:
         delete cancel_;
     }
 
+    int getButtonAmount() const {
+        return buttons_.size();
+    }
+
     void addNewButtonRow()
     {
         currY_ += 20 + buttonSizeY_;

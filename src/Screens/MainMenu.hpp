@@ -55,14 +55,14 @@ MainMenu::MainMenu(Logger* logger, Settings* settings)
     exitText_.setFont(settings_->font);
     versionText_.setFont(settings_->font);
 
-    float factor = std::min(1.f / logoRightImage_.getSize().x * (1.f*settings_->screenWidth), 1.f / logoRightImage_.getSize().y * (1.f*settings_->screenHeight));
+    float factor = std::min(1.f / logoRightImage_.getSize().x * (1.f * settings_->screenWidth), 1.f / logoRightImage_.getSize().y * (1.f * settings_->screenHeight));
     logoRightSprite_.setScale(factor, factor);
 
-    keepPlayingText_.setCharacterSize(48*settings_->getGUIFactor());
-    gameStartText_.setCharacterSize(48*settings_->getGUIFactor());
-    optionsText_.setCharacterSize(48*settings_->getGUIFactor());
-    exitText_.setCharacterSize(48*settings_->getGUIFactor());
-    versionText_.setCharacterSize(24*settings_->getGUIFactor());
+    keepPlayingText_.setCharacterSize(48 * settings_->getGUIFactor());
+    gameStartText_.setCharacterSize(48 * settings_->getGUIFactor());
+    optionsText_.setCharacterSize(48 * settings_->getGUIFactor());
+    exitText_.setCharacterSize(48 * settings_->getGUIFactor());
+    versionText_.setCharacterSize(24 * settings_->getGUIFactor());
 
     int availableSpace = settings_->screenHeight - 200;
     int perItem = availableSpace / 6;
@@ -81,12 +81,13 @@ void MainMenu::show(sf::RenderWindow& window)
     if (!keepPlaying_) {
         keepPlayingText_Changed.setFillColor(sf::Color(150, 150, 150, 100));
     }
+    
+    window.draw(logoRightSprite_);
     window.draw(keepPlayingText_Changed);
     window.draw(gameStartText_);
     window.draw(optionsText_);
     window.draw(exitText_);
     window.draw(versionText_);
-    window.draw(logoRightSprite_);
 }
 
 MainMenu::MenuResult MainMenu::handleClick(int x, int y)

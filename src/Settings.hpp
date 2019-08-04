@@ -49,6 +49,8 @@ public:
     int mapWidth = 5000;
     int mapHeight = 5000;
 
+    bool showMiniMap = true;
+
 private:
     Logger* logger_;
 };
@@ -107,6 +109,8 @@ void Settings::readSettingsFromFile()
                 movementSpeed = std::stoi(value);
             } else if (name == "gui-size") {
                 guiSize = std::stoi(value);
+            } else if(name == "show-minimap"){
+                showMiniMap = std::stoi(value);
             }
         }
     } else {
@@ -126,6 +130,7 @@ void Settings::saveSettingsToFile()
     out << "player-speed=" << playerSpeed << std::endl;
     out << "movement-speed=" << movementSpeed << std::endl;
     out << "gui-size=" << guiSize << std::endl;
+    out << "show-minimap=" << showMiniMap << std::endl;
     out.close();
 }
 
