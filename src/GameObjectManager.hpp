@@ -221,6 +221,7 @@ public:
 
     void drawAll(sf::RenderWindow& window, sf::Time dT)
     {
+        orderGameObjects();
         // Update members (all gameObjects)
         update();
 
@@ -505,7 +506,6 @@ public:
         for (auto it = gameObjects_.begin(); it != gameObjects_.end(); it++) {
             switch ((*it)->type) {
             case GameObject::Type::Player: {
-                std::cout << "set player it " << std::endl;
                 playerIterator_ = it;
                 break;
             }
@@ -529,13 +529,25 @@ public:
 
     void orderGameObjects()
     {
-        std::cout << "reorder GO" << std::endl;
         std::sort(gameObjects_.begin(), gameObjects_.end(),
-            [](GameObject* left, GameObject* right) {
+            /*[](GameObject* left, GameObject* right) {
                 if (left->type == right->type) {
                     return left->getPosition().y < right->getPosition().y;
                 }
                 return left->type > right->type;
+            });*/
+            [](GameObject* left, GameObject* right) {
+                if(left->type == GameObject::Type::Grass) {
+                    return 1;
+                }
+                if(right->type == GameObject::Type::Grass) {
+                    return 0;
+                }
+                if (left->getSprite().getGlobalBounds().top + left->getSprite().getGlobalBounds().height < right->getSprite().getGlobalBounds().top + right->getSprite().getGlobalBounds().height) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             });
         setNewIterators();
     }
