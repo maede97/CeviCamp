@@ -5,7 +5,7 @@
 
 class CheckBox {
 public:
-    CheckBox(Logger* logger, Settings* settings, const wchar_t* name, int x, int y, bool checked, bool* toChange)
+    CheckBox(Logger* logger, Settings* settings, const wchar_t* name, int x, int y, bool* toChange)
     {
         logger_ = logger;
         settings_ = settings;
@@ -39,6 +39,7 @@ public:
 
     void updateValue()
     {
+        currentValue_ = *toChange_;
         if (currentValue_) {
             value_.setFillColor(sf::Color(200, 200, 200));
         } else {
@@ -49,6 +50,7 @@ public:
 
     void draw(sf::RenderWindow& window)
     {
+        updateValue();
         window.draw(background_);
         window.draw(name_);
         window.draw(value_);
@@ -57,7 +59,7 @@ public:
     {
         if (background_.getGlobalBounds().contains(x, y)) {
             currentValue_ = !currentValue_;
-            updateValue();
+            *toChange_ = currentValue_;
         }
     }
 
@@ -222,10 +224,11 @@ Options::Options(Logger* logger, Settings* settings)
     sliders_.push_back(new Slider(logger, settings, L"KARTENGESCHWINDIGKEIT", 100, 100 + perSlider * 3, 0, 100, &settings_->movementSpeed));
     sliders_.push_back(new Slider(logger, settings, L"KARTENBREITE", 100, 100 + perSlider * 4, settings_->screenWidth, 10000, &settings_->mapWidth));
     sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 100, 100 + perSlider * 5, settings_->screenHeight, 10000, &settings_->mapHeight));
-    sliders_.push_back(new Slider(logger, settings, L"GUI-GRÖSSE (BRAUCHT NEUSTART)", 100, 100 + perSlider * 6, 1, 301, &settings_->guiSize));
+    sliders_.push_back(new Slider(logger, settings, L"GUI-GRÖSSE (BRAUCHT NEUSTART)", 100, 100 + perSlider * 6, 1, 300, &settings_->guiSize));
 
-    int perCheckBox = (settings_->screenHeight / 2) / 1;
-    checkboxes_.push_back(new CheckBox(logger, settings, L"MINIMAP ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2, settings_->showMiniMap, &settings_->showMiniMap));
+    int perCheckBox = (settings_->screenHeight / 2) / 2;
+    checkboxes_.push_back(new CheckBox(logger, settings, L"MINIMAP ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2, &settings_->showMiniMap));
+    checkboxes_.push_back(new CheckBox(logger, settings, L"TUTORIAL ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2 + perCheckBox, &settings_->showTutorial));
 
     keyMap_.setFont(settings_->font);
     keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");

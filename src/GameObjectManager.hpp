@@ -49,6 +49,16 @@ public:
         gameObjects_.push_back(playerInventory);
 
         setNewIterators(); // set all iterator
+
+        // show tutorial if not completed
+        if (settings_->showTutorial) {
+            hasMenu_ = true;
+            ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"Tutorial",
+                L"Bewege dich mit den Pfeiltasten oder WASD,\nbaue mit Rechtsklick,\nbaue ab mit Linksklick.\n\
+                Zoome mit dem Mausrad.\n\nViel Spass!\n\nPS: Die Tastenbelegung findest du auch\nin den Einstellungen.");
+            messageBox_ = box;
+            settings_->showTutorial = false;
+        }
     }
 
     ~GameObjectManager()
@@ -440,10 +450,9 @@ public:
         }
     }
 
-    void
-    moveCameraToPlayer()
+    void moveCameraToPlayer()
     {
-        sf::Vector2f playerPos = (*playerIterator_)->getPosition();
+        sf::Vector2f playerPos = (*playerIterator_)->getPosition() + sf::Vector2f((*playerIterator_)->getSprite().getGlobalBounds().width /2, (*playerIterator_)->getSprite().getGlobalBounds().height/2);
         view_->gameView.setCenter(playerPos);
     }
 

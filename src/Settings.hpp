@@ -51,6 +51,8 @@ public:
 
     bool showMiniMap = true;
 
+    bool showTutorial = true;
+
 private:
     Logger* logger_;
 };
@@ -111,6 +113,8 @@ void Settings::readSettingsFromFile()
                 guiSize = std::stoi(value);
             } else if(name == "show-minimap"){
                 showMiniMap = std::stoi(value);
+            } else if(name == "show-tutorial"){
+                showTutorial = std::stoi(value);
             }
         }
     } else {
@@ -131,6 +135,7 @@ void Settings::saveSettingsToFile()
     out << "movement-speed=" << movementSpeed << std::endl;
     out << "gui-size=" << guiSize << std::endl;
     out << "show-minimap=" << showMiniMap << std::endl;
+    out << "show-tutorial=" << showTutorial << std::endl;
     out.close();
 }
 
