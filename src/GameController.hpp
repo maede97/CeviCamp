@@ -213,31 +213,6 @@ void GameController::gameLoop()
                     settings_->keepPlaying = true;
                     gameState_ = ShowMenu;
                 }
-
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-                    gameObjectManager_->selectInventorySlot(0);
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-                    gameObjectManager_->selectInventorySlot(1);
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-                    gameObjectManager_->selectInventorySlot(2);
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-                    gameObjectManager_->selectInventorySlot(3);
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
-                    gameObjectManager_->selectInventorySlot(4);
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
-                    gameObjectManager_->selectInventorySlot(5);
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
-                    gameObjectManager_->selectInventorySlot(6);
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
-                    gameObjectManager_->selectInventorySlot(7);
-                }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
                     sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Mouse::getPosition(),view_->gameView);
                     gameObjectManager_->handleClick(worldPos.x, worldPos.y, false);

@@ -7,7 +7,6 @@
 #include "GameObjects/Grass.hpp"
 #include "GameObjects/Inventory.hpp"
 #include "GameObjects/InventoryItem.hpp"
-#include "GameObjects/InventorySlot.hpp"
 #include "GameObjects/MouseCursor.hpp"
 #include "GameObjects/Paloxe.hpp"
 #include "GameObjects/Player.hpp"
@@ -43,15 +42,11 @@ public:
         playerInventory->setPosition((settings_->screenWidth - playerInventory->getSprite().getGlobalBounds().width) / 2,
             settings_->screenHeight - playerInventory->getSprite().getGlobalBounds().height);
 
-        InventorySlot* inventorySlot = new InventorySlot(logger_, settings_, playerInventory->getPosition().x,
-            playerInventory->getPosition().y, slotSize_);
-
         movementSpeed_ = settings_->movementSpeed;
 
         // push objects into vector
         gameObjects_.push_back(cursor);
         gameObjects_.push_back(playerInventory);
-        gameObjects_.push_back(inventorySlot);
 
         setNewIterators(); // set all iterator
     }
@@ -104,7 +99,7 @@ public:
         // playSound for this Item
         std::vector<InventoryItem*>::iterator position = inventoryItems_.end();
         for (auto it = inventoryItems_.begin(); it != inventoryItems_.end(); it++) {
-            if ((*it)->getSlot() == selectedSlot_ && (*it)->getName() == item) {
+            if ((*it)->getName() == item) {
                 position = it;
                 break;
             }
@@ -202,13 +197,13 @@ public:
     {
         hasMenu_ = true;
         ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"CheatMenu", L"Klicke, um Items zu erhalten.");
-        box->addButton("ItemMatch", L"Zündholz", [&]() { addInventoryItem("ItemMatch"); });
-        box->addButton("ItemWood", L"Holz", [&]() { addInventoryItem("ItemWood"); });
-        box->addButton("ItemStone", L"Stein", [&]() { addInventoryItem("ItemStone"); });
-        box->addButton("ItemSapling", L"Setzling", [&]() { addInventoryItem("ItemSapling"); });
+        box->addButton("ItemStreichholz", L"Streichholz", [&]() { addInventoryItem("ItemStreichholz"); });
+        box->addButton("ItemHolz", L"Holz", [&]() { addInventoryItem("ItemHolz"); });
+        box->addButton("ItemStein", L"Stein", [&]() { addInventoryItem("ItemStein"); });
+        box->addButton("ItemSetzling", L"Setzling", [&]() { addInventoryItem("ItemSetzling"); });
         box->addNewButtonRow();
         box->addButton("ItemBlache", L"Blache", [&]() { addInventoryItem("ItemBlache"); });
-        box->addButton("ItemRope", L"Seil", [&]() { addInventoryItem("ItemRope"); });
+        box->addButton("ItemSeil", L"Seil", [&]() { addInventoryItem("ItemSeil"); });
         box->addButton("Delete", L"Löschen", [&]() { inventoryItems_.clear(); });
         messageBox_ = box;
     }
@@ -225,7 +220,7 @@ public:
 
         // Draw members
         for (auto gameObject : gameObjects_) {
-            if (gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
+            if (gameObject->type == GameObject::Type::Inventory) {
                 continue;
             }
 
@@ -239,7 +234,6 @@ public:
         for (auto item : inventoryItems_) {
             item->draw(window);
         }
-        window.draw((*inventorySelectorIterator_)->getSprite());
         if (hasMenu_) {
             messageBox_->draw(window);
         }
@@ -260,7 +254,7 @@ public:
         if (settings_->showMiniMap) {
             window.setView(view_->miniMapView);
             for (auto gameObject : gameObjects_) {
-                if (gameObject->type == GameObject::Type::Cursor || gameObject->type == GameObject::Type::Inventory || gameObject->type == GameObject::Type::InventorySlot) {
+                if (gameObject->type == GameObject::Type::Cursor || gameObject->type == GameObject::Type::Inventory) {
                     continue;
                 }
                 window.draw(gameObject->getSprite());
@@ -305,12 +299,6 @@ public:
         bool valid = false;
         sf::Vector2i playerPos = sf::Vector2i((*playerIterator_)->getPosition());
 
-        sf::Vector2i pos = view_->window.mapCoordsToPixel(sf::Vector2f(sf::Mouse::getPosition(view_->window)), view_->originalView);
-        if ((*inventoryIterator_)->checkClick(pos.x, pos.y)) {
-            int xd = pos.x - (*inventoryIterator_)->getPosition().x;
-            int s = xd / slotSize_;
-            selectInventorySlot(s);
-        }
         valid = (*cursorIterator_)
                     ->validClick(
                         x, y, playerPos.x, playerPos.y,
@@ -324,7 +312,6 @@ public:
         // we have a valid click
         bool exit = false;
         bool removeItem = false;
-        bool needSorting = false;
         auto removeIt = gameObjects_.end();
         auto currentIterator = gameObjects_.begin();
         for (auto gameObject : gameObjects_) {
@@ -334,7 +321,7 @@ public:
             if (leftClick && gameObject->checkClick(x, y)) {
                 switch (gameObject->type) {
                 case GameObject::Type::Tree: {
-                    if (inventorySpace(2) && addInventoryItem("ItemWood") && addInventoryItem("ItemSapling")) {
+                    if (inventorySpace(2) && addInventoryItem("ItemHolz") && addInventoryItem("ItemSetzling")) {
                         soundManager_->playSound("TreeBreak");
                         gameObject->setLevel(0);
                         removeItem = true;
@@ -344,7 +331,7 @@ public:
                     break;
                 }
                 case GameObject::Type::Stone: {
-                    if (addInventoryItem("ItemStone")) {
+                    if (addInventoryItem("ItemStein")) {
                         soundManager_->playSound("StoneBreak");
                         removeItem = true;
                         removeIt = currentIterator;
@@ -356,7 +343,7 @@ public:
                     // show menu with Blache & Rope
                     ClickableMessageBox* menu = new ClickableMessageBox(logger_, settings_, L"J+S-Paloxe", L"Wähle aus:");
                     menu->addButton("ItemBlache", L"Blache", [&]() { addInventoryItem("ItemBlache"); });
-                    menu->addButton("ItemRope", L"Seil", [&]() { addInventoryItem("ItemRope"); });
+                    menu->addButton("ItemSeil", L"Seil", [&]() { addInventoryItem("ItemSeil"); });
                     hasMenu_ = true;
                     messageBox_ = menu;
                     exit = true;
@@ -370,15 +357,15 @@ public:
                 case GameObject::Type::Fire: {
                     switch (gameObject->getLevel()) {
                     case 0:
-                        if (removeInventoryItem("ItemWood")) {
-                            soundManager_->playSound("ItemWood");
+                        if (removeInventoryItem("ItemHolz")) {
+                            soundManager_->playSound("ItemHolz");
                             gameObject->handleClick();
                             exit = true;
                         }
                         break;
                     case 1:
-                        if (removeInventoryItem("ItemMatch")) {
-                            soundManager_->playSound("ItemMatch");
+                        if (removeInventoryItem("ItemStreichholz")) {
+                            soundManager_->playSound("ItemStreichholz");
                             gameObject->handleClick();
                             exit = true;
                         }
@@ -389,14 +376,23 @@ public:
                     break;
                 }
                 case GameObject::Type::Trash: {
+                    hasMenu_ = true;
+                    ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"Abfall-Menu", L"Klicke, um wegzuwerfen.");
                     for (auto item : inventoryItems_) {
-                        if (item->getSlot() == getSelectedInventorySlot()) {
-                            if (removeInventoryItem(item->getName())) {
-                                soundManager_->playSound("ThrowTrash");
-                                exit = true;
-                            }
-                        }
+                        std::string name = item->getName();
+                        // +4 because to strip "Item"
+                        box->addButton(name, std::wstring(name.begin() + 4, name.end()).c_str(), [&, name]() {
+                            removeInventoryItem(name);
+                            soundManager_->playSound("ThrowTrash");
+                        });
                     }
+                    if (box->getButtonAmount() != 0) {
+                        messageBox_ = box;
+                    } else {
+                        delete box;
+                        hasMenu_ = false;
+                    }
+                    exit = true;
                     break;
                 }
                 default:
@@ -408,35 +404,25 @@ public:
         // no object returned anything, we think it is grass clicked --> build
         // something
         if (!exit) {
-            // place a fire on clicked position
-            if (!leftClick && checkItemInSlot("ItemStone") && removeInventoryItem("ItemStone")) {
-                soundManager_->playSound("PlaceFire");
-                Fire* fire = new Fire(logger_, settings_);
-                fire->setPosition(x - fire->getSprite().getLocalBounds().width / 2,
-                    y - fire->getSprite().getLocalBounds().height / 2);
-                gameObjects_.push_back(fire);
-                needSorting = true;
-            } else if (!leftClick && checkItemInSlot("ItemSapling") && removeInventoryItem("ItemSapling")) {
-                soundManager_->playSound("PlaceSapling");
-                Tree* tree = new Tree(logger_, settings_, x, y);
-                tree->setPosition(x - tree->getSprite().getLocalBounds().width / 2,
-                    y - tree->getSprite().getLocalBounds().height / 2);
-                gameObjects_.push_back(tree);
-                needSorting = true;
-            } else if (!leftClick && checkItemInSlot("ItemBlache") && removeInventoryItem("ItemBlache")) {
-                //soundManager_->playSound("PlaceBlache"); // TODO
-                Blache* blache = new Blache(logger_, settings_, x, y);
-                blache->setPosition(x - blache->getSprite().getLocalBounds().width / 2, y - blache->getSprite().getLocalBounds().height / 2);
-                gameObjects_.push_back(blache);
-                needSorting = true;
-            } else if (!leftClick) {
+            if (!leftClick) {
                 // show a menu with a selection to build
                 hasMenu_ = true;
                 ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"Bau-Menu", L"Klicke, um an dieser Stelle zu bauen.");
-                // TEMP item for sarasani
-                if (checkInventoryItemAmount("ItemBlache", 10) && checkInventoryItemAmount("ItemRope", 3)) {
-                    box->addButton("ItemWood", L"Sarasani", [&, x, y]() { buildMenuBuildItem(x, y, GameObject::Type::Sarasani); });
+
+                // add box buttons
+                if (checkInventoryItemAmount("ItemBlache", 10) && checkInventoryItemAmount("ItemSeil", 3)) {
+                    box->addButton("ItemSarasani", L"Sarasani", [&, x, y]() { buildMenuBuildItem(x, y, GameObject::Type::Sarasani); });
                 }
+                if (checkInventoryItemAmount("ItemStein", 1)) {
+                    box->addButton("ItemStein", L"Feuer", [&, x, y]() { buildMenuBuildItem(x, y, GameObject::Type::Fire); });
+                }
+                if (checkInventoryItemAmount("ItemBlache", 1)) {
+                    box->addButton("ItemBlache", L"Blache", [&, x, y]() { buildMenuBuildItem(x, y, GameObject::Type::Blache); });
+                }
+                if (checkInventoryItemAmount("ItemSetzling", 1)) {
+                    box->addButton("ItemSetzling", L"Baum", [&, x, y]() { buildMenuBuildItem(x, y, GameObject::Type::Tree); });
+                }
+
                 if (box->getButtonAmount() != 0) {
                     messageBox_ = box;
                 } else {
@@ -452,12 +438,10 @@ public:
             gameObjects_.erase(removeIt);
             setNewIterators();
         }
-        if (needSorting) {
-            orderGameObjects();
-        }
     }
 
-    void moveCameraToPlayer()
+    void
+    moveCameraToPlayer()
     {
         sf::Vector2f playerPos = (*playerIterator_)->getPosition();
         view_->gameView.setCenter(playerPos);
@@ -472,23 +456,36 @@ public:
             gameObjects_.push_back(sarasani);
             // remove items
             removeInventoryItemAmount("ItemBlache", 10);
-            removeInventoryItemAmount("ItemRope", 3);
+            removeInventoryItemAmount("ItemSeil", 3);
             orderGameObjects();
+            break;
+        }
+        case GameObject::Type::Fire: {
+            Fire* fire = new Fire(logger_, settings_);
+            fire->setPosition(x - fire->getSprite().getLocalBounds().width / 2, y - fire->getSprite().getLocalBounds().height / 2);
+            gameObjects_.push_back(fire);
+            removeInventoryItemAmount("ItemStein", 1);
+            break;
+        }
+        case GameObject::Type::Blache: {
+            Blache* blache = new Blache(logger_, settings_, x, y);
+            blache->setPosition(x - blache->getSprite().getLocalBounds().width / 2, y - blache->getSprite().getLocalBounds().height / 2);
+            gameObjects_.push_back(blache);
+            removeInventoryItemAmount("ItemBlache", 1);
+            break;
+        }
+        case GameObject::Type::Tree: {
+            Tree* tree = new Tree(logger_, settings_, x, y);
+            soundManager_->playSound("PlaceSapling");
+            tree->setPosition(x - tree->getSprite().getLocalBounds().width / 2, y - tree->getSprite().getLocalBounds().height / 2);
+            gameObjects_.push_back(tree);
+            removeInventoryItemAmount("ItemSetzling", 1);
             break;
         }
         default:
             break;
         }
-    }
-
-    bool checkItemInSlot(std::string itemName)
-    {
-        for (auto item : inventoryItems_) {
-            if (item->getSlot() == selectedSlot_ && item->getName() == itemName) {
-                return true;
-            }
-        }
-        return false;
+        orderGameObjects();
     }
 
     void setNewIterators()
@@ -511,10 +508,6 @@ public:
                 cursorIterator_ = it;
                 break;
             }
-            case GameObject::Type::InventorySlot: {
-                inventorySelectorIterator_ = it;
-                break;
-            }
             default:
                 break;
             }
@@ -531,20 +524,6 @@ public:
                 return left->type > right->type;
             });
         setNewIterators();
-    }
-
-    int getSelectedInventorySlot() const { return selectedSlot_; }
-
-    void selectInventorySlot(int slot)
-    {
-        selectedSlot_ = (slot + 8) % 8;
-        sf::Vector2f invPos = (*inventoryIterator_)->getPosition();
-
-        for (auto gameObject : gameObjects_) {
-            if (gameObject->type == GameObject::Type::InventorySlot) {
-                gameObject->setPosition(invPos.x + selectedSlot_ * slotSize_, invPos.y);
-            }
-        }
     }
 
     void createNewGame()
@@ -586,8 +565,8 @@ public:
         orderGameObjects();
 
         // Give some test items
-        addInventoryItem("ItemMatch");
-        addInventoryItem("ItemMatch");
+        addInventoryItem("ItemStreichholz");
+        addInventoryItem("ItemStreichholz");
     }
 
 private:
@@ -597,7 +576,6 @@ private:
 
     SoundManager* soundManager_;
 
-    unsigned int selectedSlot_ = 0;
     int slotSize_ = 112;
 
     int movementSpeed_;
@@ -609,7 +587,6 @@ private:
     std::vector<GameObject*>::iterator playerIterator_;
     std::vector<GameObject*>::iterator grassIterator_;
     std::vector<GameObject*>::iterator inventoryIterator_;
-    std::vector<GameObject*>::iterator inventorySelectorIterator_;
     std::vector<GameObject*>::iterator cursorIterator_;
     std::vector<InventoryItem*> inventoryItems_;
 };

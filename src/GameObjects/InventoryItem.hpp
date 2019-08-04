@@ -13,7 +13,7 @@ public:
         name_ = item;
         slot_ = slot;
         if (!image_.loadFromFile("res/CampParts/" + item + ".png")) {
-            logger_->error("Tree", "res/CampParts/" + item + ".png");
+            logger_->error("InventoryItem", "res/CampParts/" + item + ".png");
             return;
         }
 
