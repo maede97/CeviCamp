@@ -42,7 +42,7 @@ public:
         walkingUp_.addFrame(sf::IntRect(playerSizeX_, playerSizeY_ * 3, playerSizeX_, playerSizeY_));
         walkingUp_.addFrame(sf::IntRect(0, playerSizeY_ * 3, playerSizeX_, playerSizeY_));
 
-        // paused = false, repeat = true
+        // paused = true, repeat = false
         sprite_ = AnimatedSprite(sf::seconds(0.2), true, false);
         //sprite_.setPosition(sf::Vector2f(settings_->screenWidth / 2 - playerSize_ / 2, settings_->screenHeight / 2 - playerSize_ / 2));
 
@@ -108,7 +108,7 @@ public:
         }
         sprite_.update(internalTime_.restart());
         
-        sprite_.move(sf::Vector2f(movement_));//*frametime.asSeconds());
+        sprite_.move(sf::Vector2f(movement_));
         noKeyWasPressed_ = true;
         movement_ = sf::Vector2i(0, 0);
     }

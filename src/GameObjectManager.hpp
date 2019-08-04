@@ -251,10 +251,12 @@ public:
 
         // Draw Player pos in top left corner
         sf::Text player_pos;
+        sf::Vector2f playerPos = (*playerIterator_)->getPosition();
+        sf::FloatRect playerBounds = (*playerIterator_)->getSprite().getLocalBounds();
         player_pos.setString(
-            std::to_string(static_cast<int>((*playerIterator_)->getPosition().x - (*grassIterator_)->getPosition().x + (*playerIterator_)->getSprite().getLocalBounds().width / 2))
+            std::to_string(static_cast<int>(playerPos.x - (*grassIterator_)->getPosition().x + playerBounds.width / 2))
             + "/"
-            + std::to_string(static_cast<int>((*playerIterator_)->getPosition().y - (*grassIterator_)->getPosition().y + (*playerIterator_)->getSprite().getLocalBounds().height / 2)));
+            + std::to_string(static_cast<int>(playerPos.y - (*grassIterator_)->getPosition().y + playerBounds.height / 2)));
         player_pos.setFont(settings_->font);
         player_pos.setPosition(10, 10); // add some small spacing
         player_pos.setCharacterSize(24 * settings_->getGUIFactor());
@@ -503,6 +505,7 @@ public:
         for (auto it = gameObjects_.begin(); it != gameObjects_.end(); it++) {
             switch ((*it)->type) {
             case GameObject::Type::Player: {
+                std::cout << "set player it " << std::endl;
                 playerIterator_ = it;
                 break;
             }
@@ -526,6 +529,7 @@ public:
 
     void orderGameObjects()
     {
+        std::cout << "reorder GO" << std::endl;
         std::sort(gameObjects_.begin(), gameObjects_.end(),
             [](GameObject* left, GameObject* right) {
                 if (left->type == right->type) {
@@ -565,27 +569,27 @@ public:
         Trash* trash = new Trash(logger_, settings_, settings_->mapWidth - 400, settings_->mapHeight / 2 + 250);
         gameObjects_.push_back(trash);
 
-        orderGameObjects();
-
         Player* player = new Player(logger_, settings_);
         gameObjects_.push_back(player);
 
         player->setPosition(settings_->mapWidth / 2 - player->getSprite().getLocalBounds().width / 2,
             settings_->mapHeight / 2 - player->getSprite().getLocalBounds().height / 2);
-        orderGameObjects();
 
         // create some childs
         for (int i = 0; i < 20; i++) {
             Child* child = new Child(logger_, settings_);
-            child->setPosition(200 + std::rand() % static_cast<int>(settings_->mapWidth - 400)-200,
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400)-200);
+            child->setPosition(200 + std::rand() % static_cast<int>(settings_->mapWidth - 400) - 200,
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400) - 200);
             child->setLevel(3 + std::rand() % 5);
             gameObjects_.push_back(child);
         }
+        setNewIterators(); // used for addInventoryItem
 
         // Give some test items
         addInventoryItem("ItemStreichholz");
         addInventoryItem("ItemStreichholz");
+
+        orderGameObjects();
     }
 
 private:
