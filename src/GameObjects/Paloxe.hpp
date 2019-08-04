@@ -3,8 +3,6 @@
 
 #include "GameObject.hpp"
 
-#include <SFML/Graphics.hpp>
-
 class Paloxe : public GameObject {
 public:
     Paloxe(Logger* logger, Settings* settings, int x, int y)

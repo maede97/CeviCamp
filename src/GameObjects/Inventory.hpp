@@ -3,9 +3,6 @@
 
 #include "GameObject.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <vector>
-
 class Inventory : public GameObject {
 public:
     Inventory(Logger* logger, Settings* settings, int slotSize)

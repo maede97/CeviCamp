@@ -1,7 +1,6 @@
 #ifndef FIRE_HPP
 #define FIRE_HPP
 
-#include "AnimatedSprite.hpp"
 #include "GameObject.hpp"
 
 class Fire : public GameObject {

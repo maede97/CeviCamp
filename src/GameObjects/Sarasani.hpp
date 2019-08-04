@@ -3,8 +3,6 @@
 
 #include "GameObject.hpp"
 
-#include <SFML/Graphics.hpp>
-
 class Sarasani : public GameObject {
 public:
     Sarasani(Logger* logger, Settings* settings, int x, int y)

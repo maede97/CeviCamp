@@ -214,7 +214,7 @@ void GameController::gameLoop()
                     gameState_ = ShowMenu;
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Mouse::getPosition(),view_->gameView);
+                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Mouse::getPosition(), view_->gameView);
                     gameObjectManager_->handleClick(worldPos.x, worldPos.y, false);
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
@@ -232,11 +232,11 @@ void GameController::gameLoop()
                     break;
                 }
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Vector2i(currentEvent.mouseButton.x, currentEvent.mouseButton.y),view_->gameView);
+                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Vector2i(currentEvent.mouseButton.x, currentEvent.mouseButton.y), view_->gameView);
                     gameObjectManager_->handleClick(worldPos.x, worldPos.y);
                 }
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Vector2i(currentEvent.mouseButton.x, currentEvent.mouseButton.y),view_->gameView);
+                    sf::Vector2f worldPos = view_->window.mapPixelToCoords(sf::Vector2i(currentEvent.mouseButton.x, currentEvent.mouseButton.y), view_->gameView);
                     gameObjectManager_->handleClick(worldPos.x, worldPos.y, false);
                 }
                 break;
@@ -264,7 +264,7 @@ void GameController::gameLoop()
 
     view_->clearFrame(); // clear frame for later drawing
 
-    sf::Vector2f mousePos = view_->window.mapPixelToCoords(sf::Mouse::getPosition(view_->window),view_->gameView);
+    sf::Vector2f mousePos = view_->window.mapPixelToCoords(sf::Mouse::getPosition(view_->window), view_->gameView);
     if (gameState_ == Playing) {
         gameObjectManager_->updateMousePosition(mousePos.x, mousePos.y);
     }
@@ -369,6 +369,14 @@ void GameController::loadCampData()
         case GameObject::Type::Sarasani: {
             Sarasani* sarasani = new Sarasani(logger_, settings_, part.x, part.y);
             gameObjectManager_->addGameObject(sarasani);
+            break;
+        }
+        case GameObject::Type::Child: {
+            Child* child = new Child(logger_, settings_);
+            child->setPosition(part.x, part.y);
+            child->setLevel(part.level);
+            gameObjectManager_->addGameObject(child);
+            break;
         }
         default:
             break;

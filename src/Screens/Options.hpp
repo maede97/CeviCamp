@@ -252,6 +252,9 @@ Options::~Options()
     for (auto slider : sliders_) {
         delete slider;
     }
+    for (auto checkBox : checkboxes_) {
+        delete checkBox;
+    }
 }
 
 void Options::show(sf::RenderWindow& window)

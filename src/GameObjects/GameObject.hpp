@@ -13,6 +13,8 @@ public:
         Sarasani,
         Tree,
         Player,
+        Leader,
+        Child,
         Fire,
         Paloxe,
         Trash,

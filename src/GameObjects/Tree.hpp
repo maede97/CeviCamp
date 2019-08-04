@@ -2,7 +2,6 @@
 #define TREE_HPP
 
 #include "GameObject.hpp"
-#include <SFML/Graphics.hpp>
 
 class Tree : public GameObject {
 public:

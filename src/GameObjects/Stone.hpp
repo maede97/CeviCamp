@@ -3,8 +3,6 @@
 
 #include "GameObject.hpp"
 
-#include <SFML/Graphics.hpp>
-
 class Stone : public GameObject {
 public:
     Stone(Logger* logger, Settings* settings, int x, int y)

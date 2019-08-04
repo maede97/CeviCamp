@@ -2,7 +2,6 @@
 #define TRASH_HPP
 
 #include "GameObject.hpp"
-#include <SFML/Graphics.hpp>
 
 class Trash : public GameObject {
 public:

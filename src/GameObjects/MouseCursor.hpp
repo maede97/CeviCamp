@@ -2,7 +2,6 @@
 #define MOUSECURSOR_HPP
 
 #include "GameObject.hpp"
-#include <SFML/Graphics.hpp>
 #include <cmath>
 
 class MouseCursor : public GameObject {

@@ -1,17 +1,23 @@
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#ifndef CHILD_HPP
+#define CHILD_HPP
 
 #include "GameObject.hpp"
 
-class Player : public GameObject
-{
+class Child : public GameObject {
 public:
-    Player(Logger *logger, Settings *settings)
-        : GameObject(logger, settings, GameObject::Type::Player)
+    enum Action {
+        Idle,
+        MovingRight,
+        MovingLeft,
+        MovingUp,
+        MovingDown
+    };
+    Child(Logger* logger, Settings* settings)
+        : GameObject(logger, settings, GameObject::Type::Child)
     {
-        if (!image_.loadFromFile("res/CampParts/Player.png"))
+        if (!image_.loadFromFile("res/CampParts/Player.png")) // TODO
         {
-            logger_->error("Player", "res/CampParts/Player.png not found");
+            logger_->error("Child", "res/CampParts/Player.png not found");
             return;
         }
 
@@ -46,9 +52,19 @@ public:
         sprite_ = AnimatedSprite(sf::seconds(0.2), true, false);
         //sprite_.setPosition(sf::Vector2f(settings_->screenWidth / 2 - playerSize_ / 2, settings_->screenHeight / 2 - playerSize_ / 2));
 
-        movement_ = sf::Vector2i(0, 0);
+        movement_ = sf::Vector2f(0.f, 0.f);
 
         setAnimation();
+
+        currentAction_ = getRandomAction();
+
+        sprite_.setScale(0.75f, 0.75f);
+    }
+
+    Action getRandomAction()
+    {
+        int index = std::rand() % 5;
+        return Action(index);
     }
 
     void setAnimation()
@@ -62,55 +78,73 @@ public:
     {
         current_ = &walkingDown_;
         movement_.y += speed_;
-        if (sprite_.getPosition().y > settings_->mapHeight - playerSizeY_)
-        {
-            movement_.y = 0;
+        if (sprite_.getPosition().y > settings_->mapHeight - playerSizeY_) {
+            movement_.y = 0.f;
         }
-        noKeyWasPressed_ = false;
+        sprite_.move(movement_);
     }
     void up()
     {
         current_ = &walkingUp_;
         movement_.y += -speed_;
-        if (sprite_.getPosition().y < 0)
-        {
-            movement_.y = 0;
+        if (sprite_.getPosition().y < 0) {
+            movement_.y = 0.f;
         }
-        noKeyWasPressed_ = false;
+        sprite_.move(movement_);
     }
     void left()
     {
         current_ = &walkingLeft_;
         movement_.x += -speed_;
-        if (sprite_.getPosition().x < 0)
-        {
-            movement_.x = 0;
+        if (sprite_.getPosition().x < 0) {
+            movement_.x = 0.f;
         }
-        noKeyWasPressed_ = false;
+        sprite_.move(movement_);
     }
     void right()
     {
         current_ = &walkingRight_;
         movement_.x += speed_;
-        if (sprite_.getPosition().x > settings_->mapWidth - playerSizeX_)
-        {
-            movement_.x = 0;
+        if (sprite_.getPosition().x > settings_->mapWidth - playerSizeX_) {
+            movement_.x = 0.f;
         }
-        noKeyWasPressed_ = false;
+        sprite_.move(movement_);
     }
 
-    // update player, move in set direction
     void update()
     {
-        if (noKeyWasPressed_)
-        {
+        // use level of child as timer
+        if (actionTimer_.getElapsedTime().asSeconds() > level_) {
+            // choose random action
+            logger_->info("Child", "Grab new action to do");
+            currentAction_ = getRandomAction();
+            logger_->info("Child", "Action: " + std::to_string(currentAction_));
             sprite_.stop();
+            actionTimer_.restart();
         }
+        switch (currentAction_) {
+        case Action::Idle:
+            // do nothing here, just stand around
+            sprite_.stop();
+            break;
+        case MovingDown:
+            down();
+            break;
+        case MovingLeft:
+            left();
+            break;
+        case MovingRight:
+            right();
+            break;
+        case MovingUp:
+            up();
+            break;
+        default:
+            break;
+        }
+        movement_ = sf::Vector2f(0.f, 0.f);
+
         sprite_.update(internalTime_.restart());
-        
-        sprite_.move(sf::Vector2f(movement_));//*frametime.asSeconds());
-        noKeyWasPressed_ = true;
-        movement_ = sf::Vector2i(0, 0);
     }
 
     void play() { sprite_.play(*current_); }
@@ -123,14 +157,16 @@ private:
     Animation walkingRight_;
     Animation walkingUp_;
 
-    Animation *current_ = &walkingDown_;
+    Animation* current_ = &walkingDown_;
 
-    int speed_ = settings_->playerSpeed;
-    sf::Vector2i movement_;
-    bool noKeyWasPressed_ = true;
+    int speed_ = settings_->playerSpeed * 0.75f; // children are slower
+    sf::Vector2f movement_;
 
     int playerSizeX_ = 160;
     int playerSizeY_ = 240;
+
+    Action currentAction_;
+    sf::Clock actionTimer_;
 };
 
 #endif

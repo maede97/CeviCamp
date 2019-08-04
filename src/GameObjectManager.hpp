@@ -2,6 +2,7 @@
 #define GAMEOBJECTMANAGER_HPP
 
 #include "GameObjects/Blache.hpp"
+#include "GameObjects/Child.hpp"
 #include "GameObjects/ClickableMessageBox.hpp"
 #include "GameObjects/Fire.hpp"
 #include "GameObjects/Grass.hpp"
@@ -452,7 +453,7 @@ public:
 
     void moveCameraToPlayer()
     {
-        sf::Vector2f playerPos = (*playerIterator_)->getPosition() + sf::Vector2f((*playerIterator_)->getSprite().getGlobalBounds().width /2, (*playerIterator_)->getSprite().getGlobalBounds().height/2);
+        sf::Vector2f playerPos = (*playerIterator_)->getPosition() + sf::Vector2f((*playerIterator_)->getSprite().getGlobalBounds().width / 2, (*playerIterator_)->getSprite().getGlobalBounds().height / 2);
         view_->gameView.setCenter(playerPos);
     }
 
@@ -546,14 +547,14 @@ public:
         // TODO make tree placement better
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
             Tree* tree = new Tree(logger_, settings_,
-                200 + std::rand() % static_cast<int>(settings_->mapWidth - 200),
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 200));
+                200 + std::rand() % static_cast<int>(settings_->mapWidth - 1000),
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 1000));
             gameObjects_.push_back(tree);
         }
         for (int i = 0; i < std::rand() % 10 + 5; i++) {
             Stone* tree = new Stone(logger_, settings_,
-                200 + std::rand() % static_cast<int>(settings_->mapWidth - 200),
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 200));
+                200 + std::rand() % static_cast<int>(settings_->mapWidth - 400),
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400));
             gameObjects_.push_back(tree);
         }
 
@@ -572,6 +573,15 @@ public:
         player->setPosition(settings_->mapWidth / 2 - player->getSprite().getLocalBounds().width / 2,
             settings_->mapHeight / 2 - player->getSprite().getLocalBounds().height / 2);
         orderGameObjects();
+
+        // create some childs
+        for (int i = 0; i < 20; i++) {
+            Child* child = new Child(logger_, settings_);
+            child->setPosition(200 + std::rand() % static_cast<int>(settings_->mapWidth - 400)-200,
+                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400)-200);
+            child->setLevel(3 + std::rand() % 5);
+            gameObjects_.push_back(child);
+        }
 
         // Give some test items
         addInventoryItem("ItemStreichholz");

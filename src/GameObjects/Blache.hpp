@@ -3,8 +3,6 @@
 
 #include "GameObject.hpp"
 
-#include <SFML/Graphics.hpp>
-
 class Blache : public GameObject {
 public:
     Blache(Logger* logger, Settings* settings, int x, int y)
