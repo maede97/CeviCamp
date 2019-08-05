@@ -3,7 +3,7 @@
 
 #include "GameObjects/Blache.hpp"
 #include "GameObjects/Child.hpp"
-#include "GameObjects/ClickableMessageBox.hpp"
+#include "GameObjects/ClickableMenu.hpp"
 #include "GameObjects/Fire.hpp"
 #include "GameObjects/Grass.hpp"
 #include "GameObjects/Inventory.hpp"
@@ -15,6 +15,7 @@
 #include "GameObjects/Stone.hpp"
 #include "GameObjects/Trash.hpp"
 #include "GameObjects/Tree.hpp"
+#include "GameObjects/MessageBox.hpp"
 #include "Logger.hpp"
 #include "Settings.hpp"
 #include "SoundManager.hpp"
@@ -37,21 +38,26 @@ public:
 
         slotSize_ *= settings_->getGUIFactor();
 
+        // load general pointers
         cursorPointer_ = new MouseCursor(logger_, settings_);
-
+        grassPointer_ = new Grass(logger_, settings_);
+        grassPointer_->setPosition(0, 0);
         inventoryPointer_ = new Inventory(logger_, settings_, slotSize_);
         inventoryPointer_->setPosition((settings_->screenWidth - inventoryPointer_->getSprite().getGlobalBounds().width) / 2,
             settings_->screenHeight - inventoryPointer_->getSprite().getGlobalBounds().height);
+
+        messageBox_ = new MessageBox(logger_, settings_);
+        messageBox_->setPosition(10, 10);
 
         movementSpeed_ = settings_->movementSpeed;
 
         // show tutorial if not completed
         if (settings_->showTutorial) {
             hasMenu_ = true;
-            ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"Tutorial",
+            ClickableMenu* box = new ClickableMenu(logger_, settings_, L"Tutorial",
                 L"Bewege dich mit den Pfeiltasten oder WASD,\nbaue mit Rechtsklick,\nbaue ab mit Linksklick.\n\
                 Zoome mit dem Mausrad.\n\nViel Spass!\n\nPS: Die Tastenbelegung findest du auch\nin den Einstellungen.");
-            messageBox_ = box;
+            menuBox_ = box;
             settings_->showTutorial = false;
         }
     }
@@ -204,7 +210,7 @@ public:
     void addCheatMenu()
     {
         hasMenu_ = true;
-        ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"CheatMenu", L"Klicke, um Items zu erhalten.");
+        ClickableMenu* box = new ClickableMenu(logger_, settings_, L"CheatMenu", L"Klicke, um Items zu erhalten.");
         box->addButton("ItemStreichholz", L"Streichholz", [&]() { addInventoryItem("ItemStreichholz"); });
         box->addButton("ItemHolz", L"Holz", [&]() { addInventoryItem("ItemHolz"); });
         box->addButton("ItemStein", L"Stein", [&]() { addInventoryItem("ItemStein"); });
@@ -213,7 +219,7 @@ public:
         box->addButton("ItemBlache", L"Blache", [&]() { addInventoryItem("ItemBlache"); });
         box->addButton("ItemSeil", L"Seil", [&]() { addInventoryItem("ItemSeil"); });
         box->addButton("Delete", L"Löschen", [&]() { inventoryItems_.clear(); });
-        messageBox_ = box;
+        menuBox_ = box;
     }
 
     void drawAll(sf::RenderWindow& window, sf::Time dT)
@@ -232,6 +238,7 @@ public:
         for (auto gameObject : gameObjects_) {
             window.draw(gameObject->getSprite());
         }
+        window.draw(cursorPointer_->getSprite());
 
         // Draw static things onto original view
         window.setView(view_->originalView);
@@ -241,25 +248,11 @@ public:
             item->draw(window);
         }
 
-        window.draw(cursorPointer_->getSprite());
-
         if (hasMenu_) {
-            messageBox_->draw(window);
+            menuBox_->draw(window);
         }
 
-        // Draw Player pos in top left corner
-        sf::Text player_pos;
-        sf::Vector2f playerPos = (*playerIterator_)->getPosition();
-        sf::FloatRect playerBounds = (*playerIterator_)->getSprite().getLocalBounds();
-        player_pos.setString(
-            std::to_string(static_cast<int>(playerPos.x - playerBounds.width / 2))
-            + "/"
-            + std::to_string(static_cast<int>(playerPos.y - playerBounds.height / 2)));
-        player_pos.setFont(settings_->font);
-        player_pos.setPosition(10, 10); // add some small spacing
-        player_pos.setCharacterSize(24 * settings_->getGUIFactor());
-
-        window.draw(player_pos);
+        messageBox_->draw(window);
 
         // now draw minimap
         if (settings_->showMiniMap) {
@@ -276,12 +269,14 @@ public:
 
     void updateMousePosition(int mouseX, int mouseY)
     {
-        sf::Vector2i playerPos = sf::Vector2i((*playerIterator_)->getPosition());
+        sf::Vector2f playerPos = (*playerIterator_)->getPosition();
+        cursorPointer_->updateMousePlayerPosition(mouseX, mouseY, playerPos.x, playerPos.y,
+            (*playerIterator_)->getSprite().getGlobalBounds().width, (*playerIterator_)->getSprite().getGlobalBounds().height);
 
         for (auto gameObject : gameObjects_) {
             gameObject->updateMousePlayerPosition(
                 mouseX, mouseY, playerPos.x, playerPos.y,
-                (*playerIterator_)->getSprite().getLocalBounds().width);
+                (*playerIterator_)->getSprite().getGlobalBounds().width, (*playerIterator_)->getSprite().getGlobalBounds().height);
         }
     }
 
@@ -290,7 +285,7 @@ public:
     bool ifMenuCloseMenu()
     {
         if (hasMenu_) {
-            delete messageBox_;
+            delete menuBox_;
             hasMenu_ = false;
             return true;
         }
@@ -301,8 +296,8 @@ public:
     {
         if (hasMenu_) {
             sf::Vector2i pos = view_->window.mapCoordsToPixel(sf::Vector2f(sf::Mouse::getPosition(view_->window)), view_->originalView);
-            if (messageBox_->checkAndHandleClick(pos.x, pos.y)) {
-                delete messageBox_;
+            if (menuBox_->checkAndHandleClick(pos.x, pos.y)) {
+                delete menuBox_;
                 hasMenu_ = false;
             }
             return;
@@ -352,11 +347,11 @@ public:
                 }
                 case GameObject::Type::Paloxe: {
                     // show menu with Blache & Rope
-                    ClickableMessageBox* menu = new ClickableMessageBox(logger_, settings_, L"J+S-Paloxe", L"Wähle aus:");
+                    ClickableMenu* menu = new ClickableMenu(logger_, settings_, L"J+S-Paloxe", L"Wähle aus:");
                     menu->addButton("ItemBlache", L"Blache", [&]() { addInventoryItem("ItemBlache"); });
                     menu->addButton("ItemSeil", L"Seil", [&]() { addInventoryItem("ItemSeil"); });
                     hasMenu_ = true;
-                    messageBox_ = menu;
+                    menuBox_ = menu;
                     exit = true;
                 }
                 default:
@@ -388,7 +383,7 @@ public:
                 }
                 case GameObject::Type::Trash: {
                     hasMenu_ = true;
-                    ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"Abfall-Menu", L"Klicke, um wegzuwerfen.");
+                    ClickableMenu* box = new ClickableMenu(logger_, settings_, L"Abfall-Menu", L"Klicke, um wegzuwerfen.");
                     for (auto item : inventoryItems_) {
                         std::string name = item->getName();
                         // +4 because to strip "Item"
@@ -398,7 +393,7 @@ public:
                         });
                     }
                     if (box->getButtonAmount() != 0) {
-                        messageBox_ = box;
+                        menuBox_ = box;
                     } else {
                         delete box;
                         hasMenu_ = false;
@@ -418,7 +413,7 @@ public:
             if (!leftClick) {
                 // show a menu with a selection to build
                 hasMenu_ = true;
-                ClickableMessageBox* box = new ClickableMessageBox(logger_, settings_, L"Bau-Menu", L"Klicke, um an dieser Stelle zu bauen.");
+                ClickableMenu* box = new ClickableMenu(logger_, settings_, L"Bau-Menu", L"Klicke, um an dieser Stelle zu bauen.");
 
                 // add box buttons
                 if (checkInventoryItemAmount("ItemBlache", 10) && checkInventoryItemAmount("ItemSeil", 3)) {
@@ -435,7 +430,7 @@ public:
                 }
 
                 if (box->getButtonAmount() != 0) {
-                    messageBox_ = box;
+                    menuBox_ = box;
                 } else {
                     delete box;
                     hasMenu_ = false;
@@ -582,12 +577,6 @@ public:
         orderGameObjects();
     }
 
-    void loadPointerSprites()
-    {
-        grassPointer_ = new Grass(logger_, settings_);
-        grassPointer_->setPosition(0, 0);
-    }
-
 private:
     Logger* logger_;
     Settings* settings_;
@@ -600,7 +589,7 @@ private:
     int movementSpeed_;
 
     bool hasMenu_ = false;
-    ClickableMessageBox* messageBox_;
+    ClickableMenu* menuBox_;
 
     std::vector<GameObject*> gameObjects_;
     std::vector<GameObject*>::iterator playerIterator_;
@@ -608,6 +597,7 @@ private:
     GameObject* inventoryPointer_;
     GameObject* cursorPointer_;
     std::vector<InventoryItem*> inventoryItems_;
+    MessageBox* messageBox_;
 };
 
 #endif

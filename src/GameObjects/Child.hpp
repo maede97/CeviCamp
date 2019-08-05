@@ -10,7 +10,8 @@ public:
         MovingRight,
         MovingLeft,
         MovingUp,
-        MovingDown
+        MovingDown,
+        ShowEmotion
     };
     Child(Logger* logger, Settings* settings)
         : GameObject(logger, settings, GameObject::Type::Child)
@@ -63,7 +64,7 @@ public:
 
     Action getRandomAction()
     {
-        int index = std::rand() % 5;
+        int index = std::rand() % 6;
         return Action(index);
     }
 
@@ -119,7 +120,15 @@ public:
             currentAction_ = getRandomAction();
             sprite_.stop();
             actionTimer_.restart();
+
+            // this switch is called only once
+            switch (currentAction_) {
+                case ShowEmotion: {
+                    settings_->addMessage(L"Emotion " + std::to_wstring(level_));
+                }
+            }
         }
+        // this switch is called every update
         switch (currentAction_) {
         case Action::Idle:
             // do nothing here, just stand around

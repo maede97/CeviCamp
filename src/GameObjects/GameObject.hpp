@@ -51,7 +51,7 @@ public:
     virtual void up() {}
     virtual void down() {}
     // set mouse position
-    virtual void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerSize) {}
+    virtual void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerWidth, int playerHeight) {}
     // return true if this item is clickable and was clicked
     virtual bool validClick(int mouseX, int mouseY, int playerX, int playerY, int playerSize) { return false; }
     // set animation

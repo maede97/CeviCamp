@@ -376,13 +376,10 @@ void GameController::loadCampData()
             break;
         }
     }
-    gameObjectManager_->setNewIterators();
     std::vector<std::string> inv = settings_->readInventory();
     for (std::string& s : inv) {
         gameObjectManager_->addInventoryItem(s);
     }
-
-    gameObjectManager_->loadPointerSprites();
 
     gameObjectManager_->orderGameObjects();
 }

@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <vector>
+#include <deque>
 
 class Settings {
 public:
@@ -29,6 +30,8 @@ public:
     void saveInventory(std::vector<std::string>& inv);
 
     float getGUIFactor() const;
+
+    void addMessage(std::wstring message);
 
     const char* title = "CeviCamp";
     int screenWidth = 1920;
@@ -53,6 +56,8 @@ public:
 
     bool showTutorial = true;
 
+    std::deque<std::wstring> messages;
+
 private:
     Logger* logger_;
 };
@@ -66,6 +71,13 @@ Settings::Settings(Logger* logger)
     }
     readSettingsFromFile();
     std::srand(seed); // does not work...
+}
+
+void Settings::addMessage(std::wstring message) {
+    messages.push_back(message);
+    if(messages.size() > 10) {
+        messages.pop_front();
+    }
 }
 
 float Settings::getGUIFactor() const

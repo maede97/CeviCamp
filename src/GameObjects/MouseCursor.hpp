@@ -26,10 +26,10 @@ public:
     }
 
     // set it's position based on mouse and player
-    void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerSize)
+    void updateMousePlayerPosition(int mouseX, int mouseY, int playerX, int playerY, int playerWidth, int playerHeight)
     {
         sf::Vector2f mousePos(mouseX, mouseY);
-        sf::Vector2f playerPos(playerX + playerSize / 2, playerY + playerSize / 2);
+        sf::Vector2f playerPos(playerX + playerWidth / 2, playerY + playerHeight / 2);
         sf::Vector2f dist = (mousePos - playerPos);
         float len = std::sqrt(dist.x * dist.x + dist.y * dist.y);
         sf::Vector2f pos;

@@ -1,5 +1,5 @@
-#ifndef CLICKABLE_MESSAGE_BOX_HPP
-#define CLICKABLE_MESSAGE_BOX_HPP
+#ifndef CLICKABLE_MENU_HPP
+#define CLICKABLE_MENU_HPP
 
 #include "../Logger.hpp"
 #include "../Settings.hpp"
@@ -61,9 +61,9 @@ private:
     sf::RectangleShape boundary_;
 };
 
-class ClickableMessageBox {
+class ClickableMenu {
 public:
-    ClickableMessageBox(Logger* logger, Settings* settings, const wchar_t* title, const wchar_t* question)
+    ClickableMenu(Logger* logger, Settings* settings, const wchar_t* title, const wchar_t* question)
     {
         logger_ = logger;
         settings_ = settings;
@@ -101,7 +101,7 @@ public:
             54 * settings_->getGUIFactor(), 54 * settings_->getGUIFactor(), "CancelButton", L"");
     }
 
-    ~ClickableMessageBox()
+    ~ClickableMenu()
     {
         for (auto pair : buttons_) {
             delete pair.first;
