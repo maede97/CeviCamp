@@ -239,6 +239,7 @@ public:
         for (auto gameObject : gameObjects_) {
             window.draw(gameObject->getSprite());
             if (gameObject->type == GameObject::Type::Child) {
+                // child needs extra drawing
                 static_cast<Child*>(gameObject)->draw(window);
             }
         }

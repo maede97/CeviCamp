@@ -21,7 +21,7 @@ public:
             logger_->error("Child", "res/CampParts/Player.png not found");
             return;
         }
-        
+
         childName_ = name;
 
         // setup animation frames
@@ -59,7 +59,7 @@ public:
 
         setAnimation();
 
-        actionDist_ = std::uniform_int_distribution<std::mt19937::result_type>(0,5);
+        actionDist_ = std::uniform_int_distribution<std::mt19937::result_type>(0, 5);
 
         currentAction_ = getRandomAction();
 
@@ -71,7 +71,8 @@ public:
         childNameText_.setString(name);
     }
 
-    std::string getChildName() {
+    std::string getChildName()
+    {
         return childName_;
     }
 
@@ -124,21 +125,23 @@ public:
         sprite_.move(movement_);
     }
 
-    void draw(sf::RenderWindow& window) {
+    void draw(sf::RenderWindow& window)
+    {
         // draw text, draw emotions, etc
         childNameText_.setPosition(sprite_.getPosition().x + sprite_.getGlobalBounds().width / 2 - childNameText_.getGlobalBounds().width / 2,
-            sprite_.getPosition().y - childNameText_.getGlobalBounds().height - 10*settings_->getGUIFactor());
+            sprite_.getPosition().y - childNameText_.getGlobalBounds().height - 10 * settings_->getGUIFactor());
         window.draw(childNameText_);
     }
 
-    bool checkClick(float x, float y) { 
-        if(sprite_.getGlobalBounds().contains(x,y)) {
+    bool checkClick(float x, float y)
+    {
+        if (sprite_.getGlobalBounds().contains(x, y)) {
             settings_->addMessage(std::wstring(childName_.begin(), childName_.end()) + L" angelickt.");
             // later: do something here
             return true;
         }
         return false;
-     }
+    }
 
     void update()
     {
@@ -146,14 +149,17 @@ public:
         if (actionTimer_.getElapsedTime().asSeconds() > level_) {
             // choose random action
             currentAction_ = getRandomAction();
+            setAnimation();
             sprite_.stop();
             actionTimer_.restart();
 
             // this switch is called only once
             switch (currentAction_) {
-                case ShowEmotion: {
-                    settings_->addMessage(std::wstring(childName_.begin(), childName_.end()) + L" zeigt Emotionen.");
-                }
+            case ShowEmotion: {
+                std::vector<std::wstring> emotions({L"hat Hunger.",L"ist fröhlich.",L"möchte spielen.",L"lacht.",L"tanzt.",L"denkt nach."});
+                std::uniform_int_distribution<std::mt19937::result_type> emotionDist(0,emotions.size()-1);
+                settings_->addMessage(std::wstring(childName_.begin(), childName_.end()) + L" " +emotions[emotionDist(settings_->rng)]);
+            }
             }
         }
         // this switch is called every update

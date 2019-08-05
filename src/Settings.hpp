@@ -76,7 +76,7 @@ Settings::Settings(Logger* logger)
     }
     readSettingsFromFile();
     rng = std::mt19937(r_dev_());
-    rng.seed(seed);
+    //rng.seed(seed);
 }
 
 void Settings::addMessage(std::wstring message)
