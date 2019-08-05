@@ -21,7 +21,7 @@ public:
             logger_->error("Child", "res/CampParts/Player.png not found");
             return;
         }
-
+        
         childName_ = name;
 
         // setup animation frames

@@ -3,6 +3,7 @@
 
 #include "GameObjects/Blache.hpp"
 #include "GameObjects/Child.hpp"
+#include "GameObjects/ChildrenNames.hpp"
 #include "GameObjects/ClickableMenu.hpp"
 #include "GameObjects/Fire.hpp"
 #include "GameObjects/Grass.hpp"
@@ -561,8 +562,10 @@ public:
 
         // create some childs
         std::uniform_int_distribution<std::mt19937::result_type> distChildLevel(3, 10);
-        for (int i = 0; i < 1; i++) {
-            Child* child = new Child(logger_, settings_, std::to_string(i)); // temp name
+        std::uniform_int_distribution<std::mt19937::result_type> distChildName(0, CHILDREN_NAMES.size() - 1);
+
+        for (int i = 0; i < 20; i++) {
+            Child* child = new Child(logger_, settings_, CHILDREN_NAMES[distChildName(settings_->rng)]); // temp name
             child->setPosition(distMapWidth(settings_->rng), distMapHeight(settings_->rng));
             child->setLevel(distChildLevel(settings_->rng));
             gameObjects_.push_back(child);
