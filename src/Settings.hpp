@@ -6,10 +6,10 @@
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <cstdlib>
-#include <fstream>
-#include <vector>
 #include <deque>
+#include <fstream>
 #include <random>
+#include <vector>
 
 class Settings {
 public:
@@ -18,6 +18,7 @@ public:
         int x;
         int y;
         int level;
+        std::string varia;
     };
     Settings(Logger* logger);
 
@@ -78,9 +79,10 @@ Settings::Settings(Logger* logger)
     rng.seed(seed);
 }
 
-void Settings::addMessage(std::wstring message) {
+void Settings::addMessage(std::wstring message)
+{
     messages.push_back(message);
-    if(messages.size() > 10) {
+    if (messages.size() > 10) {
         messages.pop_front();
     }
 }
@@ -128,9 +130,9 @@ void Settings::readSettingsFromFile()
                 movementSpeed = std::stoi(value);
             } else if (name == "gui-size") {
                 guiSize = std::stoi(value);
-            } else if(name == "show-minimap"){
+            } else if (name == "show-minimap") {
                 showMiniMap = std::stoi(value);
-            } else if(name == "show-tutorial"){
+            } else if (name == "show-tutorial") {
                 showTutorial = std::stoi(value);
             }
         }
@@ -171,12 +173,14 @@ std::vector<Settings::CampPart> Settings::readCampData()
 
             auto delim1 = value.find("/");
             auto delim2 = value.find("/", delim1 + 1);
+            auto delim3 = value.find("/", delim2 + 1);
 
             CampPart current;
             current.enumType = std::stoi(name);
             current.x = std::stoi(value.substr(0, delim1));
             current.y = std::stoi(value.substr(delim1 + 1, delim2));
-            current.level = std::stoi(value.substr(delim2 + 1));
+            current.level = std::stoi(value.substr(delim2 + 1, delim3));
+            current.varia = value.substr(delim3 + 1);
             parts.push_back(current);
         }
     } else {
@@ -216,7 +220,7 @@ void Settings::saveCampData(std::vector<Settings::CampPart>& parts)
     logger_->info("Settings", "Saving camp data");
     std::ofstream out("cevicamp_parts.save");
     for (auto campPart : parts) {
-        out << campPart.enumType << "=" << campPart.x << "/" << campPart.y << "/" << campPart.level << std::endl;
+        out << campPart.enumType << "=" << campPart.x << "/" << campPart.y << "/" << campPart.level << "/" << campPart.varia << std::endl;
     }
     out.close();
 }

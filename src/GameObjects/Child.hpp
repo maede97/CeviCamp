@@ -66,6 +66,10 @@ public:
         sprite_.setScale(0.75f, 0.75f);
     }
 
+    std::string getChildName() {
+        return childName_;
+    }
+
     Action getRandomAction()
     {
         return Action(actionDist_(settings_->rng));
@@ -127,7 +131,7 @@ public:
             // this switch is called only once
             switch (currentAction_) {
                 case ShowEmotion: {
-                    settings_->addMessage(L"Kind " + std::wstring(childName_.begin(), childName_.end()) + L" zeigt Emotionen.");
+                    settings_->addMessage(std::wstring(childName_.begin(), childName_.end()) + L" zeigt Emotionen.");
                 }
             }
         }

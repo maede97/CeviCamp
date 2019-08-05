@@ -366,7 +366,7 @@ void GameController::loadCampData()
             break;
         }
         case GameObject::Type::Child: {
-            Child* child = new Child(logger_, settings_, std::to_string(part.level));
+            Child* child = new Child(logger_, settings_, part.varia);
             child->setPosition(part.x, part.y);
             child->setLevel(part.level);
             gameObjectManager_->addGameObject(child);
@@ -393,6 +393,9 @@ void GameController::saveCampData()
         current.x = gameObject->getPosition().x;
         current.y = gameObject->getPosition().y;
         current.level = gameObject->getLevel();
+        if(gameObject->type == GameObject::Type::Child) {
+            current.varia = static_cast<Child*>(gameObject)->getChildName();
+        }
         parts.push_back(current);
     }
 

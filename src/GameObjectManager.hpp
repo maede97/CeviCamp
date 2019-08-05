@@ -561,7 +561,7 @@ public:
 
         // create some childs
         std::uniform_int_distribution<std::mt19937::result_type> distChildLevel(3, 10);
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 1; i++) {
             Child* child = new Child(logger_, settings_, std::to_string(i)); // temp name
             child->setPosition(distMapWidth(settings_->rng), distMapHeight(settings_->rng));
             child->setLevel(distChildLevel(settings_->rng));
