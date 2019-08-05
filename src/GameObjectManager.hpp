@@ -37,19 +37,13 @@ public:
 
         slotSize_ *= settings_->getGUIFactor();
 
-        MouseCursor* cursor = new MouseCursor(logger_, settings_);
+        cursorPointer_ = new MouseCursor(logger_, settings_);
 
-        Inventory* playerInventory = new Inventory(logger_, settings_, slotSize_);
-        playerInventory->setPosition((settings_->screenWidth - playerInventory->getSprite().getGlobalBounds().width) / 2,
-            settings_->screenHeight - playerInventory->getSprite().getGlobalBounds().height);
+        inventoryPointer_ = new Inventory(logger_, settings_, slotSize_);
+        inventoryPointer_->setPosition((settings_->screenWidth - inventoryPointer_->getSprite().getGlobalBounds().width) / 2,
+            settings_->screenHeight - inventoryPointer_->getSprite().getGlobalBounds().height);
 
         movementSpeed_ = settings_->movementSpeed;
-
-        // push objects into vector
-        gameObjects_.push_back(cursor);
-        gameObjects_.push_back(playerInventory);
-
-        setNewIterators(); // set all iterator
 
         // show tutorial if not completed
         if (settings_->showTutorial) {
@@ -70,13 +64,16 @@ public:
         for (auto invItem : inventoryItems_) {
             delete invItem;
         }
+        delete grassPointer_;
+        delete cursorPointer_;
+        delete inventoryPointer_;
     }
 
     void addGameObject(GameObject* object) { gameObjects_.push_back(object); }
 
     bool addInventoryItem(std::string newItem)
     {
-        sf::Vector2i invPos = sf::Vector2i((*inventoryIterator_)->getPosition());
+        sf::Vector2i invPos = sf::Vector2i(inventoryPointer_->getPosition());
         for (auto item : inventoryItems_) {
             if (item->getName() == newItem) {
                 item->addItem();
@@ -159,7 +156,7 @@ public:
     void down()
     {
         view_->gameView.move(0, settings_->movementSpeed);
-        if ((*grassIterator_)->getPosition().y < settings_->mapHeight - movementSpeed_) {
+        if (0 < settings_->mapHeight - movementSpeed_) {
             (*playerIterator_)->down();
             return;
         }
@@ -167,7 +164,7 @@ public:
     void up()
     {
         view_->gameView.move(0, -settings_->movementSpeed);
-        if ((*grassIterator_)->getPosition().y > -movementSpeed_) {
+        if (0 > -movementSpeed_) {
             (*playerIterator_)->up();
             return;
         }
@@ -175,7 +172,7 @@ public:
     void left()
     {
         view_->gameView.move(-settings_->movementSpeed, 0);
-        if ((*grassIterator_)->getPosition().x > -movementSpeed_) {
+        if (0 > -movementSpeed_) {
             (*playerIterator_)->left();
             return;
         }
@@ -184,7 +181,7 @@ public:
     {
         view_->gameView.move(settings_->movementSpeed, 0);
 
-        if ((*grassIterator_)->getPosition().x < settings_->mapWidth - movementSpeed_) {
+        if (0 < settings_->mapWidth - movementSpeed_) {
             (*playerIterator_)->right();
             return;
         }
@@ -231,21 +228,21 @@ public:
         window.setView(view_->gameView);
 
         // Draw members
+        window.draw(grassPointer_->getSprite());
         for (auto gameObject : gameObjects_) {
-            if (gameObject->type == GameObject::Type::Inventory) {
-                continue;
-            }
-
             window.draw(gameObject->getSprite());
         }
 
         // Draw static things onto original view
         window.setView(view_->originalView);
 
-        window.draw((*inventoryIterator_)->getSprite());
+        window.draw(inventoryPointer_->getSprite());
         for (auto item : inventoryItems_) {
             item->draw(window);
         }
+
+        window.draw(cursorPointer_->getSprite());
+
         if (hasMenu_) {
             messageBox_->draw(window);
         }
@@ -255,9 +252,9 @@ public:
         sf::Vector2f playerPos = (*playerIterator_)->getPosition();
         sf::FloatRect playerBounds = (*playerIterator_)->getSprite().getLocalBounds();
         player_pos.setString(
-            std::to_string(static_cast<int>(playerPos.x - (*grassIterator_)->getPosition().x + playerBounds.width / 2))
+            std::to_string(static_cast<int>(playerPos.x - playerBounds.width / 2))
             + "/"
-            + std::to_string(static_cast<int>(playerPos.y - (*grassIterator_)->getPosition().y + playerBounds.height / 2)));
+            + std::to_string(static_cast<int>(playerPos.y - playerBounds.height / 2)));
         player_pos.setFont(settings_->font);
         player_pos.setPosition(10, 10); // add some small spacing
         player_pos.setCharacterSize(24 * settings_->getGUIFactor());
@@ -267,6 +264,7 @@ public:
         // now draw minimap
         if (settings_->showMiniMap) {
             window.setView(view_->miniMapView);
+            window.draw(grassPointer_->getSprite());
             for (auto gameObject : gameObjects_) {
                 if (gameObject->type == GameObject::Type::Cursor || gameObject->type == GameObject::Type::Inventory) {
                     continue;
@@ -313,13 +311,12 @@ public:
         bool valid = false;
         sf::Vector2i playerPos = sf::Vector2i((*playerIterator_)->getPosition());
 
-        valid = (*cursorIterator_)
+        valid = cursorPointer_
                     ->validClick(
                         x, y, playerPos.x, playerPos.y,
                         (*playerIterator_)->getSprite().getLocalBounds().width);
 
         if (!valid) {
-            logger_->info("valid", "not valid");
             return;
         }
 
@@ -509,18 +506,6 @@ public:
                 playerIterator_ = it;
                 break;
             }
-            case GameObject::Type::Grass: {
-                grassIterator_ = it;
-                break;
-            }
-            case GameObject::Type::Inventory: {
-                inventoryIterator_ = it;
-                break;
-            }
-            case GameObject::Type::Cursor: {
-                cursorIterator_ = it;
-                break;
-            }
             default:
                 break;
             }
@@ -537,12 +522,6 @@ public:
                 return left->type > right->type;
             });*/
             [](GameObject* left, GameObject* right) {
-                if(left->type == GameObject::Type::Grass) {
-                    return 1;
-                }
-                if(right->type == GameObject::Type::Grass) {
-                    return 0;
-                }
                 if (left->getSprite().getGlobalBounds().top + left->getSprite().getGlobalBounds().height < right->getSprite().getGlobalBounds().top + right->getSprite().getGlobalBounds().height) {
                     return 1;
                 } else {
@@ -555,9 +534,8 @@ public:
     void createNewGame()
     {
         logger_->info("GOM", "Create New Game");
-        Grass* grass = new Grass(logger_, settings_);
-
-        gameObjects_.push_back(grass);
+        grassPointer_ = new Grass(logger_, settings_);
+        grassPointer_->setPosition(0, 0);
 
         // place x trees and stones all over the map
         // TODO make tree placement better
@@ -604,6 +582,12 @@ public:
         orderGameObjects();
     }
 
+    void loadPointerSprites()
+    {
+        grassPointer_ = new Grass(logger_, settings_);
+        grassPointer_->setPosition(0, 0);
+    }
+
 private:
     Logger* logger_;
     Settings* settings_;
@@ -620,9 +604,9 @@ private:
 
     std::vector<GameObject*> gameObjects_;
     std::vector<GameObject*>::iterator playerIterator_;
-    std::vector<GameObject*>::iterator grassIterator_;
-    std::vector<GameObject*>::iterator inventoryIterator_;
-    std::vector<GameObject*>::iterator cursorIterator_;
+    GameObject* grassPointer_;
+    GameObject* inventoryPointer_;
+    GameObject* cursorPointer_;
     std::vector<InventoryItem*> inventoryItems_;
 };
 

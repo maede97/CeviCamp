@@ -116,9 +116,7 @@ public:
         // use level of child as timer
         if (actionTimer_.getElapsedTime().asSeconds() > level_) {
             // choose random action
-            logger_->info("Child", "Grab new action to do");
             currentAction_ = getRandomAction();
-            logger_->info("Child", "Action: " + std::to_string(currentAction_));
             sprite_.stop();
             actionTimer_.restart();
         }

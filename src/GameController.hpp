@@ -325,12 +325,6 @@ void GameController::loadCampData()
             gameObjectManager_->addGameObject(player);
             break;
         }
-        case GameObject::Type::Grass: {
-            Grass* grass = new Grass(logger_, settings_);
-            grass->setPosition(part.x, part.y);
-            gameObjectManager_->addGameObject(grass);
-            break;
-        }
         case GameObject::Type::Fire: {
             Fire* fire = new Fire(logger_, settings_);
             fire->setPosition(part.x, part.y);
@@ -387,6 +381,8 @@ void GameController::loadCampData()
     for (std::string& s : inv) {
         gameObjectManager_->addInventoryItem(s);
     }
+
+    gameObjectManager_->loadPointerSprites();
 
     gameObjectManager_->orderGameObjects();
 }
