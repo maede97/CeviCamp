@@ -9,6 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <deque>
+#include <random>
 
 class Settings {
 public:
@@ -44,6 +45,8 @@ public:
     int playerSpeed = 15;
     int movementSpeed = 10;
 
+    // Random Number Generator
+    std::mt19937 rng;
     int seed = 42;
 
     int guiSize = 100; // percent
@@ -60,6 +63,7 @@ public:
 
 private:
     Logger* logger_;
+    std::random_device r_dev_;
 };
 
 Settings::Settings(Logger* logger)
@@ -70,7 +74,8 @@ Settings::Settings(Logger* logger)
         return;
     }
     readSettingsFromFile();
-    std::srand(seed); // does not work...
+    rng = std::mt19937(r_dev_());
+    rng.seed(seed);
 }
 
 void Settings::addMessage(std::wstring message) {

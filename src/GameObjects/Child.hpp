@@ -13,7 +13,7 @@ public:
         MovingDown,
         ShowEmotion
     };
-    Child(Logger* logger, Settings* settings)
+    Child(Logger* logger, Settings* settings, std::string name)
         : GameObject(logger, settings, GameObject::Type::Child)
     {
         if (!image_.loadFromFile("res/CampParts/Player.png")) // TODO
@@ -21,6 +21,8 @@ public:
             logger_->error("Child", "res/CampParts/Player.png not found");
             return;
         }
+
+        childName_ = name;
 
         // setup animation frames
         walkingDown_.setSpriteSheet(image_);
@@ -57,6 +59,8 @@ public:
 
         setAnimation();
 
+        actionDist_ = std::uniform_int_distribution<std::mt19937::result_type>(0,5);
+
         currentAction_ = getRandomAction();
 
         sprite_.setScale(0.75f, 0.75f);
@@ -64,8 +68,7 @@ public:
 
     Action getRandomAction()
     {
-        int index = std::rand() % 6;
-        return Action(index);
+        return Action(actionDist_(settings_->rng));
     }
 
     void setAnimation()
@@ -124,7 +127,7 @@ public:
             // this switch is called only once
             switch (currentAction_) {
                 case ShowEmotion: {
-                    settings_->addMessage(L"Emotion " + std::to_wstring(level_));
+                    settings_->addMessage(L"Kind " + std::wstring(childName_.begin(), childName_.end()) + L" zeigt Emotionen.");
                 }
             }
         }
@@ -174,6 +177,10 @@ private:
 
     Action currentAction_;
     sf::Clock actionTimer_;
+
+    std::string childName_;
+
+    std::uniform_int_distribution<std::mt19937::result_type> actionDist_;
 };
 
 #endif

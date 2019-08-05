@@ -366,7 +366,7 @@ void GameController::loadCampData()
             break;
         }
         case GameObject::Type::Child: {
-            Child* child = new Child(logger_, settings_);
+            Child* child = new Child(logger_, settings_, std::to_string(part.level));
             child->setPosition(part.x, part.y);
             child->setLevel(part.level);
             gameObjectManager_->addGameObject(child);

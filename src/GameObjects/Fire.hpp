@@ -56,9 +56,11 @@ public:
         if (current_ == &stones_) {
             current_ = &wood_;
             level_ = 1;
+            settings_->addMessage(L"Holz hinzugefügt.");
         } else if (current_ = &wood_) {
             current_ = &burning_;
             level_ = 2;
+            settings_->addMessage(L"Feuer angezündet.");
         }
     }
 

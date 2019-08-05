@@ -8,6 +8,7 @@
 #include "GameObjects/Grass.hpp"
 #include "GameObjects/Inventory.hpp"
 #include "GameObjects/InventoryItem.hpp"
+#include "GameObjects/MessageBox.hpp"
 #include "GameObjects/MouseCursor.hpp"
 #include "GameObjects/Paloxe.hpp"
 #include "GameObjects/Player.hpp"
@@ -15,7 +16,6 @@
 #include "GameObjects/Stone.hpp"
 #include "GameObjects/Trash.hpp"
 #include "GameObjects/Tree.hpp"
-#include "GameObjects/MessageBox.hpp"
 #include "Logger.hpp"
 #include "Settings.hpp"
 #include "SoundManager.hpp"
@@ -534,16 +534,15 @@ public:
 
         // place x trees and stones all over the map
         // TODO make tree placement better
-        for (int i = 0; i < std::rand() % 10 + 5; i++) {
-            Tree* tree = new Tree(logger_, settings_,
-                200 + std::rand() % static_cast<int>(settings_->mapWidth - 1000),
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 1000));
+        std::uniform_int_distribution<std::mt19937::result_type> distAmount(5, 15);
+        std::uniform_int_distribution<std::mt19937::result_type> distMapWidth(200, settings_->mapWidth - 1000);
+        std::uniform_int_distribution<std::mt19937::result_type> distMapHeight(200, settings_->mapHeight - 1000);
+        for (int i = 0; i < distAmount(settings_->rng); i++) {
+            Tree* tree = new Tree(logger_, settings_, distMapWidth(settings_->rng), distMapHeight(settings_->rng));
             gameObjects_.push_back(tree);
         }
-        for (int i = 0; i < std::rand() % 10 + 5; i++) {
-            Stone* tree = new Stone(logger_, settings_,
-                200 + std::rand() % static_cast<int>(settings_->mapWidth - 400),
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400));
+        for (int i = 0; i < distAmount(settings_->rng); i++) {
+            Stone* tree = new Stone(logger_, settings_, distMapWidth(settings_->rng), distMapHeight(settings_->rng));
             gameObjects_.push_back(tree);
         }
 
@@ -561,11 +560,11 @@ public:
             settings_->mapHeight / 2 - player->getSprite().getLocalBounds().height / 2);
 
         // create some childs
+        std::uniform_int_distribution<std::mt19937::result_type> distChildLevel(3, 10);
         for (int i = 0; i < 20; i++) {
-            Child* child = new Child(logger_, settings_);
-            child->setPosition(200 + std::rand() % static_cast<int>(settings_->mapWidth - 400) - 200,
-                200 + std::rand() % static_cast<int>(settings_->mapHeight - 400) - 200);
-            child->setLevel(3 + std::rand() % 5);
+            Child* child = new Child(logger_, settings_, std::to_string(i)); // temp name
+            child->setPosition(distMapWidth(settings_->rng), distMapHeight(settings_->rng));
+            child->setLevel(distChildLevel(settings_->rng));
             gameObjects_.push_back(child);
         }
         setNewIterators(); // used for addInventoryItem
