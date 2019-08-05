@@ -64,6 +64,11 @@ public:
         currentAction_ = getRandomAction();
 
         sprite_.setScale(0.75f, 0.75f);
+
+        childNameText_.setFillColor(sf::Color::White);
+        childNameText_.setFont(settings_->font);
+        childNameText_.setCharacterSize(16 * settings_->getGUIFactor());
+        childNameText_.setString(name);
     }
 
     std::string getChildName() {
@@ -118,6 +123,22 @@ public:
         }
         sprite_.move(movement_);
     }
+
+    void draw(sf::RenderWindow& window) {
+        // draw text, draw emotions, etc
+        childNameText_.setPosition(sprite_.getPosition().x + sprite_.getGlobalBounds().width / 2 - childNameText_.getGlobalBounds().width / 2,
+            sprite_.getPosition().y - childNameText_.getGlobalBounds().height - 10*settings_->getGUIFactor());
+        window.draw(childNameText_);
+    }
+
+    bool checkClick(float x, float y) { 
+        if(sprite_.getGlobalBounds().contains(x,y)) {
+            settings_->addMessage(std::wstring(childName_.begin(), childName_.end()) + L" angelickt.");
+            // later: do something here
+            return true;
+        }
+        return false;
+     }
 
     void update()
     {
@@ -183,6 +204,8 @@ private:
     sf::Clock actionTimer_;
 
     std::string childName_;
+
+    sf::Text childNameText_;
 
     std::uniform_int_distribution<std::mt19937::result_type> actionDist_;
 };

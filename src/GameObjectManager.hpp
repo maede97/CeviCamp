@@ -238,6 +238,9 @@ public:
         window.draw(grassPointer_->getSprite());
         for (auto gameObject : gameObjects_) {
             window.draw(gameObject->getSprite());
+            if (gameObject->type == GameObject::Type::Child) {
+                static_cast<Child*>(gameObject)->draw(window);
+            }
         }
         window.draw(cursorPointer_->getSprite());
 
@@ -327,6 +330,11 @@ public:
             // left click = break something
             if (leftClick && gameObject->checkClick(x, y)) {
                 switch (gameObject->type) {
+                case GameObject::Type::Child: {
+                    // only one child clickable
+                    exit = true;
+                    break;
+                }
                 case GameObject::Type::Tree: {
                     if (inventorySpace(2) && addInventoryItem("ItemHolz") && addInventoryItem("ItemSetzling")) {
                         soundManager_->playSound("TreeBreak");
