@@ -226,9 +226,10 @@ Options::Options(Logger* logger, Settings* settings)
     sliders_.push_back(new Slider(logger, settings, L"KARTENHÖHE", 100, 100 + perSlider * 5, settings_->screenHeight, 10000, &settings_->mapHeight));
     sliders_.push_back(new Slider(logger, settings, L"GUI-GRÖSSE (BRAUCHT NEUSTART)", 100, 100 + perSlider * 6, 1, 300, &settings_->guiSize));
 
-    int perCheckBox = (settings_->screenHeight / 2) / 2;
+    int perCheckBox = (settings_->screenHeight / 2) / 3;
     checkboxes_.push_back(new CheckBox(logger, settings, L"MINIMAP ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2, &settings_->showMiniMap));
     checkboxes_.push_back(new CheckBox(logger, settings, L"TUTORIAL ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2 + perCheckBox, &settings_->showTutorial));
+    checkboxes_.push_back(new CheckBox(logger, settings, L"UPDATES SUCHEN",settings_->screenWidth / 2, settings_->screenHeight / 2 + perCheckBox * 2, & settings_->checkForUpdates));
 
     keyMap_.setFont(settings_->font);
     keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");

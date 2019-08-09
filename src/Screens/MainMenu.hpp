@@ -47,7 +47,7 @@ MainMenu::MainMenu(Logger* logger, Settings* settings)
     gameStartText_.setString("SPIEL STARTEN");
     optionsText_.setString("EINSTELLUNGEN");
     exitText_.setString("BEENDEN");
-    versionText_.setString("VERSION 1.0.0 ALPHA");
+    versionText_.setString(settings_->VERSION);
 
     keepPlayingText_.setFont(settings_->font);
     gameStartText_.setFont(settings_->font);

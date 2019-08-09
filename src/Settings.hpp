@@ -10,9 +10,12 @@
 #include <fstream>
 #include <random>
 #include <vector>
+#include <curlpp/cURLpp.hpp>
+#include <curlpp/Options.hpp>
 
 class Settings {
 public:
+    std::string VERSION = std::string("1.0.3-alpha");
     struct CampPart {
         int enumType;
         int x;
@@ -60,6 +63,8 @@ public:
 
     bool showTutorial = true;
 
+    bool checkForUpdates = true;
+
     std::deque<std::wstring> messages;
 
 private:
@@ -77,6 +82,23 @@ Settings::Settings(Logger* logger)
     readSettingsFromFile();
     rng = std::mt19937(r_dev_());
     //rng.seed(seed);
+
+    if(checkForUpdates) {
+        curlpp::Cleanup myCleanup;
+
+        std::ostringstream os;
+        os << curlpp::options::Url(std::string("https://raw.githubusercontent.com/maede97/CeviCamp/master/version"));
+
+        std::string versions = os.str();
+        size_t position = versions.find(VERSION);
+        if(position > 0) {
+            addMessage(L"Deine Version ist veraltet.");
+        } else if(position == std::string::npos){
+            addMessage(L"Deine Version wurde nicht gefunden.");
+        } else {
+            addMessage(L"Deine Version ist aktuell.");
+        }
+    }
 }
 
 void Settings::addMessage(std::wstring message)
@@ -134,6 +156,8 @@ void Settings::readSettingsFromFile()
                 showMiniMap = std::stoi(value);
             } else if (name == "show-tutorial") {
                 showTutorial = std::stoi(value);
+            } else if(name == "check-updates") {
+                checkForUpdates = std::stoi(value);
             }
         }
     } else {
@@ -155,6 +179,7 @@ void Settings::saveSettingsToFile()
     out << "gui-size=" << guiSize << std::endl;
     out << "show-minimap=" << showMiniMap << std::endl;
     out << "show-tutorial=" << showTutorial << std::endl;
+    out << "check-updates=" << checkForUpdates << std::endl;
     out.close();
 }
 
