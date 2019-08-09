@@ -35,8 +35,8 @@ View::View(Settings* settings, Logger* logger)
 {
     settings_ = settings;
     logger_ = logger;
-
-    vm_ = sf::VideoMode::getFullscreenModes().at(0);
+    
+    vm_ = sf::VideoMode::getDesktopMode();
     settings_->screenHeight = vm_.height;
     settings_->screenWidth = vm_.width;
 
@@ -62,7 +62,7 @@ void View::resetViews()
         miniMapView.setViewport(sf::FloatRect(0.8f, 0.f, 0.2f, fac1));
     } else {
         fac1 = settings_->screenHeight * settings_->mapWidth * 0.2f / settings_->mapHeight / settings_->screenWidth;
-        miniMapView.setViewport(sf::FloatRect(1.f-fac1, 0.f, fac1, 0.2f));
+        miniMapView.setViewport(sf::FloatRect(1.f - fac1, 0.f, fac1, 0.2f));
     }
     originalView.reset(sf::FloatRect(0.f, 0.f, settings_->screenWidth, settings_->screenHeight));
     originalView.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
