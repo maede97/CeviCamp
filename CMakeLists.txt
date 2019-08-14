@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.1)
 
 project(CeviCamp)
 
-
-include(FindPkgConfig)
-pkg_check_modules(CURLPP REQUIRED curlpp)
-
+if(NOT WIN32)
+    include(FindPkgConfig)
+    pkg_check_modules(CURLPP REQUIRED curlpp)
+endif()
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RELEASE" CACHE STRING "Choose the type ot the build type" FORCE)
 endif()

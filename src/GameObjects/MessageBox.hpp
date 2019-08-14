@@ -4,9 +4,9 @@
 #include "../Settings.hpp"
 #include <SFML/Graphics.hpp>
 
-class MessageBox {
+class MessageBox_ {
 public:
-    MessageBox(Logger* logger, Settings* settings)
+    MessageBox_(Logger* logger, Settings* settings)
     {
         logger_ = logger;
         settings_ = settings;

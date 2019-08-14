@@ -10,8 +10,11 @@
 #include <fstream>
 #include <random>
 #include <vector>
-#include <curlpp/cURLpp.hpp>
-#include <curlpp/Options.hpp>
+
+#ifndef WIN32
+    #include <curlpp/cURLpp.hpp>
+    #include <curlpp/Options.hpp>
+#endif
 
 class Settings {
 public:
@@ -84,20 +87,24 @@ Settings::Settings(Logger* logger)
     //rng.seed(seed);
 
     if(checkForUpdates) {
-        curlpp::Cleanup myCleanup;
+        #ifdef WIN32
+            addMessage(L"Automatische Updates funktionieren momentan nicht auf Windows!");
+        #else
+            curlpp::Cleanup myCleanup;
 
-        std::ostringstream os;
-        os << curlpp::options::Url(std::string("https://raw.githubusercontent.com/maede97/CeviCamp/master/version"));
+            std::ostringstream os;
+            os << curlpp::options::Url(std::string("https://raw.githubusercontent.com/maede97/CeviCamp/master/version"));
 
-        std::string versions = os.str();
-        size_t position = versions.find(VERSION);
-        if(position > 0) {
-            addMessage(L"Deine Version ist veraltet.");
-        } else if(position == std::string::npos){
-            addMessage(L"Deine Version wurde nicht gefunden.");
-        } else {
-            addMessage(L"Deine Version ist aktuell.");
-        }
+            std::string versions = os.str();
+            size_t position = versions.find(VERSION);
+            if(position > 0) {
+                addMessage(L"Deine Version ist veraltet.");
+            } else if(position == std::string::npos){
+                addMessage(L"Deine Version wurde nicht gefunden.");
+            } else {
+                addMessage(L"Deine Version ist aktuell.");
+            }
+        #endif
     }
 }
 

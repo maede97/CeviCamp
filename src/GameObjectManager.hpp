@@ -47,7 +47,7 @@ public:
         inventoryPointer_->setPosition((settings_->screenWidth - inventoryPointer_->getSprite().getGlobalBounds().width) / 2,
             settings_->screenHeight - inventoryPointer_->getSprite().getGlobalBounds().height);
 
-        messageBox_ = new MessageBox(logger_, settings_);
+        messageBox_ = new MessageBox_(logger_, settings_);
         messageBox_->setPosition(10, 10);
 
         movementSpeed_ = settings_->movementSpeed;
@@ -608,7 +608,7 @@ private:
     GameObject* inventoryPointer_;
     GameObject* cursorPointer_;
     std::vector<InventoryItem*> inventoryItems_;
-    MessageBox* messageBox_;
+    MessageBox_* messageBox_;
 };
 
 #endif
