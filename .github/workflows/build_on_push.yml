@@ -1,4 +1,4 @@
-name: Build on Push on branch actions
+name: Build on Push amd commit
 on: [push, commit]
 
 jobs:
@@ -8,6 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install all stuff
-      run: sudo apt-get install libsfml-dev libcurlpp-dev libcurl-dev cmake
+      run: sudo apt-get install libsfml-dev libcurlpp-dev curl cmake
     - name: Make
       run: ./make.sh
