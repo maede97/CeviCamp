@@ -1,4 +1,4 @@
-name: Build on Push amd commit
+name: Build on Push and commit
 on: [push, commit]
 
 jobs:
