@@ -1,5 +1,5 @@
 name: Build on Push on branch actions
-on: [push]
+on: [push, commit]
 
 jobs:
   build:
