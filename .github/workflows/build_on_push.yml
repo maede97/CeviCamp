@@ -1,4 +1,4 @@
-name: Build on Push
+name: Build on Push on branch actions
 on: [push]
 
 jobs:
