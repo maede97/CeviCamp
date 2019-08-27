@@ -23,6 +23,8 @@ else()
     add_executable(main src/main.cpp)
 endif()
 
+set(SFML_DIR ${CMAKE_HOME_DIRECTORY})
+
 if(CMAKE_BUILD_TYPE MATCHES RELEASE)
     if(WIN32)
         find_package(SFML 2.5 COMPONENTS audio graphics window system main)
