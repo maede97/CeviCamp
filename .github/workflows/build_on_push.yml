@@ -1,0 +1,13 @@
+name: Build on Push on branch actions
+on: [push, commit]
+
+jobs:
+  build:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: installation
+    - run: sudo apt-get install sfml-dev libcurlpp cmake
+    - name: make
+    - run: ./make.sh
