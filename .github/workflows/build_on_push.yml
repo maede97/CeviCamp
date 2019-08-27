@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: installation
-    - run: sudo apt-get install sfml-dev libcurlpp cmake
-    - name: make
-    - run: ./make.sh
+    - name: Install all stuff
+      run: sudo apt-get install sfml-dev libcurlpp cmake
+    - name: Make
+      run: ./make.sh
