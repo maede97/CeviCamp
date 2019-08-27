@@ -8,6 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install all stuff
-      run: sudo apt-get install libsfml-dev libcurlpp-dev curl cmake
+      run: sudo apt-get install libsfml-dev libcurlpp-dev libcurl4-gnutls-dev cmake
     - name: Make
       run: ./make.sh
