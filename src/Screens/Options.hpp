@@ -229,7 +229,7 @@ Options::Options(Logger* logger, Settings* settings)
     int perCheckBox = (settings_->screenHeight / 2) / 3;
     checkboxes_.push_back(new CheckBox(logger, settings, L"MINIMAP ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2, &settings_->showMiniMap));
     checkboxes_.push_back(new CheckBox(logger, settings, L"TUTORIAL ANZEIGEN", settings_->screenWidth / 2, settings_->screenHeight / 2 + perCheckBox, &settings_->showTutorial));
-    checkboxes_.push_back(new CheckBox(logger, settings, L"UPDATES SUCHEN",settings_->screenWidth / 2, settings_->screenHeight / 2 + perCheckBox * 2, & settings_->checkForUpdates));
+    checkboxes_.push_back(new CheckBox(logger, settings, L"UPDATES SUCHEN", settings_->screenWidth / 2, settings_->screenHeight / 2 + perCheckBox * 2, &settings_->checkForUpdates));
 
     keyMap_.setFont(settings_->font);
     keyMap_.setString(L"Tastaturbelegung\n\nVorwärts\nRückwärts\nLinks\nRechts\nBauen\nCheat-Menu\nZoom zurücksetzen");
